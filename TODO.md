@@ -2,15 +2,41 @@
 
 Working notes and handover checklist for this repo. See [DESIGN_NOTES.md](./DESIGN_NOTES.md) for design reasoning and [README.md](./README.md) for stack/commands.
 
+## Design system (2026-07-08)
+
+The site now runs on the imported **Bobby Muljono editorial design system** (Claude Design
+handoff bundle) — see `DESIGN_NOTES.md`. This pass covered **Home + Work** only; **Writing**
+and **Chat** stay Phase 2. Bio + project copy were populated from the bundle's sample content.
+
 ## Content checklist (blocking a real launch)
 
-- [ ] **Bio content** (`src/pages/index.astro`): full name + current title, one concrete sentence on what you do and for whom, a 2-3 sentence "now" blurb, 3-4 past roles each with one concrete impact line, a plain grouped skills list (languages / frameworks / infra / tools).
-- [ ] **Contact details**: real email and LinkedIn URL (`src/pages/index.astro` and `src/components/Footer.astro` both have `TODO@replace-me.com` / `TODO-your-handle` placeholders — search for `TODO` to find every spot).
+- [x] **Bio content** (`src/pages/index.astro`): hero, lead paragraph, and contact section
+  populated from the design bundle's first-person copy (Senior Data Analyst at Shopee, 5+ yrs,
+  RAG / multi-agent / 8 markets). Skill tags regrounded in the real resume (Presto SQL, Python,
+  LangChain, RAG, Multi-agent, Claude agents & skills, A/B testing) — no longer generic. Removed
+  the "Available for AI & analytics work" badge and the "8 markets" skill/tech tags per review.
+- [x] **Contact details**: GitHub and LinkedIn (`linkedin.com/in/bobbymul`) are wired real in
+  both `src/pages/index.astro` and `src/components/Footer.astro`. Email was intentionally removed
+  everywhere (hero contact row + footer) — not published. `bobbymul93@gmail.com` is on file from
+  the resume if a mail link is ever wanted again.
 - [ ] **Résumé PDF**: coming later; wire up the link once the file exists.
-- [ ] **3-5 real projects** (`src/content/projects/`): copy `_template.md` per project. Each needs title, ≤160-char description, tech stack, a working `liveUrl` and/or `repoUrl`, and real Problem/Approach/Technical decisions/What I learned prose. Set `draft: false` when ready to publish.
-- [ ] **Headshot photo**: the hero on `src/pages/index.astro` uses an `.avatar-placeholder` circle (initials "BM") until you supply a real photo. Once you have one, add it under `public/` and swap the placeholder `<div>` for an `<img>` (marked with a `TODO` comment at the swap site).
-- [ ] **Optional visual assets**: per-project cover screenshots, a real default OG share image (`public/og-default.png` doesn't exist yet — the `image` prop on `BaseLayout` is optional and currently unused).
-- [ ] **Confidentiality check**: for any project built as part of your day job, only describe what's already public/non-confidential.
+- [x] **3-5 real projects** (`src/content/projects/`): four write-ups added (support-rag-chatbot,
+  ops-copilot-multi-agent, marketplace-health-dashboard, checkout-ab-framework) with `kind`,
+  description, techStack, and Problem/Approach/Technical decisions/What I learned prose. Add
+  real `liveUrl`/`repoUrl` where they exist.
+- [ ] **Headshot photo**: the hero on `src/pages/index.astro` uses an `.avatar-placeholder`
+  ("BM") in the design's 320×400 portrait slot until you supply a real photo. Once you have
+  one, add it under `public/` and swap the placeholder `<div>` for an `<img>` (marked with a
+  `TODO` comment at the swap site).
+- [ ] **Self-host fonts (optional)**: Newsreader / Source Sans 3 / IBM Plex Mono currently load
+  from the Google Fonts CDN via `<link>` in `BaseLayout.astro`. Download and `@font-face` them
+  if you want to drop the network request.
+- [ ] **Optional visual assets**: per-project cover screenshots, a real default OG share image
+  (`public/og-default.png` doesn't exist yet — the `image` prop on `BaseLayout` is optional and
+  currently unused).
+- [ ] **Confidentiality check**: the four project write-ups were authored from the bundle's
+  representative sample copy. Before treating any as final, confirm each only describes what's
+  public/non-confidential about your Shopee work.
 
 ## Decisions log
 
@@ -19,12 +45,13 @@ Working notes and handover checklist for this repo. See [DESIGN_NOTES.md](./DESI
 - [ ] **Domain**: shipping on `bobbymuljono.github.io` for now. Namecheap custom domain cutover is independent and can happen anytime: A records (185.199.108/109/110/111.153) + `www` CNAME + `public/CNAME` file + update `site` in `astro.config.mjs`.
 - [x] **Chatbot backend (Phase 2)**: Supabase Edge Function, not Cloudflare Workers — one account handles both the Claude Haiku proxy (API key as a secret) and conversation logging in Postgres.
 - [x] **Layout redesign (2026-07-07)**: original design read as "plain and uninviting." Reworked to a side-by-side photo hero (placeholder avatar for now), card/bento-grid content sections (Now card, Background timeline, Stack pill-grid, Contact card), and subtle CSS-only hover reveals (animated underline on links, lift + image zoom on project cards) — still zero shipped JS.
+- [x] **Design system import (2026-07-08)**: adopted the Claude Design handoff bundle ("Bobby Muljono editorial design system") — warm stone + single forest-green accent, Newsreader/Source Sans 3/IBM Plex Mono, hairline-driven editorial layout. Replaced the prior warm-clay/system-font tokens in `global.css`; rebuilt nav, footer, Home and Work to match. Fonts now load from Google Fonts CDN (one deliberate webfont request). Writing + Chat screens deferred to Phase 2. See `DESIGN_NOTES.md`.
 - [x] **Scroll-reveal + elevated cards (2026-07-07)**: added a small vanilla-JS `IntersectionObserver` (inlined, no separate `.js` file) that fades in About sections and project cards on scroll — fully progressive enhancement, content is visible immediately with no JS or `prefers-reduced-motion` set. Cards moved from a flat border to a shadow-based elevation (softer radius, resting + hover shadow tokens), inspired by the Supercharged Design agency site the user shared, kept deliberately more restrained than that reference. See `DESIGN_NOTES.md`.
 
 ## Phase 2 (not built yet)
 
 - **Blog**: second content collection under `src/content/blog`, frontmatter `{ title, description, date, tags, draft }`.
-- **Chatbot**: a single interactive island (vanilla TS Web Component, not a UI framework, to keep shipped JS near zero) calling a Supabase Edge Function (`supabase/functions/chat/index.ts`) that:
+- **Chatbot**: the Home hero shows a non-functional **"Chat with Bobby AI — In development"** marker (`.chat-soon` in `src/pages/index.astro`) as a standing reminder that this is unbuilt. When it ships, replace that marker with the real entry point and restore the design's "Chat with my AI" nav CTA. Planned build: a single interactive island (vanilla TS Web Component, not a UI framework, to keep shipped JS near zero) calling a Supabase Edge Function (`supabase/functions/chat/index.ts`) that:
   1. Prepends a static persona system prompt server-side.
   2. Calls Claude Haiku with a capped max-token budget.
   3. Inserts a row into a `conversations` table (`id`, `created_at`, `session_id`/IP hash, `question`, `answer`, `input_tokens`, `output_tokens`, `flagged`, `model`) before returning the reply.

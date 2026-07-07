@@ -7,6 +7,8 @@ const projects = defineCollection({
     z.object({
       title: z.string(),
       description: z.string().max(160),
+      // Editorial eyebrow shown above the title, e.g. "AI agent · case study".
+      kind: z.string().optional(),
       date: z.coerce.date(),
       techStack: z.array(z.string()),
       liveUrl: z.string().url().optional(),

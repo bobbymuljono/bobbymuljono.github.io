@@ -1,113 +1,91 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-// TODO: replace every bracketed placeholder below with real content — see TODO.md.
+const featured = (await getCollection('projects', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 2);
 
-const stack = [
-  { category: 'Languages', items: ['[TypeScript]', '[Python]'] },
-  { category: 'Frameworks', items: ['[Astro]', '[React]'] },
-  { category: 'Infra', items: ['[AWS]', '[Supabase]'] },
-  { category: 'Tools', items: ['[Git]', '[Figma]'] },
-];
-
-const background = [
-  { role: '[Role] · [Company]', impact: '[One concrete impact line — what changed because you did this.]' },
-  { role: '[Role] · [Company]', impact: '[One concrete impact line.]' },
-];
+const heroTags = ['Presto SQL', 'Python', 'LangChain', 'RAG', 'Multi-agent', 'Claude agents & skills', 'A/B testing'];
 ---
 
 <BaseLayout
   title="Bobby Muljono"
-  description="[One concrete sentence on what you do and for whom.]"
+  description="Senior Data Analyst at Shopee building AI — RAG chatbots, multi-agent workflows, and analytics across 8 markets."
 >
-  <section class="hero">
-    <!-- TODO: replace with a real <img> once you supply a headshot; see TODO.md -->
-    <div class="avatar-placeholder" aria-hidden="true">BM</div>
+  <!-- Hero -->
+  <section class="hero" data-reveal>
     <div class="hero__text">
-      <h1>Bobby Muljono</h1>
-      <p class="hero__role">[Current role/title]</p>
-      <p>[One concrete sentence on what you do and for whom.]</p>
+      <h1>I build AI, and I read data for a living.</h1>
+      <p class="hero__lead">
+        I'm Bobby — a Senior Data Analyst at Shopee, with 5+ years in SQL, dashboarding,
+        and data analytics. These days that expertise is evolving into building the AI
+        that does it with me: RAG chatbots, automated SQL execution, and automated
+        insight and visualization generation, across 8 markets.
+      </p>
       <div class="hero__cta">
-        <a class="button button--primary" href="/projects/">View work</a>
-        <a class="button button--secondary" href="#contact">Contact</a>
+        <a class="button button--primary" href="/projects/">See my work</a>
+        <a class="button button--secondary" href="#contact">Get in touch</a>
       </div>
+      <!-- Phase 2: AI persona chatbot — not built yet. See TODO.md. -->
+      <p class="hero__soon">
+        <span class="chat-soon" aria-disabled="true">
+          Chat with Bobby AI
+          <span class="chat-soon__tag">In development</span>
+        </span>
+      </p>
+      <ul class="tag-list hero__tags">
+        {heroTags.map((tag) => <li class="tag">{tag}</li>)}
+      </ul>
     </div>
+    <!-- TODO: swap for a real <img> once you supply a headshot; see TODO.md -->
+    <div class="hero__portrait avatar-placeholder" aria-hidden="true">BM</div>
   </section>
 
-  <section data-reveal>
-    <h2>Now</h2>
-    <div class="card">
-      <p>[2-3 sentences on your current focus — not a static objective statement.]</p>
-    </div>
-  </section>
-
-  <section data-reveal>
-    <h2>Background</h2>
-    <ol class="timeline">
-      {background.map((role) => (
-        <li>
-          <strong>{role.role}</strong>
-          <p>{role.impact}</p>
-        </li>
-      ))}
-    </ol>
-  </section>
-
-  <section data-reveal>
-    <h2>Stack</h2>
-    <div class="stack-grid">
-      {stack.map((group) => (
-        <div class="card">
-          <h3>{group.category}</h3>
-          <ul class="pill-list">
-            {group.items.map((item) => (
-              <li>{item}</li>
-            ))}
-          </ul>
+  <!-- Selected work -->
+  {
+    featured.length > 0 && (
+      <section class="selected" data-reveal>
+        <div class="selected__head">
+          <span class="eyebrow">Selected work</span>
+          <a href="/projects/" class="selected__all">All projects &rarr;</a>
         </div>
-      ))}
-    </div>
-  </section>
+        <div class="selected__grid">
+          {featured.map((p) => (
+            <a href={`/projects/${p.id}/`} class="card card--interactive project-preview">
+              {p.data.kind && <span class="eyebrow">{p.data.kind}</span>}
+              <h3>{p.data.title}</h3>
+              <p>{p.data.description}</p>
+              <ul class="tag-list">
+                {p.data.techStack.map((t) => (
+                  <li class="tag">{t}</li>
+                ))}
+              </ul>
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
 
-  <section id="contact" data-reveal>
-    <h2>Contact</h2>
-    <div class="card contact-card">
-      <a class="button button--secondary" href="mailto:TODO@replace-me.com">Email</a>
+  <!-- Contact -->
+  <section id="contact" class="contact" data-reveal>
+    <span class="eyebrow">Contact</span>
+    <h2>Let's talk.</h2>
+    <p class="contact__lead">
+      Building something at the seam of analytics and AI, or just want to compare notes?
+      I'm happy to hear from you.
+    </p>
+    <div class="contact__actions">
       <a class="button button--secondary" href="https://github.com/bobbymuljono">GitHub</a>
-      <a class="button button--secondary" href="https://www.linkedin.com/in/TODO-your-handle">LinkedIn</a>
+      <a class="button button--secondary" href="https://www.linkedin.com/in/bobbymul">LinkedIn</a>
     </div>
   </section>
 </BaseLayout>
 
 <style>
-  .hero {
-    display: flex;
-    align-items: center;
-    gap: var(--space-5);
-    padding-block: var(--space-6) var(--space-5);
-  }
-
-  .hero__role {
-    color: var(--color-text-muted);
-    font-weight: 600;
-  }
-
-  .hero__cta {
-    display: flex;
-    gap: var(--space-3);
-    margin-top: var(--space-4);
-  }
-
-  @media (max-width: 40rem) {
-    .hero {
-      flex-direction: column;
-      align-items: flex-start;
-      text-align: left;
-    }
-  }
-
   section {
-    padding-block: var(--space-6);
+    padding-block: var(--space-8);
     border-top: 1px solid var(--color-border);
   }
 
@@ -115,29 +93,136 @@ const background = [
     border-top: none;
   }
 
-  .contact-card {
+  /* Hero */
+  .hero {
     display: flex;
+    gap: var(--space-8);
+    align-items: center;
     flex-wrap: wrap;
-    gap: var(--space-3);
+    padding-top: var(--space-9);
   }
 
-  .stack-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  .hero__text {
+    flex: 1 1 420px;
+    max-width: 560px;
+  }
+
+  .hero h1 {
+    font-size: var(--text-4xl);
+    margin: 18px 0 20px;
+  }
+
+  .hero__lead {
+    font-size: var(--text-lg);
+    line-height: 1.55;
+    max-width: 58ch;
+    margin: 0 0 var(--space-3);
+  }
+
+  .hero__cta {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+    flex-wrap: wrap;
+  }
+
+  .hero__soon {
+    margin: var(--space-4) 0 0;
+  }
+
+  .chat-soon {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    border: 1px dashed var(--color-border-strong);
+    border-radius: var(--radius-pill);
+    padding: 6px 14px;
+    cursor: default;
+  }
+
+  .chat-soon__tag {
+    font-family: var(--font-code);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-accent-deep);
+    background: var(--color-surface-accent);
+    border-radius: var(--radius-pill);
+    padding: 2px 8px;
+  }
+
+  .hero__tags {
+    margin-top: var(--space-6);
+  }
+
+  .hero__portrait {
+    width: 320px;
+    height: 400px;
+    flex: 0 0 auto;
+    border-radius: var(--radius-lg);
+    font-size: var(--text-4xl);
+  }
+
+  /* Selected work */
+  .selected__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: var(--space-5);
     gap: var(--space-4);
   }
 
-  .stack-grid h3 {
-    margin-bottom: var(--space-3);
+  .selected__all {
+    font-size: var(--text-sm);
+    text-decoration: none;
+    white-space: nowrap;
   }
 
-  .timeline strong {
-    display: block;
-    margin-bottom: var(--space-1);
+  .selected__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-5);
   }
 
-  .timeline p {
-    margin: 0;
+  .project-preview h3 {
+    font-size: var(--text-xl);
+    margin: var(--space-2) 0 var(--space-3);
+  }
+
+  .project-preview p {
+    font-size: var(--text-base);
     color: var(--color-text-muted);
+    margin: 0 0 var(--space-4);
+  }
+
+  /* Contact */
+  .contact h2 {
+    font-size: var(--text-3xl);
+    margin: var(--space-3) 0 var(--space-3);
+  }
+
+  .contact__lead {
+    color: var(--color-text-muted);
+    max-width: 54ch;
+  }
+
+  .contact__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+  }
+
+  @media (max-width: 52rem) {
+    .selected__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hero__portrait {
+      width: 100%;
+      height: 320px;
+    }
   }
 </style>

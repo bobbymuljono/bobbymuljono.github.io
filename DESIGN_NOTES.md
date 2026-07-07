@@ -2,6 +2,65 @@
 
 Concrete decisions this site's design is drawing from, and why — kept here so token/component choices are traceable instead of arbitrary defaults.
 
+## Current system: Bobby Muljono editorial design system (2026-07-08)
+
+The site now runs on the **Claude Design handoff bundle** ("Bobby Muljono Design System"),
+imported 2026-07-08. This supersedes the warm-clay/system-font direction described in the
+"References" and "Decisions taken" sections below — those are kept for history, but the
+tokens, type, and palette they describe are no longer in `global.css`.
+
+**What the design system fixes (non-negotiable — do not substitute):**
+
+- **Palette — one accent only.** Warm stone background `#E9E8E2`, forest-black text
+  `#23291F`, muted `#5E655A`, and forest green `#2E5E43` as the single accent (`#234A34`
+  for text on tint). Layered stone surfaces (`#F3F1EA` raised, `#DEDCD3` sunk, `#E4EBDF`
+  sage wash) give depth. No second accent, no gradients, no glassmorphism.
+- **Type.** Newsreader (serif) for display/headings, Source Sans 3 (humanist sans) for
+  body/UI at a 17px base, IBM Plex Mono for eyebrows/tags/code (UPPERCASE, `0.08em`
+  tracking). Loaded from Google Fonts CDN via `<link>` in `BaseLayout` — this is the one
+  deliberate departure from the old "no webfont request" rule, accepted because the
+  distinctive serif is core to the brand. Self-host later if the network cost matters
+  (see `TODO.md`).
+- **Layout.** Left-aligned, generous whitespace, 1120px container (`--container`), prose
+  capped ~68ch. Structure comes from hairline `1px` borders (`#D6D2C4`), not shadows.
+- **Cards.** Raised oat surface + hairline border + restrained 6px radius — deliberately
+  NOT bubbly SaaS cards and never a colored-left-border accent card. Interactive cards
+  lift 2px with an accent border + soft shadow on hover.
+- **Radii.** 3px inputs/tags · 6px buttons/cards · 10px dialogs/chat · pill for tags.
+- **Motion.** Quiet and quick (120–320ms, ease-out); fades + small `translateY` lifts.
+  No bounces, no infinite decorative loops.
+- **No emoji.** Warmth comes from type, color, and copy. Unicode middot (`·`) and arrows
+  (`→`) are used lightly for editorial flourish.
+
+**Adaptations / flagged gaps (things the bundle left open):**
+
+- **Deferred screens.** The bundle ships four screens — Home, Work, Writing, Chat. Only
+  **Home + Work** were implemented this pass; **Writing** (blog) and **Chat** (AI persona)
+  remain Phase 2 (see `TODO.md`). The nav therefore wires only real destinations (Work,
+  Contact) and the signature "Chat with my AI" CTA is replaced by "Get in touch" until the
+  chat exists — restore it when Chat ships.
+- **No portrait.** The hero uses a monogram `.avatar-placeholder` ("BM") in the design's
+  rectangular 320×400 slot until a real headshot is supplied.
+- **No logo.** The wordmark is type-set (Newsreader) with a forest-green period accent, per
+  the bundle's guidance. Never fabricate a logo.
+- **Contact links.** GitHub is real; LinkedIn + public email are still placeholders
+  (`href="#"`) — the bundle left these as `#` and no real values were provided.
+- **Project copy.** The four project write-ups were authored from the bundle's `site-data`
+  sample copy (Shopee-flavoured: RAG chatbot, ops copilot, health dashboard, A/B
+  framework). Treat specifics as representative until confirmed; run the confidentiality
+  check in `TODO.md` before treating any as final.
+
+The tokens/components live in `src/styles/global.css` (single file consumed by
+`BaseLayout`). Utility classes mirror the bundle's React primitives: `.button`
+(`--primary`/`--secondary`/`--ghost`/`--sm`), `.card` (`--interactive`/`--wash`), `.tag`
+(`--outline`/`--solid`), `.badge`, `.eyebrow`, `.avatar-placeholder`.
+
+---
+
+## History — original warm-clay direction (pre-2026-07-08)
+
+_Kept for provenance. The tokens described below were replaced by the design system above._
+
 ## References
 
 - **[joshwcomeau.com](https://www.joshwcomeau.com)** — personality lives in the *copy and accents* (confident headlines, conversational asides like "pretty friggin' cool"), not in flashy animation. Interactive flourishes are restrained and purposeful, not everywhere.

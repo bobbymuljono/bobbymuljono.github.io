@@ -1,94 +1,56 @@
 ---
-import { Image } from 'astro:assets';
-
 interface Props {
   slug: string;
   title: string;
   description: string;
   techStack: string[];
-  coverImage?: ImageMetadata;
-  coverImageAlt?: string;
+  kind?: string;
 }
 
-const { slug, title, description, techStack, coverImage, coverImageAlt } = Astro.props;
+const { slug, title, description, techStack, kind } = Astro.props;
 ---
 
-<article class="project-card" data-reveal>
-  {coverImage && (
-    <div class="project-card__media">
-      <Image src={coverImage} alt={coverImageAlt ?? ''} width={640} loading="lazy" />
-    </div>
-  )}
-  <h3><a href={`/projects/${slug}/`}>{title}</a></h3>
-  <p>{description}</p>
-  <ul class="project-card__stack">
-    {techStack.map((tech) => (
-      <li>{tech}</li>
-    ))}
-  </ul>
-</article>
+<a href={`/projects/${slug}/`} class="card card--interactive project-row" data-reveal>
+  <div class="project-row__body">
+    {kind && <span class="eyebrow">{kind}</span>}
+    <h3>{title}</h3>
+    <p>{description}</p>
+    <ul class="tag-list">
+      {techStack.map((tech) => <li class="tag">{tech}</li>)}
+    </ul>
+  </div>
+  <span class="project-row__cta">Read case study &rarr;</span>
+</a>
 
 <style>
-  .project-card {
-    padding: var(--space-4);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius);
-    background: var(--color-bg);
-    box-shadow: var(--shadow-sm);
-    transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-  }
-
-  .project-card:hover {
-    border-color: var(--color-accent);
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-  }
-
-  .project-card__media {
-    overflow: hidden;
-    border-radius: var(--radius);
-    margin-bottom: var(--space-3);
-  }
-
-  .project-card img {
-    display: block;
-    width: 100%;
-    height: auto;
-    transition: transform 0.25s ease;
-  }
-
-  .project-card:hover img {
-    transform: scale(1.04);
-  }
-
-  .project-card h3 {
-    margin-bottom: var(--space-2);
-  }
-
-  .project-card h3 a {
-    text-decoration: none;
-    color: var(--color-text);
-  }
-
-  .project-card h3 a:hover {
-    color: var(--color-accent);
-  }
-
-  .project-card__stack {
-    list-style: none;
+  .project-row {
     display: flex;
+    gap: var(--space-5);
+    align-items: flex-start;
     flex-wrap: wrap;
-    gap: var(--space-2);
-    margin: 0;
-    padding: 0;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: var(--color-text-muted);
   }
 
-  .project-card__stack li {
-    background: var(--color-surface);
-    border-radius: var(--radius);
-    padding: 0.15rem 0.5rem;
+  .project-row__body {
+    flex: 1;
+    min-width: 300px;
+  }
+
+  .project-row h3 {
+    font-size: var(--text-2xl);
+    margin: var(--space-2) 0 var(--space-2);
+  }
+
+  .project-row p {
+    font-size: var(--text-base);
+    color: var(--color-text-muted);
+    margin: 0 0 var(--space-4);
+    max-width: 60ch;
+  }
+
+  .project-row__cta {
+    font-family: var(--font-serif);
+    font-size: var(--text-sm);
+    color: var(--color-accent);
+    white-space: nowrap;
   }
 </style>

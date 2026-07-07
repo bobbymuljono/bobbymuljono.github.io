@@ -8,23 +8,31 @@ const projects = (await getCollection('projects', ({ data }) => !data.draft)).so
 );
 ---
 
-<BaseLayout title="Selected work — Bobby Muljono" description="A few projects worth a closer look.">
-  <h1>Selected work</h1>
-  <p>A handful of projects worth a closer look — not an exhaustive list.</p>
+<BaseLayout
+  title="Work — Bobby Muljono"
+  description="AI agents, RAG systems, and the analytics and experimentation work underneath them."
+>
+  <section class="work-intro" data-reveal>
+    <span class="eyebrow">Selected work · 2021—2026</span>
+    <h1>Things I've shipped</h1>
+    <p>
+      AI agents, RAG systems, and the analytics + experimentation work underneath them.
+      A few representative projects from Shopee and side work.
+    </p>
+  </section>
 
   {
     projects.length === 0 ? (
       <p class="empty-state">Selected work is coming soon.</p>
     ) : (
-      <div class="project-grid">
+      <div class="work-list">
         {projects.map((project) => (
           <ProjectCard
             slug={project.id}
             title={project.data.title}
             description={project.data.description}
             techStack={project.data.techStack}
-            coverImage={project.data.coverImage}
-            coverImageAlt={project.data.coverImageAlt}
+            kind={project.data.kind}
           />
         ))}
       </div>
@@ -33,11 +41,28 @@ const projects = (await getCollection('projects', ({ data }) => !data.draft)).so
 </BaseLayout>
 
 <style>
-  .project-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  .work-intro {
+    padding-top: var(--space-7);
+    margin-bottom: var(--space-7);
+  }
+
+  .work-intro h1 {
+    font-size: var(--text-3xl);
+    margin: 14px 0 12px;
+  }
+
+  .work-intro p {
+    font-size: var(--text-lg);
+    color: var(--color-text-muted);
+    max-width: 56ch;
+    margin: 0;
+  }
+
+  .work-list {
+    display: flex;
+    flex-direction: column;
     gap: var(--space-4);
-    margin-top: var(--space-5);
+    padding-bottom: var(--space-4);
   }
 
   .empty-state {

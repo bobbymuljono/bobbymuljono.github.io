@@ -12,11 +12,13 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const { Content } = await render(project);
-const { title, description, techStack, liveUrl, repoUrl, status } = project.data;
+const { title, description, techStack, liveUrl, repoUrl, status, kind } = project.data;
 ---
 
 <BaseLayout title={`${title} — Bobby Muljono`} description={description}>
-  <a href="/projects/" class="back-link">&larr; Selected work</a>
+  <div class="detail">
+  <a href="/projects/" class="back-link">&larr; Work</a>
+  {kind && <span class="eyebrow">{kind}</span>}
   <h1>{title}</h1>
 
   <ul class="meta">
@@ -32,14 +34,26 @@ const { title, description, techStack, liveUrl, repoUrl, status } = project.data
   <div class="prose">
     <Content />
   </div>
+  </div>
 </BaseLayout>
 
 <style>
+  .detail {
+    max-width: var(--container-narrow);
+    padding-top: var(--space-7);
+  }
+
+  .detail h1 {
+    font-size: var(--text-3xl);
+    margin: var(--space-2) 0 var(--space-4);
+  }
+
   .back-link {
     display: inline-block;
     margin-bottom: var(--space-4);
     color: var(--color-text-muted);
     text-decoration: none;
+    font-size: var(--text-sm);
   }
 
   .back-link:hover {

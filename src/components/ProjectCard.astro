@@ -13,7 +13,7 @@ interface Props {
 const { slug, title, description, techStack, coverImage, coverImageAlt } = Astro.props;
 ---
 
-<article class="project-card">
+<article class="project-card" data-reveal>
   {coverImage && (
     <div class="project-card__media">
       <Image src={coverImage} alt={coverImageAlt ?? ''} width={640} loading="lazy" />
@@ -34,13 +34,14 @@ const { slug, title, description, techStack, coverImage, coverImageAlt } = Astro
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     background: var(--color-bg);
+    box-shadow: var(--shadow-sm);
     transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
   }
 
   .project-card:hover {
     border-color: var(--color-accent);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px -12px rgba(42, 36, 32, 0.25);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
   }
 
   .project-card__media {

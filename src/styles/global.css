@@ -26,7 +26,11 @@
   --space-7: 6rem;
 
   --measure: 65ch;
-  --radius: 8px;
+  --radius: 14px;
+
+  --shadow-sm: 0 1px 2px rgba(42, 36, 32, 0.05), 0 1px 3px rgba(42, 36, 32, 0.06);
+  --shadow-md: 0 8px 20px -12px rgba(42, 36, 32, 0.25);
+  --shadow-lg: 0 16px 32px -14px rgba(42, 36, 32, 0.3);
 }
 
 *,
@@ -164,6 +168,7 @@ button:focus-visible {
   background: var(--color-surface);
   border-radius: var(--radius);
   padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Avatar placeholder — swap for a real <img> once a photo is supplied */
@@ -208,6 +213,20 @@ button:focus-visible {
   border-radius: 50%;
   background: var(--color-accent);
   border: 2px solid var(--color-bg);
+}
+
+/* Scroll reveal — progressive enhancement only; content is fully visible with no JS or reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .js-reveal [data-reveal] {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .js-reveal [data-reveal].is-revealed {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .skip-link {

@@ -1,0 +1,76 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  slug: string;
+  title: string;
+  description: string;
+  techStack: string[];
+  coverImage?: ImageMetadata;
+  coverImageAlt?: string;
+}
+
+const { slug, title, description, techStack, coverImage, coverImageAlt } = Astro.props;
+---
+
+<article class="project-card">
+  {coverImage && <Image src={coverImage} alt={coverImageAlt ?? ''} width={640} loading="lazy" />}
+  <h3><a href={`/projects/${slug}/`}>{title}</a></h3>
+  <p>{description}</p>
+  <ul class="project-card__stack">
+    {techStack.map((tech) => (
+      <li>{tech}</li>
+    ))}
+  </ul>
+</article>
+
+<style>
+  .project-card {
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    transition: border-color 0.15s ease;
+  }
+
+  .project-card:hover {
+    border-color: var(--color-accent);
+  }
+
+  .project-card img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    margin-bottom: var(--space-3);
+  }
+
+  .project-card h3 {
+    margin-bottom: var(--space-2);
+  }
+
+  .project-card h3 a {
+    text-decoration: none;
+    color: var(--color-text);
+  }
+
+  .project-card h3 a:hover {
+    color: var(--color-accent);
+  }
+
+  .project-card__stack {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+  }
+
+  .project-card__stack li {
+    background: var(--color-surface);
+    border-radius: var(--radius);
+    padding: 0.15rem 0.5rem;
+  }
+</style>

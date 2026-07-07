@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+
+const projects = (await getCollection('projects', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+
+<BaseLayout title="Selected work — Bobby Muljono" description="A few projects worth a closer look.">
+  <h1>Selected work</h1>
+  <p>A handful of projects worth a closer look — not an exhaustive list.</p>
+
+  {
+    projects.length === 0 ? (
+      <p class="empty-state">Selected work is coming soon.</p>
+    ) : (
+      <div class="project-grid">
+        {projects.map((project) => (
+          <ProjectCard
+            slug={project.id}
+            title={project.data.title}
+            description={project.data.description}
+            techStack={project.data.techStack}
+            coverImage={project.data.coverImage}
+            coverImageAlt={project.data.coverImageAlt}
+          />
+        ))}
+      </div>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-5);
+  }
+
+  .empty-state {
+    color: var(--color-text-muted);
+  }
+</style>

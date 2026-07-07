@@ -1,0 +1,45 @@
+---
+const year = new Date().getUTCFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrapper site-footer__inner">
+    <p>&copy; {year} Bobby Muljono</p>
+    <ul class="site-footer__links">
+      <li><a href="https://github.com/bobbymuljono" rel="me">GitHub</a></li>
+      {/* TODO: replace with your real LinkedIn URL and email */}
+      <li><a href="https://www.linkedin.com/in/TODO-your-handle" rel="me">LinkedIn</a></li>
+      <li><a href="mailto:TODO@replace-me.com">Email</a></li>
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--color-border);
+    margin-top: var(--space-7);
+  }
+
+  .site-footer__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding-block: var(--space-4);
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+
+  .site-footer p {
+    margin: 0;
+  }
+
+  .site-footer__links {
+    list-style: none;
+    display: flex;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+  }
+</style>

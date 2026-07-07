@@ -1,0 +1,59 @@
+---
+const navLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/projects/', label: 'Selected work' },
+  { href: '/#contact', label: 'Contact' },
+];
+---
+
+<header class="site-header">
+  <div class="wrapper site-header__inner">
+    <a href="/" class="site-header__mark">Bobby Muljono</a>
+    <nav aria-label="Primary">
+      <ul>
+        {navLinks.map((link) => (
+          <li><a href={link.href}>{link.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding-block: var(--space-4);
+  }
+
+  .site-header__mark {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+  }
+
+  nav a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  nav a:hover {
+    color: var(--color-accent);
+  }
+</style>

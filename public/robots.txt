@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bobbymuljono.github.io/sitemap-index.xml

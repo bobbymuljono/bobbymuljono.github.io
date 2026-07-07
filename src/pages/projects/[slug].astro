@@ -1,0 +1,77 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects', ({ data }) => !data.draft);
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const { title, description, techStack, liveUrl, repoUrl, status } = project.data;
+---
+
+<BaseLayout title={`${title} — Bobby Muljono`} description={description}>
+  <a href="/projects/" class="back-link">&larr; Selected work</a>
+  <h1>{title}</h1>
+
+  <ul class="meta">
+    <li><span class="meta__label">Status</span> {status}</li>
+    <li><span class="meta__label">Stack</span> {techStack.join(', ')}</li>
+  </ul>
+
+  <p class="links">
+    {liveUrl && <a href={liveUrl}>Live site &rarr;</a>}
+    {repoUrl && <a href={repoUrl}>Source &rarr;</a>}
+  </p>
+
+  <div class="prose">
+    <Content />
+  </div>
+</BaseLayout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    margin-bottom: var(--space-4);
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .back-link:hover {
+    color: var(--color-accent);
+  }
+
+  .meta {
+    list-style: none;
+    display: flex;
+    gap: var(--space-5);
+    margin: 0 0 var(--space-3);
+    padding: 0;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+
+  .meta__label {
+    font-weight: 600;
+    color: var(--color-text);
+    margin-right: var(--space-1);
+  }
+
+  .links {
+    display: flex;
+    gap: var(--space-4);
+  }
+
+  .prose {
+    margin-top: var(--space-5);
+  }
+
+  .prose :global(h2) {
+    margin-top: var(--space-6);
+  }
+</style>

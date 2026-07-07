@@ -1,77 +1,113 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-// TODO: replace every bracketed placeholder below with real content.
-// See the "Content you need to supply" section of the project plan.
+// TODO: replace every bracketed placeholder below with real content — see TODO.md.
+
+const stack = [
+  { category: 'Languages', items: ['[TypeScript]', '[Python]'] },
+  { category: 'Frameworks', items: ['[Astro]', '[React]'] },
+  { category: 'Infra', items: ['[AWS]', '[Supabase]'] },
+  { category: 'Tools', items: ['[Git]', '[Figma]'] },
+];
+
+const background = [
+  { role: '[Role] · [Company]', impact: '[One concrete impact line — what changed because you did this.]' },
+  { role: '[Role] · [Company]', impact: '[One concrete impact line.]' },
+];
 ---
 
 <BaseLayout
   title="Bobby Muljono"
   description="[One concrete sentence on what you do and for whom.]"
 >
-  <section class="intro">
-    <h1>Bobby Muljono</h1>
-    <p>[Current role/title]. [One concrete sentence on what you do and for whom.]</p>
+  <section class="hero">
+    <!-- TODO: replace with a real <img> once you supply a headshot; see TODO.md -->
+    <div class="avatar-placeholder" aria-hidden="true">BM</div>
+    <div class="hero__text">
+      <h1>Bobby Muljono</h1>
+      <p class="hero__role">[Current role/title]</p>
+      <p>[One concrete sentence on what you do and for whom.]</p>
+      <div class="hero__cta">
+        <a class="button button--primary" href="/projects/">View work</a>
+        <a class="button button--secondary" href="#contact">Contact</a>
+      </div>
+    </div>
   </section>
 
   <section>
     <h2>Now</h2>
-    <p>[2-3 sentences on your current focus — not a static objective statement.]</p>
+    <div class="card">
+      <p>[2-3 sentences on your current focus — not a static objective statement.]</p>
+    </div>
   </section>
 
   <section>
     <h2>Background</h2>
-    <ul class="background-list">
-      <li>
-        <strong>[Role] · [Company]</strong>
-        <p>[One concrete impact line — what changed because you did this.]</p>
-      </li>
-      <li>
-        <strong>[Role] · [Company]</strong>
-        <p>[One concrete impact line.]</p>
-      </li>
-    </ul>
+    <ol class="timeline">
+      {background.map((role) => (
+        <li>
+          <strong>{role.role}</strong>
+          <p>{role.impact}</p>
+        </li>
+      ))}
+    </ol>
   </section>
 
   <section>
     <h2>Stack</h2>
-    <dl class="stack-list">
-      <div>
-        <dt>Languages</dt>
-        <dd>[e.g. TypeScript, Python]</dd>
-      </div>
-      <div>
-        <dt>Frameworks</dt>
-        <dd>[e.g. Astro, React]</dd>
-      </div>
-      <div>
-        <dt>Infra</dt>
-        <dd>[e.g. AWS, Supabase]</dd>
-      </div>
-      <div>
-        <dt>Tools</dt>
-        <dd>[e.g. Git, Figma]</dd>
-      </div>
-    </dl>
+    <div class="stack-grid">
+      {stack.map((group) => (
+        <div class="card">
+          <h3>{group.category}</h3>
+          <ul class="pill-list">
+            {group.items.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
   </section>
 
   <section id="contact">
     <h2>Contact</h2>
-    <p>
-      <a href="mailto:TODO@replace-me.com">Email</a> ·
-      <a href="https://github.com/bobbymuljono">GitHub</a> ·
-      <a href="https://www.linkedin.com/in/TODO-your-handle">LinkedIn</a>
-    </p>
+    <div class="card contact-card">
+      <a class="button button--secondary" href="mailto:TODO@replace-me.com">Email</a>
+      <a class="button button--secondary" href="https://github.com/bobbymuljono">GitHub</a>
+      <a class="button button--secondary" href="https://www.linkedin.com/in/TODO-your-handle">LinkedIn</a>
+    </div>
   </section>
 </BaseLayout>
 
 <style>
-  .intro {
+  .hero {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
     padding-block: var(--space-6) var(--space-5);
   }
 
+  .hero__role {
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+
+  .hero__cta {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+
+  @media (max-width: 40rem) {
+    .hero {
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+    }
+  }
+
   section {
-    padding-block: var(--space-5);
+    padding-block: var(--space-6);
     border-top: 1px solid var(--color-border);
   }
 
@@ -79,33 +115,28 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     border-top: none;
   }
 
-  .background-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  .contact-card {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
+    flex-wrap: wrap;
+    gap: var(--space-3);
   }
 
-  .background-list p {
-    margin: var(--space-1) 0 0;
-    color: var(--color-text-muted);
-  }
-
-  .stack-list {
+  .stack-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
     gap: var(--space-4);
-    margin: 0;
   }
 
-  .stack-list dt {
-    font-weight: 600;
+  .stack-grid h3 {
+    margin-bottom: var(--space-3);
+  }
+
+  .timeline strong {
+    display: block;
     margin-bottom: var(--space-1);
   }
 
-  .stack-list dd {
+  .timeline p {
     margin: 0;
     color: var(--color-text-muted);
   }

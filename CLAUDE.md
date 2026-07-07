@@ -1,0 +1,31 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+Bobby Muljono's personal portfolio site (`bobbymuljono.github.io`) — About/bio and selected project write-ups today, with a blog and an AI persona chatbot planned as Phase 2 (see `TODO.md`).
+
+## Commands
+
+Requires Node >=22.12.0.
+
+- `npm install` — install dependencies
+- `npm run dev` — start the dev server at `localhost:4321` (Astro 7 runs this as a detached daemon; `npm run astro -- dev stop` stops it)
+- `npm run build` — type-checks content collections and builds the static site to `./dist/`
+- `npm run preview` — serve the production build locally
+- `npm run astro -- check` — type-check `.astro` files and content collection schemas without a full build
+
+There is no test suite and no separate lint script configured.
+
+## Architecture
+
+This is an Astro (TypeScript strict) static site deployed to GitHub Pages via GitHub Actions. It intentionally ships ~0KB of JavaScript — there is no UI or animation library, and any future interactive feature (e.g. the planned chatbot) should stay a vanilla JS/Web Component island rather than pulling in a framework. Verify after any change that `dist/` still contains no `.js` files unless one was deliberately added.
+
+**Content collections**: `src/content.config.ts` (repo convention for Astro 5+'s Content Layer API — not the older `src/content/config.ts` path) defines the `projects` collection via a `glob` loader with pattern `**/[^_]*.md`. Files prefixed with `_` (e.g. `src/content/projects/_template.md`) are intentionally excluded by that pattern and serve as copy-paste templates for new entries, not published content. `src/pages/projects/[slug].astro` renders individual entries via `getStaticPaths()` + the `render()` helper from `astro:content`; `src/pages/projects/index.astro` lists non-draft entries sorted by `date`.
+
+**Layout/components**: every page renders through `src/layouts/BaseLayout.astro`, which owns the `<head>` (meta, canonical URL, OG/Twitter tags — `og:image` is only emitted when a page passes an `image` prop) plus the shared `Header`/`Footer`. `ProjectCard.astro` is the only reusable content component. There is no client-side routing or hydration — everything is static HTML.
+
+**Design tokens**: all colors, type scale, and spacing are CSS custom properties in `src/styles/global.css`, imported once by `BaseLayout`. Reusable utility classes (`.button`/`.button--primary`/`.button--secondary`, `.card`, `.pill-list`, `.timeline`, `.avatar-placeholder`, `.wrapper`) live there too and are composed in page-level `<style>` blocks rather than duplicated. The reasoning behind the current palette and layout choices (and the named reference sites they're drawn from) is recorded in `DESIGN_NOTES.md` — read and update it when changing visual design, don't just change tokens in isolation. **Standing rule**: for design/layout changes, wait for the user to supply reference sites/samples rather than sourcing inspiration via web search independently.
+
+**Deployment**: `.github/workflows/deploy.yml` builds with the official `withastro/action` and deploys via `actions/deploy-pages` on every push to `main`. This requires the repo's Settings → Pages → Source to be set to "GitHub Actions" (a one-time manual step not encoded anywhere in the repo).
+
+**Project status**: this repo is mid-buildout — bio content and real project write-ups are still placeholders (grep for `TODO` and bracketed text like `[Current role/title]` to find them). `TODO.md` is the living checklist: content still needed, a decisions log (framework, license, domain, chatbot backend), and the architecture sketch for the not-yet-built Phase 2 (a `blog` content collection plus a chatbot backed by a Supabase Edge Function calling Claude Haiku). Check it for current state before assuming what's done.

@@ -19,6 +19,7 @@ Working notes and handover checklist for this repo. See [DESIGN_NOTES.md](./DESI
 - [ ] **Domain**: shipping on `bobbymuljono.github.io` for now. Namecheap custom domain cutover is independent and can happen anytime: A records (185.199.108/109/110/111.153) + `www` CNAME + `public/CNAME` file + update `site` in `astro.config.mjs`.
 - [x] **Chatbot backend (Phase 2)**: Supabase Edge Function, not Cloudflare Workers — one account handles both the Claude Haiku proxy (API key as a secret) and conversation logging in Postgres.
 - [x] **Layout redesign (2026-07-07)**: original design read as "plain and uninviting." Reworked to a side-by-side photo hero (placeholder avatar for now), card/bento-grid content sections (Now card, Background timeline, Stack pill-grid, Contact card), and subtle CSS-only hover reveals (animated underline on links, lift + image zoom on project cards) — still zero shipped JS.
+- [x] **Scroll-reveal + elevated cards (2026-07-07)**: added a small vanilla-JS `IntersectionObserver` (inlined, no separate `.js` file) that fades in About sections and project cards on scroll — fully progressive enhancement, content is visible immediately with no JS or `prefers-reduced-motion` set. Cards moved from a flat border to a shadow-based elevation (softer radius, resting + hover shadow tokens), inspired by the Supercharged Design agency site the user shared, kept deliberately more restrained than that reference. See `DESIGN_NOTES.md`.
 
 ## Phase 2 (not built yet)
 

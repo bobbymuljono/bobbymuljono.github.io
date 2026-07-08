@@ -2,9 +2,10 @@
 // Site navigation — wordmark + section links + primary CTA, per the design system.
 // Chat / Writing are Phase 2, so the nav wires only real destinations for now.
 const { pathname } = Astro.url;
+// 'Contact' is intentionally omitted — the 'Get in touch' button below points to the
+// same #contact anchor, so a separate text link would be redundant.
 const navLinks = [
   { href: '/projects/', label: 'Work' },
-  { href: '/#contact', label: 'Contact' },
 ];
 const isActive = (href: string) =>
   href === '/projects/' ? pathname.startsWith('/projects') : false;
@@ -32,6 +33,12 @@ const isActive = (href: string) =>
 
 <style>
   .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    /* Opaque stone — the design system bans blur/translucency, so the sticky bar
+       is a solid surface, not a glass one. */
+    background: var(--color-bg);
     border-bottom: 1px solid var(--color-border);
   }
 

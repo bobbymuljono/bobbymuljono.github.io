@@ -39,8 +39,15 @@ tokens, type, and palette they describe are no longer in `global.css`.
   remain Phase 2 (see `TODO.md`). The nav therefore wires only real destinations (Work,
   Contact) and the signature "Chat with my AI" CTA is replaced by "Get in touch" until the
   chat exists — restore it when Chat ships.
-- **No portrait.** The hero uses a monogram `.avatar-placeholder` ("BM") in the design's
-  rectangular 320×400 slot until a real headshot is supplied.
+- **Portrait (2026-07-08).** The hero now carries a real headshot (`public/bobby-headshot.png`)
+  in the design's rectangular 320×400 sage-wash slot, replacing the `.avatar-placeholder` ("BM")
+  monogram (the class is kept in `global.css` as the documented fallback). The photo fills the
+  panel (`object-fit: cover`, `object-position: center top` so the face is never cropped) and
+  dissolves gently into the sage at the bottom via a non-destructive CSS `mask-image` linear
+  gradient (opaque to 80%, transparent at 100%); the panel's bottom border is dropped so the
+  fade reads clean. On mobile the hero stacks via CSS grid areas so the photo lands directly
+  after the intro paragraph and before the CTAs (not pushed to the bottom), capped at 320×380
+  and centered. Image file is untouched — all treatment is CSS.
 - **No logo.** The wordmark is type-set (Newsreader) with a forest-green period accent, per
   the bundle's guidance. Never fabricate a logo.
 - **Contact links.** GitHub is real; LinkedIn + public email are still placeholders

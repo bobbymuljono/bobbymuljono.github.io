@@ -24,10 +24,13 @@ and **Chat** stay Phase 2. Bio + project copy were populated from the bundle's s
   ops-copilot-multi-agent, marketplace-health-dashboard, checkout-ab-framework) with `kind`,
   description, techStack, and Problem/Approach/Technical decisions/What I learned prose. Add
   real `liveUrl`/`repoUrl` where they exist.
-- [ ] **Headshot photo**: the hero on `src/pages/index.astro` uses an `.avatar-placeholder`
-  ("BM") in the design's 320×400 portrait slot until you supply a real photo. Once you have
-  one, add it under `public/` and swap the placeholder `<div>` for an `<img>` (marked with a
-  `TODO` comment at the swap site).
+- [x] **Headshot photo** (2026-07-08): real headshot added at `public/bobby-headshot.png` and
+  wired into the hero on `src/pages/index.astro` — the `.avatar-placeholder` ("BM") monogram is
+  gone. The photo fills the 320×400 sage-wash panel (`object-fit: cover`, `object-position:
+  center top`) with a subtle CSS bottom-fade mask that dissolves it into the sage (image file
+  untouched). Hero markup was split into `.hero__intro` / `.hero__portrait` / `.hero__body` and
+  laid out with grid areas so the photo sits between the intro and the CTAs when stacked on
+  mobile. `.avatar-placeholder` remains in `global.css` as the documented monogram fallback.
 - [ ] **Self-host fonts (optional)**: Newsreader / Source Sans 3 / IBM Plex Mono currently load
   from the Google Fonts CDN via `<link>` in `BaseLayout.astro`. Download and `@font-face` them
   if you want to drop the network request.

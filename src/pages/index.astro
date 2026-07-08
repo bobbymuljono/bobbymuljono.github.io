@@ -15,14 +15,26 @@ const heroTags = ['Presto SQL', 'Python', 'LangChain', 'RAG', 'Multi-agent', 'Cl
 >
   <!-- Hero -->
   <section class="hero" data-reveal>
-    <div class="hero__text">
-      <h1>I build AI, and I read data for a living.</h1>
+    <div class="hero__intro">
+      <h1>I build with AI, and I storytell with data for a living.</h1>
       <p class="hero__lead">
         I'm Bobby — a Senior Data Analyst at Shopee, with 5+ years in SQL, dashboarding,
         and data analytics. These days that expertise is evolving into building the AI
         that does it with me: RAG chatbots, automated SQL execution, and automated
         insight and visualization generation, across 8 markets.
       </p>
+    </div>
+    <div class="hero__portrait">
+      <img
+        src="/bobby-headshot.png"
+        alt="Bobby Muljono"
+        width="896"
+        height="1036"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </div>
+    <div class="hero__body">
       <div class="hero__cta">
         <a class="button button--primary" href="/projects/">See my work</a>
         <a class="button button--secondary" href="#contact">Get in touch</a>
@@ -38,8 +50,6 @@ const heroTags = ['Presto SQL', 'Python', 'LangChain', 'RAG', 'Multi-agent', 'Cl
         {heroTags.map((tag) => <li class="tag">{tag}</li>)}
       </ul>
     </div>
-    <!-- TODO: swap for a real <img> once you supply a headshot; see TODO.md -->
-    <div class="hero__portrait avatar-placeholder" aria-hidden="true">BM</div>
   </section>
 
   <!-- Selected work -->
@@ -93,17 +103,25 @@ const heroTags = ['Presto SQL', 'Python', 'LangChain', 'RAG', 'Multi-agent', 'Cl
     border-top: none;
   }
 
-  /* Hero */
+  /* Hero — two-column grid: text (intro over body) left, portrait spanning right. */
   .hero {
-    display: flex;
-    gap: var(--space-8);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    grid-template-areas:
+      "intro   portrait"
+      "body    portrait";
+    column-gap: var(--space-8);
     align-items: center;
-    flex-wrap: wrap;
     padding-top: var(--space-9);
   }
 
-  .hero__text {
-    flex: 1 1 420px;
+  .hero__intro {
+    grid-area: intro;
+    max-width: 560px;
+  }
+
+  .hero__body {
+    grid-area: body;
     max-width: 560px;
   }
 
@@ -157,12 +175,28 @@ const heroTags = ['Presto SQL', 'Python', 'LangChain', 'RAG', 'Multi-agent', 'Cl
     margin-top: var(--space-6);
   }
 
+  /* Portrait panel — sage-wash box, photo fills it and fades gently into the sage at the bottom. */
   .hero__portrait {
+    grid-area: portrait;
+    align-self: center;
     width: 320px;
     height: 400px;
-    flex: 0 0 auto;
     border-radius: var(--radius-lg);
-    font-size: var(--text-4xl);
+    overflow: hidden;
+    background: var(--sage-wash);
+    border: 1px solid var(--color-border);
+    border-bottom: none; /* let the faded photo dissolve into the sage cleanly */
+  }
+
+  .hero__portrait img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    /* Subtle bottom fade only — opaque to 80%, then dissolves into the sage panel. */
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 80%, rgba(0, 0, 0, 0) 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 80%, rgba(0, 0, 0, 0) 100%);
   }
 
   /* Selected work */
@@ -220,9 +254,24 @@ const heroTags = ['Presto SQL', 'Python', 'LangChain', 'RAG', 'Multi-agent', 'Cl
       grid-template-columns: 1fr;
     }
 
+    /* Stack to a single column: intro, then photo, then the buttons/tags. */
+    .hero {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "intro"
+        "portrait"
+        "body";
+      row-gap: var(--space-5);
+    }
+
     .hero__portrait {
       width: 100%;
-      height: 320px;
+      /* Cap width so the panel stays a portrait shape (not a wide letterbox that
+         crops the face) on wider stacked viewports; centered per spec. */
+      max-width: 320px;
+      height: 380px; /* concrete height so the photo's object-fit: cover resolves */
+      max-height: 380px;
+      justify-self: center;
     }
   }
 </style>

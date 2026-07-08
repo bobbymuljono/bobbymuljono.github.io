@@ -16,6 +16,22 @@ Requires Node >=22.12.0.
 
 There is no test suite and no separate lint script configured.
 
+## Session workflows
+
+Two named routines the user triggers by phrase. Treat any close paraphrase as the trigger (e.g. "let's start", "kick off", "spin up" → **start**; "prep handover", "wrap up", "hand off" → **prepare handover**).
+
+### On "start" (or similar)
+
+1. **Git bootstrap.** `git checkout main`, `git pull`, then create and switch to a fresh session branch named `session/<YYYY-MM-DD>` (today's date; append `-b`, `-c`, … if that branch already exists). This matches the existing `session/<date>` convention.
+2. **Design context.** Read `DESIGN_NOTES.md` — it is the canonical, distilled form of the Claude design-system handoff, kept in sync with the tokens in `src/styles/global.css`. Do **not** wait for a zip. Only ingest a raw handoff bundle when the user explicitly says a *new/updated* design handoff has arrived; in that case, read the zip they provide, then re-distill the changes into `DESIGN_NOTES.md` + the relevant tokens rather than leaving the site pointed at a binary. Raw handoff zips are not committed to the repo (the distilled text is the source of truth).
+3. **Get up to speed.** Read `TODO.md` (the living checklist + decisions log) and skim `README.md` and any other top-level `*.md` touched recently.
+4. **Report.** Summarize `TODO.md` — what's done, what's outstanding — and recommend the next low-hanging-fruit item (small, unblocked, high-signal) to tackle this session.
+
+### On "prepare handover" (or similar)
+
+1. **Prune stale docs.** Review `CLAUDE.md`, `TODO.md`, `DESIGN_NOTES.md`, and `README.md` against what actually changed this session; remove or correct anything now stale (finished items, superseded decisions, outdated status lines). Convert relative dates to absolute.
+2. **Sync git.** Stage and commit all session work with a clear message, ensure the working tree is clean (`git status`), then push the session branch to `origin`. Stop short of opening a PR — the user decides when to merge. Report the branch name and what was committed.
+
 ## Architecture
 
 This is an Astro (TypeScript strict) static site deployed to GitHub Pages via GitHub Actions. It intentionally ships near-zero JavaScript — there is no UI or animation library, and any future interactive feature (e.g. the planned chatbot) should stay a vanilla JS/Web Component island rather than pulling in a framework. Verify after any change that `dist/` still contains no `.js` files unless one was deliberately added (small inline `<script>` blocks in `.astro` files are fine — Astro inlines anything tiny directly into the HTML rather than emitting a separate file). The scroll-reveal script in `BaseLayout.astro` (an `IntersectionObserver` that toggles a `.js-reveal`/`data-reveal` class pair, see `DESIGN_NOTES.md`) is the reference pattern for this: always progressive enhancement, content fully visible with no JS or `prefers-reduced-motion` set.

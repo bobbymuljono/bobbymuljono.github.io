@@ -1,5 +1,7 @@
 ---
-// Site footer — quiet, editorial, hairline top rule (per the design system).
+// Site footer — minimal & editorial: brand + tagline on the left, external links on the
+// right. Work/Contact live in the (sticky) header, so the footer intentionally does NOT
+// repeat them — it only carries the off-site links and the copyright line.
 const year = new Date().getUTCFullYear();
 ---
 
@@ -11,18 +13,11 @@ const year = new Date().getUTCFullYear();
       <p class="site-footer__copy">&copy; {year}</p>
     </div>
 
-    <div class="site-footer__cols">
-      <div class="site-footer__col">
-        <div class="site-footer__head">Site</div>
-        <a href="/projects/">Work</a>
-        <a href="/#contact">Contact</a>
-      </div>
-      <div class="site-footer__col">
-        <div class="site-footer__head">Elsewhere</div>
-        <a href="https://github.com/bobbymuljono" rel="me">GitHub</a>
-        <a href="https://www.linkedin.com/in/bobbymul" rel="me">LinkedIn</a>
-      </div>
-    </div>
+    <nav aria-label="Elsewhere" class="site-footer__links">
+      <a href="https://github.com/bobbymuljono" rel="me">GitHub</a>
+      <span aria-hidden="true" class="site-footer__sep">&middot;</span>
+      <a href="https://www.linkedin.com/in/bobbymul" rel="me">LinkedIn</a>
+    </nav>
   </div>
 </footer>
 
@@ -35,8 +30,9 @@ const year = new Date().getUTCFullYear();
   .site-footer__inner {
     display: flex;
     justify-content: space-between;
+    align-items: flex-end;
     flex-wrap: wrap;
-    gap: var(--space-7);
+    gap: var(--space-6);
     padding-block: var(--space-7) var(--space-8);
   }
 
@@ -61,34 +57,23 @@ const year = new Date().getUTCFullYear();
     margin-top: var(--space-4) !important;
   }
 
-  .site-footer__cols {
+  .site-footer__links {
     display: flex;
-    gap: var(--space-8);
-    flex-wrap: wrap;
-  }
-
-  .site-footer__col {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-  }
-
-  .site-footer__head {
-    font-family: var(--font-label);
-    font-style: italic;
+    align-items: center;
+    gap: var(--space-3);
     font-size: var(--text-sm);
-    letter-spacing: var(--tracking-normal);
-    color: var(--color-text-muted);
-    margin-bottom: var(--space-1);
   }
 
-  .site-footer__col a {
+  .site-footer__links a {
     color: var(--color-text);
     text-decoration: none;
-    font-size: var(--text-sm);
   }
 
-  .site-footer__col a:hover {
+  .site-footer__links a:hover {
     color: var(--color-accent);
+  }
+
+  .site-footer__sep {
+    color: var(--color-text-muted);
   }
 </style>

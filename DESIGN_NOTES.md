@@ -42,9 +42,19 @@ tokens, type, and palette they describe are no longer in `global.css`.
 
 - **Deferred screens.** The bundle ships four screens — Home, Work, Writing, Chat. Only
   **Home + Work** were implemented this pass; **Writing** (blog) and **Chat** (AI persona)
-  remain Phase 2 (see `TODO.md`). The nav therefore wires only real destinations (Work,
-  Contact) and the signature "Chat with my AI" CTA is replaced by "Get in touch" until the
+  remain Phase 2 (see `TODO.md`). The nav therefore wires only real destinations (Work)
+  and the signature "Chat with my AI" CTA is replaced by "Get in touch" until the
   chat exists — restore it when Chat ships.
+- **Header — sticky + de-duplicated (2026-07-08).** The top bar is `position: sticky; top: 0`
+  with a **solid** stone background (`--color-bg`) and the hairline bottom rule — deliberately
+  not a translucent/blurred bar, since the system bans glassmorphism. The old `Contact` text
+  link was removed: the `Get in touch` primary button already targets `#contact`, so a second
+  control to the same anchor was redundant. Nav is now `Work · [Get in touch]`, with the CTA
+  pinned and reachable on scroll (the site's whole job is "make it easy to connect").
+- **Footer — minimal (2026-07-08).** Dropped the `Site`/`Elsewhere` two-column block, which
+  duplicated the header nav (Work/Contact) and the contact section's GitHub/LinkedIn buttons.
+  The footer is now just brand + tagline + `©` on the left and a single `GitHub · LinkedIn`
+  line on the right — no repeated site nav (a 2-page site doesn't need nav-in-footer).
 - **Portrait (2026-07-08).** The hero now carries a real headshot (`public/bobby-headshot.png`)
   in the design's rectangular 320×400 sage-wash slot, replacing the `.avatar-placeholder` ("BM")
   monogram (the class is kept in `global.css` as the documented fallback). The photo fills the
@@ -83,7 +93,7 @@ _Kept for provenance. The tokens described below were replaced by the design sys
 ## Decisions taken
 
 1. **Information architecture**: About page reads top-down as a narrative (intro → now → background → stack → contact), per leerob — not a dashboard of cards. Projects get their own listing page since this site has more structured project write-ups than leerob's link list, but the projects section is titled "Selected work," not "Portfolio," to keep the same selective framing (3-5 real entries, not an exhaustive grid).
-2. **Navigation**: a minimal static top nav (Home, Selected work, Contact) — no scroll-hide/shrink behavior, no repeated nav-in-footer-and-body pattern like joshwcomeau's content site (that pattern suits a large content library; unnecessary complexity for a 3-page site).
+2. **Navigation**: a minimal top nav (wordmark, Work, and a `Get in touch` CTA). As of 2026-07-08 it is **sticky** (pinned on scroll) but still has **no shrink/hide behavior** — it just stays put so the CTA is always reachable. No repeated nav-in-footer-and-body pattern like joshwcomeau's content site (that pattern suits a large content library; unnecessary complexity for this small site — the footer intentionally carries only off-site links now).
 3. **Type pairing**: a warm serif/slab stack for display headings (name, page titles, project titles) paired with a clean humanist sans for body copy — borrows joshwcomeau's "confidence in headings" while keeping leerob's readable, typographic-first body text. Both stacks are system-font based (no webfont network request), preserving near-zero-JS/near-zero-network performance.
 4. **Color**: warm off-white background (not pure white, not gray), warm dark-brown/charcoal body text (not pure black), one confident warm clay/terracotta accent used sparingly for links and CTAs, a soft warm-neutral border/divider tone. Single light theme for v1; token structure leaves room for a dark variant later without rework.
 5. **Hover/interactive treatment**: underline-on-hover for text links; project cards lift, deepen their shadow, and zoom their cover image slightly on hover. Cards rest on a soft ambient shadow (`--shadow-sm`) rather than a flat border alone, for a lightweight "elevated" feel — borrowed from the Supercharged Design reference (2026-07-07) but kept subtle, not the full agency-site treatment (no gradients, no marquees, no lead-gen chrome).

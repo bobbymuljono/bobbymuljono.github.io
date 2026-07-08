@@ -15,9 +15,15 @@ tokens, type, and palette they describe are no longer in `global.css`.
   `#23291F`, muted `#5E655A`, and forest green `#2E5E43` as the single accent (`#234A34`
   for text on tint). Layered stone surfaces (`#F3F1EA` raised, `#DEDCD3` sunk, `#E4EBDF`
   sage wash) give depth. No second accent, no gradients, no glassmorphism.
-- **Type.** Newsreader (serif) for display/headings, Source Sans 3 (humanist sans) for
-  body/UI at a 17px base, IBM Plex Mono for eyebrows/tags/code (UPPERCASE, `0.08em`
-  tracking). Loaded from Google Fonts CDN via `<link>` in `BaseLayout` — this is the one
+- **Type.** Newsreader (serif) for display/headings, Hanken Grotesk (warm humanist
+  grotesque) for body/UI at a 17px base, IBM Plex Mono for **code & data only**.
+  Eyebrows/kickers, tags, and badges are set in **italic Newsreader** at 14px, sentence
+  case, no tracking — an editorial byline (`--font-label`), no longer uppercase mono.
+  Two font updates landed 2026-07-08 to match the updated design-system handoff bundle:
+  Hanken Grotesk replaced Source Sans 3 (`tokens/fonts.css` calls for a characterful
+  grotesque over a neutral default sans), and the label/kicker treatment moved from mono
+  UPPERCASE to italic-serif (`tokens/typography.css` + the "Labels & kickers" type card).
+  Loaded from Google Fonts CDN via `<link>` in `BaseLayout` — this is the one
   deliberate departure from the old "no webfont request" rule, accepted because the
   distinctive serif is core to the brand. Self-host later if the network cost matters
   (see `TODO.md`).

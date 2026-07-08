@@ -3,6 +3,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import '../styles/fonts.css';
 import '../styles/global.css';
+import Analytics from '@vercel/analytics/astro';
 
 interface Props {
   title: string;
@@ -22,6 +23,7 @@ const ogImageURL = image ? new URL(image, Astro.site) : undefined;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonicalURL} />
     <meta name="generator" content={Astro.generator} />
+    <Analytics />
 
     <!-- Brand webfonts, self-hosted from /public/fonts (see src/styles/fonts.css).
          Newsreader (serif) · Hanken Grotesk (body/UI) · IBM Plex Mono (code/data).

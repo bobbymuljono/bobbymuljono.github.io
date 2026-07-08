@@ -38,3 +38,5 @@ Thumbs.db
 # .env variants (keep example files tracked)
 .env.*
 !.env.example
+.vercel
+.env*

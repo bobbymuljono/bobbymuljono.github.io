@@ -23,10 +23,13 @@ tokens, type, and palette they describe are no longer in `global.css`.
   Hanken Grotesk replaced Source Sans 3 (`tokens/fonts.css` calls for a characterful
   grotesque over a neutral default sans), and the label/kicker treatment moved from mono
   UPPERCASE to italic-serif (`tokens/typography.css` + the "Labels & kickers" type card).
-  Loaded from Google Fonts CDN via `<link>` in `BaseLayout` — this is the one
-  deliberate departure from the old "no webfont request" rule, accepted because the
-  distinctive serif is core to the brand. Self-host later if the network cost matters
-  (see `TODO.md`).
+  **Self-hosted (2026-07-08).** The fonts previously loaded from the Google Fonts CDN via a
+  `<link>` in `BaseLayout`; they are now self-hosted from `public/fonts/` (latin + latin-ext
+  `woff2` subsets) via `@font-face` in `src/styles/fonts.css`. This closes the one deliberate
+  departure from the "no webfont request" rule and restores near-zero-network — no third-party
+  request, no CDN privacy/reliability dependency, same fonts. Two above-the-fold latin faces
+  (Hanken 400 body, Newsreader 600 hero) are `preload`ed in `BaseLayout` to avoid FOUT.
+  Regenerate the files + CSS with `scripts/fetch-fonts.ps1` if the weights/axes change.
 - **Layout.** Left-aligned, generous whitespace, 1120px container (`--container`), prose
   capped ~68ch. Structure comes from hairline `1px` borders (`#D6D2C4`), not shadows.
 - **Cards.** Raised oat surface + hairline border + restrained 6px radius — deliberately
@@ -64,6 +67,17 @@ tokens, type, and palette they describe are no longer in `global.css`.
   fade reads clean. On mobile the hero stacks via CSS grid areas so the photo lands directly
   after the intro paragraph and before the CTAs (not pushed to the bottom), capped at 320×380
   and centered. Image file is untouched — all treatment is CSS.
+- **Experience list (2026-07-08).** The Home page carries an Experience section directly below
+  the hero (`.experience` / `.exp-list` in `src/pages/index.astro`, page-scoped styles). It's a
+  deliberately **minimalist progression list**, styled after the henrylin.io reference Bobby
+  supplied: each entry is the company (serif `h3`) with the year range right-aligned and muted on
+  the same line, an italic-serif role kicker (`--font-label`, accent), and a one-line description
+  in muted body. Reverse-chronological, whitespace-separated (no hairline dividers — the one place
+  on the site that leans on space rather than rules, matching the reference's restraint); on mobile
+  the year range drops below the company. Composed from existing tokens only. The bundle didn't ship
+  an Experience screen — this follows the supplied reference, per the standing "wait for samples"
+  rule. Copy is short one-liners (no résumé metrics), so no confidentiality concern; Education is
+  intentionally omitted to keep the list minimal.
 - **No logo.** The wordmark is type-set (Newsreader) with a forest-green period accent, per
   the bundle's guidance. Never fabricate a logo.
 - **Contact links.** GitHub is real; LinkedIn + public email are still placeholders

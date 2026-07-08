@@ -13,6 +13,7 @@ Design decisions and their reasoning live in [DESIGN_NOTES.md](./DESIGN_NOTES.md
 - [Astro](https://astro.build) (TypeScript strict) — static output, ships ~0KB JS
 - Content collections for project write-ups (`src/content/projects`)
 - No component/animation library — hand-written CSS tokens in `src/styles/global.css`
+- Self-hosted webfonts (Newsreader / Hanken Grotesk / IBM Plex Mono) in `src/styles/fonts.css` — no third-party font requests
 
 ## Commands
 

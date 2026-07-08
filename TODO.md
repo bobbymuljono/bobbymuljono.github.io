@@ -19,11 +19,24 @@ and **Chat** stay Phase 2. Bio + project copy were populated from the bundle's s
   both `src/pages/index.astro` and `src/components/Footer.astro`. Email was intentionally removed
   everywhere (hero contact row + footer) — not published. `bobbymul93@gmail.com` is on file from
   the resume if a mail link is ever wanted again.
-- [ ] **Résumé PDF**: coming later; wire up the link once the file exists.
+- [x] **Résumé PDF — won't do** (2026-07-08): decided not to host the résumé on the site (it
+  evolves over time). It's parsed in as context for copy instead; there's no link to wire up.
 - [x] **3-5 real projects** (`src/content/projects/`): four write-ups added (support-rag-chatbot,
   ops-copilot-multi-agent, marketplace-health-dashboard, checkout-ab-framework) with `kind`,
   description, techStack, and Problem/Approach/Technical decisions/What I learned prose. Add
   real `liveUrl`/`repoUrl` where they exist.
+- [x] **Experience section** (2026-07-08): added a minimalist progression list on the Home page
+  directly below the hero (`.experience` / `.exp-list` in `src/pages/index.astro`), styled after
+  the henrylin.io reference Bobby supplied. Each entry is company (serif) + year range (right,
+  muted) on one line, an italic-serif role, and a one-liner — reverse-chronological, whitespace-
+  separated, no dividers; year drops below company on mobile. Entries: Shopee — Senior Data Analyst
+  — 2020–Present — "Building analytical solutions with AI"; ISS Facility Services — Data Analyst —
+  2019–2020 — "Drawing insights from data"; First Code Academy — STEM Course Facilitator — 2017 —
+  "Teaching kids how to code" (this last role is not on the résumé; Bobby supplied it directly).
+  No confidentiality concern — the earlier draft's résumé metrics were dropped in favour of the
+  one-liners. The résumé itself is intentionally NOT hosted (it evolves) — parsed in as context
+  only. Education (NTU, Singapore Polytechnic) is intentionally left out to keep the list minimal
+  (confirmed 2026-07-08 — keep it off).
 - [x] **Headshot photo** (2026-07-08): real headshot added at `public/bobby-headshot.png` and
   wired into the hero on `src/pages/index.astro` — the `.avatar-placeholder` ("BM") monogram is
   gone. The photo fills the 320×400 sage-wash panel (`object-fit: cover`, `object-position:
@@ -31,9 +44,12 @@ and **Chat** stay Phase 2. Bio + project copy were populated from the bundle's s
   untouched). Hero markup was split into `.hero__intro` / `.hero__portrait` / `.hero__body` and
   laid out with grid areas so the photo sits between the intro and the CTAs when stacked on
   mobile. `.avatar-placeholder` remains in `global.css` as the documented monogram fallback.
-- [ ] **Self-host fonts (optional)**: Newsreader / Source Sans 3 / IBM Plex Mono currently load
-  from the Google Fonts CDN via `<link>` in `BaseLayout.astro`. Download and `@font-face` them
-  if you want to drop the network request.
+- [x] **Self-host fonts** (2026-07-08): Newsreader / Hanken Grotesk / IBM Plex Mono are now
+  self-hosted from `public/fonts/` (latin + latin-ext `woff2` subsets) via `@font-face` in
+  `src/styles/fonts.css`, imported by `BaseLayout`. The Google Fonts `<link>` + `preconnect`
+  tags are gone; the two above-the-fold latin faces (Hanken 400 body, Newsreader 600 hero) are
+  `preload`ed. Regenerate with `scripts/fetch-fonts.ps1` if the weights/axes change. Restores
+  the near-zero-network goal (no third-party font request).
 - [ ] **Optional visual assets**: per-project cover screenshots, a real default OG share image
   (`public/og-default.png` doesn't exist yet — the `image` prop on `BaseLayout` is optional and
   currently unused).
@@ -41,7 +57,18 @@ and **Chat** stay Phase 2. Bio + project copy were populated from the bundle's s
   authored from the bundle's representative sample copy and are kept live **as scaffolding /
   inspiration** — Bobby will rewrite each one-by-one in his own words. Do NOT treat the current
   copy as final. Confidentiality still applies: when each is rewritten, confirm it only describes
-  what's public/non-confidential about the Shopee work before publishing.
+  what's public/non-confidential about the Shopee work before publishing. **Use the
+  `portfolio-writeup` skill** (see below) to draft/rewrite these — it handles voice, structure,
+  and the confidentiality flagging.
+- [x] **Content-writing skill** (2026-07-08): built a project `portfolio-writeup` skill at
+  `.claude/skills/portfolio-writeup/SKILL.md` for writing impactful, lean, illustrative work
+  showcases. Two modes (interview-first + rough-notes→draft), flexible per-project structure,
+  warm & personal voice, and a confidentiality gate that softens internal metrics by default and
+  appends a "please check" list (keeps `draft: true` until cleared). Validated against a real
+  project (the AI data analyst agent) vs a no-skill baseline — clear lift. **Versioned with the
+  repo**: `.gitignore` was changed to `.claude/*` + `!.claude/skills/`, so the skill is tracked
+  and travels to other devices on clone, while local `.claude` files (launch.json,
+  settings.local.json) stay ignored.
 
 ## Decisions log
 

@@ -52,6 +52,39 @@ const heroTags = ['Presto SQL', 'Python', 'LangChain', 'RAG', 'Multi-agent', 'Cl
     </div>
   </section>
 
+  <!-- Experience — minimalist progression list (inspired by henrylin.io) -->
+  <section class="experience" data-reveal>
+    <span class="eyebrow">Experience</span>
+    <ul class="exp-list">
+      <li class="exp">
+        <div class="exp__head">
+          <h3 class="exp__company">Shopee</h3>
+          <span class="exp__years">2020 &mdash; Present</span>
+        </div>
+        <p class="exp__role">Senior Data Analyst</p>
+        <p class="exp__note">Building analytical solutions with AI</p>
+      </li>
+
+      <li class="exp">
+        <div class="exp__head">
+          <h3 class="exp__company">ISS Facility Services</h3>
+          <span class="exp__years">2019 &mdash; 2020</span>
+        </div>
+        <p class="exp__role">Data Analyst</p>
+        <p class="exp__note">Drawing insights from data</p>
+      </li>
+
+      <li class="exp">
+        <div class="exp__head">
+          <h3 class="exp__company">First Code Academy</h3>
+          <span class="exp__years">2017</span>
+        </div>
+        <p class="exp__role">STEM Course Facilitator</p>
+        <p class="exp__note">Teaching kids how to code</p>
+      </li>
+    </ul>
+  </section>
+
   <!-- Selected work -->
   {
     featured.length > 0 && (
@@ -199,6 +232,50 @@ const heroTags = ['Presto SQL', 'Python', 'LangChain', 'RAG', 'Multi-agent', 'Cl
     mask-image: linear-gradient(to bottom, #000 0%, #000 80%, rgba(0, 0, 0, 0) 100%);
   }
 
+  /* Experience — minimalist progression list (inspired by henrylin.io):
+     company + year range on one line, italic-serif role, muted one-liner.
+     Whitespace-separated, no dividers. */
+  .exp-list {
+    list-style: none;
+    margin: var(--space-6) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .exp__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-4);
+  }
+
+  .exp__company {
+    font-size: var(--text-2xl);
+    margin: 0;
+  }
+
+  .exp__years {
+    flex-shrink: 0;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-snug);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .exp__role {
+    font-family: var(--font-label);
+    font-style: italic;
+    color: var(--color-accent);
+    font-size: var(--text-lg);
+    margin: var(--space-1) 0 0;
+  }
+
+  .exp__note {
+    color: var(--color-text-muted);
+    margin: var(--space-2) 0 0;
+  }
+
   /* Selected work */
   .selected__head {
     display: flex;
@@ -252,6 +329,17 @@ const heroTags = ['Presto SQL', 'Python', 'LangChain', 'RAG', 'Multi-agent', 'Cl
   @media (max-width: 52rem) {
     .selected__grid {
       grid-template-columns: 1fr;
+    }
+
+    /* Experience: year range drops below the company name instead of sitting inline. */
+    .exp__head {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-1);
+    }
+
+    .exp__company {
+      font-size: var(--text-xl);
     }
 
     /* Stack to a single column: intro, then photo, then the buttons/tags. */

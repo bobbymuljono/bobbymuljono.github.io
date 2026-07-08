@@ -28,7 +28,12 @@ Thumbs.db
 
 # editor/vault tooling (not part of the site)
 .obsidian/
-.claude/
+# Ignore local .claude tooling (launch.json, settings.local.json, …) but version
+# the skills so they travel with the repo. Note: the parent dir must be matched with
+# `.claude/*` (not `.claude/`) for the negation below to take effect — git can't
+# re-include a path whose parent directory is itself excluded.
+.claude/*
+!.claude/skills/
 
 # .env variants (keep example files tracked)
 .env.*

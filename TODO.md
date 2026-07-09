@@ -53,13 +53,17 @@ and **Chat** stay Phase 2. Bio + project copy were populated from the bundle's s
 - [ ] **Optional visual assets**: per-project cover screenshots, a real default OG share image
   (`public/og-default.png` doesn't exist yet — the `image` prop on `BaseLayout` is optional and
   currently unused).
-- [ ] **Project write-ups are intentional placeholders** (2026-07-08): the four write-ups were
-  authored from the bundle's representative sample copy and are kept live **as scaffolding /
-  inspiration** — Bobby will rewrite each one-by-one in his own words. Do NOT treat the current
-  copy as final. Confidentiality still applies: when each is rewritten, confirm it only describes
-  what's public/non-confidential about the Shopee work before publishing. **Use the
-  `portfolio-writeup` skill** (see below) to draft/rewrite these — it handles voice, structure,
-  and the confidentiality flagging.
+- [~] **Project write-ups: first real rewrite done; three still placeholders** (updated
+  2026-07-10). The four write-ups started as sample copy from the design bundle. **One is now a
+  real, published rewrite**: `data-analyst-ai-agent.md` ("An AI agent did half a day of my
+  analyst work in 3 minutes"), a journey piece (Boko → Astro → Clyde) with four inline HTML/CSS
+  architecture diagrams (the `.arch` pattern), written with Bobby via brain-dump + interview and
+  cleared through the confidentiality gate (`draft: false`, live). It **replaced and deleted** the
+  old `support-rag-chatbot.md` (URL changed to `/projects/data-analyst-ai-agent`). The other three
+  (`ops-copilot-multi-agent`, `marketplace-health-dashboard`, `checkout-ab-framework`) are still
+  placeholder scaffolding and were flipped to **`draft: true`** (hidden from the live Work list)
+  until Bobby rewrites each in his own words. Confidentiality still applies to each rewrite. **Use
+  the `portfolio-writeup` skill** (see below) to draft/rework these.
 - [x] **Content-writing skill** (2026-07-08): built a project `portfolio-writeup` skill at
   `.claude/skills/portfolio-writeup/SKILL.md` for writing impactful, lean, illustrative work
   showcases. Two modes (interview-first + rough-notes→draft), flexible per-project structure,
@@ -69,6 +73,17 @@ and **Chat** stay Phase 2. Bio + project copy were populated from the bundle's s
   repo**: `.gitignore` was changed to `.claude/*` + `!.claude/skills/`, so the skill is tracked
   and travels to other devices on clone, while local `.claude` files (launch.json,
   settings.local.json) stay ignored.
+- [x] **Skill expanded from the first real write-up** (2026-07-10): after drafting
+  `data-analyst-ai-agent.md`, folded the lessons back into `portfolio-writeup/SKILL.md`. New
+  guidance: an **Illustrations & diagrams** section (build diagrams as self-contained inline
+  HTML/CSS in the `.md` using the design tokens, not image-gen; lock the architecture with Bobby
+  first; the `.arch` reference pattern; preview-verify workflow; gentle glyphs only, no aggressive
+  symbols like the heavy X); a hard **no em-dashes / en-dashes** rule; **strong concrete,
+  searchable titles** (not vague); the **hook as a lead before the first heading**, with every
+  heading matching its section; the journey/evolution shape; deriving an honest hook number
+  (show the math, or use a compression framing) instead of inventing one; stand-in names for
+  internal tools; and slug-rename on replacement. No-em-dashes is also saved to Claude's memory as
+  a general writing preference.
 
 ## Decisions log
 

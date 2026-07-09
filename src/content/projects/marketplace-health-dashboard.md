@@ -5,7 +5,7 @@ kind: "Analytics"
 date: 2026-01-18
 techStack: ["SQL", "dbt", "Dashboards"]
 status: "live"
-draft: false
+draft: true
 ---
 
 ## Problem

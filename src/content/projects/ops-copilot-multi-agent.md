@@ -5,7 +5,7 @@ kind: "Multi-agent · production"
 date: 2026-03-12
 techStack: ["Multi-agent", "SQL", "Tooling"]
 status: "live"
-draft: false
+draft: true
 ---
 
 ## Problem

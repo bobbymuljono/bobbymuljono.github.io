@@ -82,10 +82,22 @@ tokens, type, and palette they describe are no longer in `global.css`.
   the bundle's guidance. Never fabricate a logo.
 - **Contact links.** GitHub is real; LinkedIn + public email are still placeholders
   (`href="#"`) — the bundle left these as `#` and no real values were provided.
-- **Project copy.** The four project write-ups were authored from the bundle's `site-data`
-  sample copy (Shopee-flavoured: RAG chatbot, ops copilot, health dashboard, A/B
-  framework). Treat specifics as representative until confirmed; run the confidentiality
-  check in `TODO.md` before treating any as final.
+- **Project copy.** The write-ups started as the bundle's `site-data` sample copy. As of
+  2026-07-10 the first is a real rewrite (`data-analyst-ai-agent.md`); the other three remain
+  representative placeholders and are now `draft: true`. Run the confidentiality check in
+  `TODO.md` before treating any as final. See `TODO.md` for status.
+- **Project detail header (2026-07-10).** The `[slug].astro` header leads with the title and a
+  muted, formatted `date` beneath it. The `kind` eyebrow and the "Status" meta line were removed
+  there (they read as clutter above a title, and the back-link already sat awkwardly beside the
+  eyebrow); `kind` still labels the Work listing cards. Only the `Stack` meta line remains under
+  the date.
+- **In-write-up diagrams (2026-07-10).** Architecture diagrams inside a project write-up are
+  built as self-contained inline HTML/CSS, namespaced under `.arch`, and styled entirely from the
+  design tokens (hairline borders, one forest-green accent, sage-wash for a highlighted node,
+  `--font-*`, `--radius-md`, `--space-*`). No image-generator output (it can't match the palette
+  or type), no shadows or gradients, and only gentle glyphs (`·`, `→`, `↓`; no heavy symbols like
+  a big X). `data-analyst-ai-agent.md` is the reference; the `portfolio-writeup` skill documents
+  the pattern. Prose in write-ups also avoids em-dashes and en-dashes (a standing content rule).
 
 The tokens/components live in `src/styles/global.css` (single file consumed by
 `BaseLayout`). Utility classes mirror the bundle's React primitives: `.button`

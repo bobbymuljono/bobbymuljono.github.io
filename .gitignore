@@ -43,3 +43,6 @@ Thumbs.db
 
 # local scratch scripts (not part of the site)
 test_chat.*
+
+# personal git cheat sheet (not part of the site)
+GIT_CHEATSHEET.md

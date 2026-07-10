@@ -43,11 +43,12 @@ tokens, type, and palette they describe are no longer in `global.css`.
 
 **Adaptations / flagged gaps (things the bundle left open):**
 
-- **Deferred screens.** The bundle ships four screens — Home, Work, Writing, Chat. Only
-  **Home + Work** were implemented this pass; **Writing** (blog) and **Chat** (AI persona)
-  remain Phase 2 (see `TODO.md`). The nav therefore wires only real destinations (Work)
-  and the signature "Chat with my AI" CTA is replaced by "Get in touch" until the
-  chat exists — restore it when Chat ships.
+- **Deferred screens.** The bundle ships four screens — Home, Work, Writing, Chat.
+  **Home + Work** were implemented in the first pass; **Chat** (the AI persona) shipped
+  2026-07-10 but as a **dialog island launched from a hero CTA button** ("Chat with Bobby AI"),
+  not as its own screen. The nav still wires only real destinations (Work) with a "Get in touch"
+  CTA — the bundle's signature "Chat with my AI" *nav* CTA was deliberately not restored (the
+  chat launches from the hero instead). **Writing** (blog) remains Phase 2 (see `TODO.md`).
 - **Header — sticky + de-duplicated (2026-07-08).** The top bar is `position: sticky; top: 0`
   with a **solid** stone background (`--color-bg`) and the hairline bottom rule — deliberately
   not a translucent/blurred bar, since the system bans glassmorphism. The old `Contact` text

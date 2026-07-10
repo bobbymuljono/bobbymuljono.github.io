@@ -49,6 +49,12 @@ tokens, type, and palette they describe are no longer in `global.css`.
   not as its own screen. The nav still wires only real destinations (Work) with a "Get in touch"
   CTA — the bundle's signature "Chat with my AI" *nav* CTA was deliberately not restored (the
   chat launches from the hero instead). **Writing** (blog) remains Phase 2 (see `TODO.md`).
+- **"In development" disabled-button pattern (2026-07-10).** When a feature needs to be
+  temporarily hidden without deleting its CTA (e.g. the chat launch button while reworking the
+  persona/KB), render a `disabled` `.button` variant with a **dashed border** instead of the
+  usual solid one, plus an inline `.badge` reading "In development" (reuses the existing italic
+  accent badge token, no new colors). See `.bobbychat__launch--disabled` in `ChatBot.astro` for
+  the reference implementation; reuse this pattern for any other feature-flagged CTA.
 - **Header — sticky + de-duplicated (2026-07-08).** The top bar is `position: sticky; top: 0`
   with a **solid** stone background (`--color-bg`) and the hairline bottom rule — deliberately
   not a translucent/blurred bar, since the system bans glassmorphism. The old `Contact` text

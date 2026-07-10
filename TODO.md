@@ -139,14 +139,14 @@ Bio + project copy were populated from the bundle's sample content.
     but hits transient 503s. This is why `CHAT_PROVIDER=anthropic` is the working default — resolve
     Gemini billing before switching the provider to gemini.
 
-- [ ] **Chatbot on/off toggle (requested 2026-07-10, not built)**: Bobby wants a simple config
-  switch — **like `CHAT_PROVIDER`** — to show/hide the "Chat with Bobby AI" button in production
-  **without asking Claude to edit code**. Use case: flip it **off** while manually reworking the
-  persona/system prompt or updating the knowledge base (`npm run ingest`), then flip it back **on**
-  when ready. Design intent: a single env var (e.g. `CHAT_ENABLED=true|false`) read at build/render
-  time in `index.astro` (or wherever `<ChatBot />` renders) that conditionally renders the launch
-  button; changeable from the Vercel dashboard + local `.env` with no code change. Keep the
-  endpoint itself gated too (return 503/404 when disabled) so it can't be hit while off.
+- [x] **Chatbot on/off toggle (shipped 2026-07-10)**: built as a single source-level flag rather
+  than an env var (simpler, no Vercel dashboard step needed) — `export const CHAT_ENABLED = false`
+  in `src/lib/chat/enabled.ts`, imported by both `ChatBot.astro` and `pages/api/chat.ts`. Flip that
+  one line + redeploy to bring it back. When `false`: the hero renders a disabled, dashed-border
+  button reading "Chat with Bobby AI · *In development*" (the italic badge reuses the existing
+  `.badge` token, no new colors) instead of the launch button + dialog, and `POST /api/chat`
+  short-circuits with a `503` so the endpoint can't be hit directly while hidden. Currently **off**
+  while Bobby reworks the persona/KB.
 
 - [ ] **Blog / Writing**: second content collection under `src/content/blog`, frontmatter
   `{ title, description, date, tags, draft }`. The last deferred screen from the design bundle.

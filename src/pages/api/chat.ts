@@ -18,6 +18,7 @@ export const prerender = false;
 import type { APIRoute } from 'astro';
 import { createClient } from '@supabase/supabase-js';
 import { getChatProvider, type Turn, type Usage } from '../../lib/chat';
+import { CHAT_ENABLED } from '../../lib/chat/enabled';
 import { embedQuery } from '../../lib/embeddings';
 
 const GEMINI_API_KEY = import.meta.env.GEMINI_API_KEY;
@@ -55,6 +56,10 @@ function json(status: number, body: unknown) {
 }
 
 export const POST: APIRoute = async ({ request }) => {
+  if (!CHAT_ENABLED) {
+    return json(503, { error: 'Bobby AI is temporarily offline.' });
+  }
+
   // Embeddings always need Gemini; Supabase is always needed.
   if (!GEMINI_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     return json(500, { error: 'Server is not configured. Missing env vars.' });

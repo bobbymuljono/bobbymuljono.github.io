@@ -18,6 +18,7 @@ Design decisions and their reasoning live in [DESIGN_NOTES.md](./DESIGN_NOTES.md
 - **Chatbot (`src/pages/api/chat.ts` + `src/components/ChatBot.astro`)**: RAG over Supabase
   pgvector, Gemini embeddings, streamed generation from Claude Haiku or Gemini (switchable via
   `CHAT_PROVIDER`). Needs an on-demand server route — hence the `@astrojs/vercel` adapter.
+  Toggle on/off via `CHAT_ENABLED` in `src/lib/chat/enabled.ts` (currently off).
 
 ## Commands
 

@@ -7,22 +7,22 @@ const featured = (await getCollection('projects', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 2);
 
-const heroTags = ['Presto SQL', 'Python', 'LangChain', 'RAG', 'Multi-agent', 'Claude agents & skills', 'A/B testing'];
+const heroTags = ['Presto SQL', 'Python', 'LangChain', 'LLM integration', 'A/B testing', 'Data Visualization'];
 ---
 
 <BaseLayout
   title="Bobby Muljono"
-  description="Senior Data Analyst at Shopee building AI — RAG chatbots, multi-agent workflows, and analytics across 8 markets."
+  description="Senior Data Analyst building with AI — RAG chatbots, multi-agent workflows, and analytics."
 >
   <!-- Hero -->
   <section class="hero" data-reveal>
     <div class="hero__intro">
       <h1>I build with AI, and I storytell with data for a living.</h1>
       <p class="hero__lead">
-        I'm Bobby — a Senior Data Analyst at Shopee, with 5+ years in SQL, dashboarding,
+        I'm Bobby — a Senior Data Analyst, with 6+ years in SQL, dashboarding,
         and data analytics. These days that expertise is evolving into building the AI
         that does it with me: RAG chatbots, automated SQL execution, and automated
-        insight and visualization generation, across 8 markets.
+        insight and visualization generation.
       </p>
     </div>
     <div class="hero__portrait">

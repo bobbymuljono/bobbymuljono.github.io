@@ -32,7 +32,7 @@ const { slug, title, description, techStack, kind } = Astro.props;
 
   .project-row__body {
     flex: 1;
-    min-width: 300px;
+    min-width: min(300px, 100%);
   }
 
   .project-row h3 {

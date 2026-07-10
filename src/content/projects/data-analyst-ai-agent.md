@@ -1,9 +1,9 @@
 ---
 title: "An AI agent did half a day of my analyst work in 3 minutes"
 description: "The data analyst role is changing fast. Three tools, one I built and two that beat it, and what I learned about staying useful."
-kind: "AI agent · journey"
+kind: "AI Analytics"
 date: 2026-07-09
-techStack: ["RAG", "LangChain", "Claude Haiku", "MCP", "Presto SQL"]
+techStack: ["RAG", "LangChain", "Claude", "MCP", "Presto SQL", "Vector DB"]
 featured: true
 status: "live"
 draft: false

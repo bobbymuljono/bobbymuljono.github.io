@@ -1,0 +1,281 @@
+---
+// ChatBot.astro — "Bobby AI" chat island.
+// Vanilla TS, no framework (keeps shipped JS minimal, per repo rules).
+// Progressive enhancement: the launcher is a plain button; if JS is off it simply
+// does nothing (the site's content is unaffected).
+const endpoint = '/api/chat';
+---
+
+<div class="bobbychat" data-endpoint={endpoint}>
+  <button class="button button--secondary bobbychat__launch" type="button" data-chat-open>
+    Chat with Bobby AI
+  </button>
+
+  <dialog class="bobbychat__dialog" data-chat-dialog aria-label="Chat with Bobby AI">
+    <header class="bobbychat__head">
+      <div>
+        <span class="bobbychat__title">Bobby AI</span>
+        <span class="bobbychat__sub">an AI version of me</span>
+      </div>
+      <button class="bobbychat__close" type="button" data-chat-close aria-label="Close chat">&times;</button>
+    </header>
+
+    <div class="bobbychat__log" data-chat-log>
+      <div class="bobbychat__msg bobbychat__msg--bot">
+        Hi, I'm an AI version of Bobby. Ask me about my work, my projects, or how I build with AI.
+      </div>
+    </div>
+
+    <form class="bobbychat__form" data-chat-form>
+      <input
+        class="bobbychat__input"
+        type="text"
+        name="q"
+        autocomplete="off"
+        maxlength="2000"
+        placeholder="Ask me something…"
+        required
+      />
+      <button class="button button--primary button--sm" type="submit" data-chat-send>Send</button>
+    </form>
+  </dialog>
+</div>
+
+<script>
+  type Turn = { role: 'user' | 'model'; text: string };
+
+  const root = document.currentScript?.closest('.bobbychat') as HTMLElement | null;
+  // Fallback: wire every .bobbychat on the page.
+  document.querySelectorAll<HTMLElement>('.bobbychat').forEach(setup);
+
+  function setup(el: HTMLElement) {
+    const endpoint = el.dataset.endpoint || '/api/chat';
+    const dialog = el.querySelector('[data-chat-dialog]') as HTMLDialogElement;
+    const log = el.querySelector('[data-chat-log]') as HTMLElement;
+    const form = el.querySelector('[data-chat-form]') as HTMLFormElement;
+    const input = el.querySelector('.bobbychat__input') as HTMLInputElement;
+    const openBtn = el.querySelector('[data-chat-open]') as HTMLButtonElement;
+    const closeBtn = el.querySelector('[data-chat-close]') as HTMLButtonElement;
+    const sendBtn = el.querySelector('[data-chat-send]') as HTMLButtonElement;
+    if (!dialog || !log || !form || !input) return;
+
+    const history: Turn[] = [];
+
+    // Per-visitor session id (session-only memory; used for logging + rate limiting).
+    let sessionId = '';
+    try {
+      sessionId = localStorage.getItem('bobbychat_session') || '';
+      if (!sessionId) {
+        sessionId = crypto.randomUUID();
+        localStorage.setItem('bobbychat_session', sessionId);
+      }
+    } catch {
+      sessionId = crypto.randomUUID();
+    }
+
+    openBtn?.addEventListener('click', () => {
+      dialog.showModal();
+      input.focus();
+    });
+    closeBtn?.addEventListener('click', () => dialog.close());
+
+    function addMsg(role: 'user' | 'bot', text: string): HTMLElement {
+      const div = document.createElement('div');
+      div.className = `bobbychat__msg bobbychat__msg--${role}`;
+      div.textContent = text;
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+      return div;
+    }
+
+    let busy = false;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const message = input.value.trim();
+      if (!message || busy) return;
+
+      busy = true;
+      input.value = '';
+      input.disabled = true;
+      sendBtn.disabled = true;
+
+      addMsg('user', message);
+      const botEl = addMsg('bot', '');
+      botEl.classList.add('is-streaming');
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ message, history, sessionId }),
+        });
+
+        if (!res.ok || !res.body) {
+          let msg = 'Sorry, something went wrong. Please try again.';
+          try {
+            const err = await res.json();
+            if (err?.error) msg = err.error;
+          } catch {}
+          botEl.textContent = msg;
+        } else {
+          const reader = res.body.getReader();
+          const dec = new TextDecoder();
+          let full = '';
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            full += dec.decode(value, { stream: true });
+            botEl.textContent = full;
+            log.scrollTop = log.scrollHeight;
+          }
+          history.push({ role: 'user', text: message });
+          history.push({ role: 'model', text: full });
+        }
+      } catch {
+        botEl.textContent = 'Sorry, I could not reach the server. Please try again.';
+      } finally {
+        botEl.classList.remove('is-streaming');
+        busy = false;
+        input.disabled = false;
+        sendBtn.disabled = false;
+        input.focus();
+      }
+    });
+  }
+</script>
+
+<!-- Styles are global (is:global) because the chat messages are created in JS via
+     document.createElement, which would not receive Astro's scoped data-astro-cid
+     attribute — so scoped rules never match them. All classes are uniquely
+     namespaced (bobbychat__*), so global scope is collision-safe. -->
+<style is:global>
+  .bobbychat__launch {
+    cursor: pointer;
+  }
+
+  .bobbychat__dialog {
+    width: min(440px, calc(100vw - 2rem));
+    max-width: 440px;
+    padding: 0;
+    border: var(--border-hairline);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+
+  .bobbychat__dialog::backdrop {
+    background: color-mix(in oklab, var(--forest-black) 32%, transparent);
+  }
+
+  .bobbychat__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    border-bottom: var(--border-hairline);
+  }
+
+  .bobbychat__title {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    color: var(--color-text);
+  }
+
+  .bobbychat__sub {
+    display: block;
+    font-family: var(--font-label);
+    font-style: italic;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .bobbychat__close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 0 var(--space-1);
+  }
+  .bobbychat__close:hover {
+    color: var(--color-text);
+  }
+
+  .bobbychat__log {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    max-height: min(50vh, 420px);
+    overflow-y: auto;
+  }
+
+  .bobbychat__msg {
+    max-width: 85%;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    font-size: var(--text-base);
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .bobbychat__msg--bot {
+    align-self: flex-start;
+    background: var(--color-surface-sunk);
+    border: var(--border-hairline);
+  }
+
+  .bobbychat__msg--user {
+    align-self: flex-end;
+    background: var(--color-surface-accent);
+    color: var(--color-text-on-wash);
+  }
+
+  /* Typing indicator: shown only while an empty bot bubble is streaming. */
+  .bobbychat__msg.is-streaming:empty::after {
+    content: '\2022\2022\2022'; /* three dots */
+    letter-spacing: 2px;
+    color: var(--color-text-muted);
+    animation: bobbychat-typing 1.4s ease-in-out infinite;
+  }
+
+  @keyframes bobbychat-typing {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bobbychat__msg.is-streaming:empty::after { animation: none; }
+  }
+
+  .bobbychat__form {
+    display: flex;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border-top: var(--border-hairline);
+    background: var(--color-bg);
+  }
+
+  .bobbychat__input {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    padding: var(--space-2) var(--space-3);
+    border: var(--border-hairline);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+  .bobbychat__input:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-focus);
+  }
+</style>

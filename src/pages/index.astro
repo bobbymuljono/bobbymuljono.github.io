@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ChatBot from '../components/ChatBot.astro';
 
 const featured = (await getCollection('projects', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
@@ -35,17 +36,12 @@ const heroTags = ['Presto SQL', 'Python', 'LangChain', 'RAG', 'Multi-agent', 'Cl
       />
     </div>
     <div class="hero__body">
+      <!-- Buttons share one row: See my work (primary) + Get in touch + Chat with Bobby AI -->
       <div class="hero__cta">
         <a class="button button--primary" href="/projects/">See my work</a>
         <a class="button button--secondary" href="#contact">Get in touch</a>
+        <ChatBot />
       </div>
-      <!-- Phase 2: AI persona chatbot — not built yet. See TODO.md. -->
-      <p class="hero__soon">
-        <span class="chat-soon" aria-disabled="true">
-          Chat with Bobby AI
-          <span class="chat-soon__tag">In development</span>
-        </span>
-      </p>
       <ul class="tag-list hero__tags">
         {heroTags.map((tag) => <li class="tag">{tag}</li>)}
       </ul>
@@ -172,36 +168,16 @@ const heroTags = ['Presto SQL', 'Python', 'LangChain', 'RAG', 'Multi-agent', 'Cl
 
   .hero__cta {
     display: flex;
+    align-items: center;
     gap: var(--space-3);
     margin-top: var(--space-5);
     flex-wrap: wrap;
   }
 
-  .hero__soon {
-    margin: var(--space-4) 0 0;
-  }
-
-  .chat-soon {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    font-size: var(--text-sm);
-    color: var(--color-text-muted);
-    border: 1px dashed var(--color-border-strong);
-    border-radius: var(--radius-pill);
-    padding: 6px 14px;
-    cursor: default;
-  }
-
-  .chat-soon__tag {
-    font-family: var(--font-label);
-    font-style: italic;
-    font-size: var(--text-sm);
-    letter-spacing: var(--tracking-normal);
-    color: var(--color-accent-deep);
-    background: var(--color-surface-accent);
-    border-radius: var(--radius-pill);
-    padding: 2px 10px;
+  /* ChatBot renders a wrapper div; make it transparent so its launch button
+     sits in the CTA flex row alongside the other two buttons. */
+  .hero__cta :global(.bobbychat) {
+    display: contents;
   }
 
   .hero__tags {

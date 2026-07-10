@@ -5,8 +5,9 @@ Working notes and handover checklist for this repo. See [DESIGN_NOTES.md](./DESI
 ## Design system (2026-07-08)
 
 The site now runs on the imported **Bobby Muljono editorial design system** (Claude Design
-handoff bundle) — see `DESIGN_NOTES.md`. This pass covered **Home + Work** only; **Writing**
-and **Chat** stay Phase 2. Bio + project copy were populated from the bundle's sample content.
+handoff bundle) — see `DESIGN_NOTES.md`. The first pass covered **Home + Work**; the **Chat**
+persona shipped 2026-07-10 (see Phase 2 below). **Writing** (blog) is the last deferred screen.
+Bio + project copy were populated from the bundle's sample content.
 
 ## Content checklist (blocking a real launch)
 
@@ -89,35 +90,72 @@ and **Chat** stay Phase 2. Bio + project copy were populated from the bundle's s
 
 - [x] **Framework**: Astro (TypeScript strict) — ships ~0KB JS, static output for GitHub Pages.
 - [x] **License**: MIT (switched from GPL-3.0, 2026-07-07) — copyleft was a poor fit for a portfolio.
-- [~] **Hosting / domain (updated 2026-07-08)**: **migrating to Vercel.** The site is currently
-  dual-hosted — GitHub Pages (`bobbymuljono.github.io`, the documented CI deploy) **and** Vercel.
-  Decision: make **Vercel the canonical home** and attach the custom domain there, then retire the
-  Pages deploy (running two public copies indefinitely risks duplicate-content/SEO ambiguity).
-  Cutover steps: (1) point the domain's DNS at Vercel per its dashboard (differs from the old GH
-  Pages A-record recipe — 185.199.108/109/110/111.153 + `www` CNAME no longer apply); (2) update
-  `site` in `astro.config.mjs` to the real domain (drives canonical URLs, sitemap, absolute OG
-  URLs); (3) disable/remove `.github/workflows/deploy.yml` (or set Pages Source → None). _Open:
-  record the Vercel project URL + final domain here once confirmed._
-- [x] **Chatbot backend (Phase 2)**: Supabase Edge Function, not Cloudflare Workers — one account handles both the Claude Haiku proxy (API key as a secret) and conversation logging in Postgres.
+- [x] **Hosting / domain — migrated to Vercel (2026-07-10)**: **Vercel is now canonical.** The
+  chatbot needs a server runtime (the `/api/chat` endpoint is `prerender = false`), which GitHub
+  Pages can't serve, so the migration became mandatory rather than optional. Done this session:
+  added the **`@astrojs/vercel` adapter** to `astro.config.mjs` (static pages stay prerendered;
+  only `/api/chat` becomes a serverless function), updated `site` to
+  `https://bobbymuljono-github-io.vercel.app`, and **removed `.github/workflows/deploy.yml`**
+  (the Pages CI could not build the server route). Push to `main` now auto-deploys to Vercel with
+  the env vars set in the dashboard. Verified live 2026-07-10. _Still open:_ (1) attach a **custom
+  domain** in Vercel → Domains, then update `site` in `astro.config.mjs` to it (drives canonical
+  URLs, sitemap, absolute OG URLs) — DNS differs from the old GH Pages A-record recipe
+  (185.199.108/109/110/111.153 + `www` CNAME no longer apply); (2) **rotate the Gemini + Anthropic
+  API keys** before wider promotion (both were exposed during setup) and update them in Vercel +
+  local `.env`.
+- [x] **Chatbot backend (built 2026-07-10)**: originally planned as a Supabase Edge Function; **shipped instead as an Astro on-demand endpoint** (`src/pages/api/chat.ts`) running on the Vercel adapter — keeps everything in one codebase/deploy. Supabase is still used, but as the **pgvector store + conversation log** (Postgres), not as the compute. Provider is switchable (Claude Haiku / Gemini) via `CHAT_PROVIDER`. See Phase 2 for the full shape.
 - [x] **Layout redesign (2026-07-07)**: original design read as "plain and uninviting." Reworked to a side-by-side photo hero (placeholder avatar for now), card/bento-grid content sections (Now card, Background timeline, Stack pill-grid, Contact card), and subtle CSS-only hover reveals (animated underline on links, lift + image zoom on project cards) — still zero shipped JS.
 - [x] **Design system import (2026-07-08)**: adopted the Claude Design handoff bundle ("Bobby Muljono editorial design system") — warm stone + single forest-green accent, Newsreader/Source Sans 3/IBM Plex Mono, hairline-driven editorial layout. Replaced the prior warm-clay/system-font tokens in `global.css`; rebuilt nav, footer, Home and Work to match. Fonts now load from Google Fonts CDN (one deliberate webfont request). Writing + Chat screens deferred to Phase 2. See `DESIGN_NOTES.md`.
 - [x] **Scroll-reveal + elevated cards (2026-07-07)**: added a small vanilla-JS `IntersectionObserver` (inlined, no separate `.js` file) that fades in About sections and project cards on scroll — fully progressive enhancement, content is visible immediately with no JS or `prefers-reduced-motion` set. Cards moved from a flat border to a shadow-based elevation (softer radius, resting + hover shadow tokens), inspired by the Supercharged Design agency site the user shared, kept deliberately more restrained than that reference. See `DESIGN_NOTES.md`.
 - [x] **Font refresh to match updated bundle (2026-07-08)**: body/UI font Source Sans 3 → **Hanken Grotesk**; eyebrows/tags/badges/footer heads/chat marker moved from mono UPPERCASE → **italic Newsreader** (sentence case, `--font-label` token). IBM Plex Mono is now code/data only. Shipped in PR #1.
 - [x] **Redundancy / UX cleanup (2026-07-08)**: (1) **sticky header** — the top bar is now `position: sticky` with a solid stone background + hairline (no blur, per the design system), so the `Get in touch` CTA stays reachable on scroll; (2) **de-duplicated the header** — dropped the `Contact` text link since `Get in touch` already targets `#contact` (nav is now `Work · Get in touch`); (3) **minimal footer** — removed the `Site`/`Elsewhere` columns that duplicated the header nav + contact links; footer is now brand + tagline + `©` on the left and a single `GitHub · LinkedIn` line on the right. Still zero shipped JS. _Note: the hero still has its own `Get in touch` secondary button (standard hero dual-CTA); left as-is, easy to drop later if it reads as redundant with the sticky CTA._
 
-## Phase 2 (not built yet)
+## Phase 2
 
-- **Blog**: second content collection under `src/content/blog`, frontmatter `{ title, description, date, tags, draft }`.
-- **Chatbot**: the Home hero shows a non-functional **"Chat with Bobby AI — In development"** marker (`.chat-soon` in `src/pages/index.astro`) as a standing reminder that this is unbuilt. When it ships, replace that marker with the real entry point and restore the design's "Chat with my AI" nav CTA. Planned build: a single interactive island (vanilla TS Web Component, not a UI framework, to keep shipped JS near zero) calling a Supabase Edge Function (`supabase/functions/chat/index.ts`) that:
-  1. Prepends a static persona system prompt server-side.
-  2. Calls Claude Haiku with a capped max-token budget.
-  3. Inserts a row into a `conversations` table (`id`, `created_at`, `session_id`/IP hash, `question`, `answer`, `input_tokens`, `output_tokens`, `flagged`, `model`) before returning the reply.
-  4. Does a naive recent-row-count check per session as a first-pass rate limit.
+- [x] **Chatbot — "Bobby AI" (shipped 2026-07-10)**: a vanilla-TS `<dialog>` island launched from
+  a **hero CTA button** ("Chat with Bobby AI", `src/components/ChatBot.astro`) — no UI framework,
+  streaming fetch, session-id in localStorage. It calls an **Astro on-demand endpoint**
+  (`src/pages/api/chat.ts`, `prerender = false`), not the originally-planned Supabase Edge Function
+  — the adapter route was simpler to keep in one codebase. Per request the endpoint: validates +
+  rate-limits (12 msgs / 60s per session via a recent-row count), embeds the question, retrieves
+  the top-5 matching chunks from Supabase pgvector, assembles the persona system prompt + context +
+  recent history, streams the reply, and logs the turn to a `conversations` table.
+  - **Provider-switchable** via `CHAT_PROVIDER` env var: `anthropic` → Claude Haiku
+    (`claude-haiku-4-5`), else Gemini (`gemini-3.5-flash`). Abstraction lives in `src/lib/chat/`
+    (`types.ts`, `gemini.ts`, `anthropic.ts`, `index.ts` selector). Currently set to `anthropic`.
+  - **Embeddings are always Gemini** (`gemini-embedding-001`, 768-dim) — Anthropic has no
+    embeddings API — regardless of `CHAT_PROVIDER`. So `GEMINI_API_KEY` is *always* required.
+  - **RAG corpus**: `knowledge/` (`bio.md` seeded; `faq.md` + `resume.md` are stubs for Bobby to
+    fill) plus published project write-ups. `scripts/ingest.mjs` chunks + embeds them and rebuilds
+    the `documents` table — run `npm run ingest` after editing the KB. Schema in
+    `supabase/schema.sql` (`documents` + `conversations` tables, HNSW index, `match_documents` RPC,
+    service_role grants) — applied manually in the Supabase SQL editor.
+  - **Env vars** (local `.env`, git-ignored; also set in Vercel → Production): `CHAT_PROVIDER`,
+    `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`. The
+    service-role key is server-side only — never `PUBLIC_`-prefixed, never in the browser.
+    `.env.example` is the tracked template (no real secrets).
+  - _Gemini generation quota:_ the current Gemini key's project has **zero free-tier *generation*
+    quota** (`limit: 0` on `gemini-2.0-flash`); embeddings work fine. `gemini-3.5-flash` has quota
+    but hits transient 503s. This is why `CHAT_PROVIDER=anthropic` is the working default — resolve
+    Gemini billing before switching the provider to gemini.
+
+- [ ] **Chatbot on/off toggle (requested 2026-07-10, not built)**: Bobby wants a simple config
+  switch — **like `CHAT_PROVIDER`** — to show/hide the "Chat with Bobby AI" button in production
+  **without asking Claude to edit code**. Use case: flip it **off** while manually reworking the
+  persona/system prompt or updating the knowledge base (`npm run ingest`), then flip it back **on**
+  when ready. Design intent: a single env var (e.g. `CHAT_ENABLED=true|false`) read at build/render
+  time in `index.astro` (or wherever `<ChatBot />` renders) that conditionally renders the launch
+  button; changeable from the Vercel dashboard + local `.env` with no code change. Keep the
+  endpoint itself gated too (return 503/404 when disabled) so it can't be hit while off.
+
+- [ ] **Blog / Writing**: second content collection under `src/content/blog`, frontmatter
+  `{ title, description, date, tags, draft }`. The last deferred screen from the design bundle.
 
 ## Repo setup reminders
 
 - Local: `.obsidian/` and `.claude/` are intentionally kept on disk but gitignored — don't expect them on a fresh clone.
-- GitHub: **Settings → Pages → Source** must be set to **GitHub Actions** for `.github/workflows/deploy.yml` to publish.
+- Local `.env` is required to run the chatbot in `npm run dev` (git-ignored — copy `.env.example` and fill in the secrets). `test_chat.*` scratch scripts are git-ignored too.
+- Deploy is **Vercel** (auto-builds on push to `main`). Set the 5 chatbot env vars in the Vercel dashboard (Production scope) — see Phase 2. GitHub Pages is retired (`deploy.yml` removed).
 
 ## Working agreements
 

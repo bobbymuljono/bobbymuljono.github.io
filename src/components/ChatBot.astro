@@ -3,42 +3,56 @@
 // Vanilla TS, no framework (keeps shipped JS minimal, per repo rules).
 // Progressive enhancement: the launcher is a plain button; if JS is off it simply
 // does nothing (the site's content is unaffected).
+import { CHAT_ENABLED } from '../lib/chat/enabled';
 const endpoint = '/api/chat';
 ---
 
 <div class="bobbychat" data-endpoint={endpoint}>
-  <button class="button button--secondary bobbychat__launch" type="button" data-chat-open>
-    Chat with Bobby AI
-  </button>
+  {CHAT_ENABLED ? (
+    <>
+      <button class="button button--secondary bobbychat__launch" type="button" data-chat-open>
+        Chat with Bobby AI
+      </button>
 
-  <dialog class="bobbychat__dialog" data-chat-dialog aria-label="Chat with Bobby AI">
-    <header class="bobbychat__head">
-      <div>
-        <span class="bobbychat__title">Bobby AI</span>
-        <span class="bobbychat__sub">an AI version of me</span>
-      </div>
-      <button class="bobbychat__close" type="button" data-chat-close aria-label="Close chat">&times;</button>
-    </header>
+      <dialog class="bobbychat__dialog" data-chat-dialog aria-label="Chat with Bobby AI">
+        <header class="bobbychat__head">
+          <div>
+            <span class="bobbychat__title">Bobby AI</span>
+            <span class="bobbychat__sub">an AI version of me</span>
+          </div>
+          <button class="bobbychat__close" type="button" data-chat-close aria-label="Close chat">&times;</button>
+        </header>
 
-    <div class="bobbychat__log" data-chat-log>
-      <div class="bobbychat__msg bobbychat__msg--bot">
-        Hi, I'm an AI version of Bobby. Ask me about my work, my projects, or how I build with AI.
-      </div>
-    </div>
+        <div class="bobbychat__log" data-chat-log>
+          <div class="bobbychat__msg bobbychat__msg--bot">
+            Hi, I'm an AI version of Bobby. Ask me about my work, my projects, or how I build with AI.
+          </div>
+        </div>
 
-    <form class="bobbychat__form" data-chat-form>
-      <input
-        class="bobbychat__input"
-        type="text"
-        name="q"
-        autocomplete="off"
-        maxlength="2000"
-        placeholder="Ask me something…"
-        required
-      />
-      <button class="button button--primary button--sm" type="submit" data-chat-send>Send</button>
-    </form>
-  </dialog>
+        <form class="bobbychat__form" data-chat-form>
+          <input
+            class="bobbychat__input"
+            type="text"
+            name="q"
+            autocomplete="off"
+            maxlength="2000"
+            placeholder="Ask me something…"
+            required
+          />
+          <button class="button button--primary button--sm" type="submit" data-chat-send>Send</button>
+        </form>
+      </dialog>
+    </>
+  ) : (
+    <button
+      class="button button--secondary bobbychat__launch bobbychat__launch--disabled"
+      type="button"
+      disabled
+      aria-disabled="true"
+    >
+      Chat with Bobby AI <span class="badge bobbychat__badge">In development</span>
+    </button>
+  )}
 </div>
 
 <script>
@@ -152,6 +166,24 @@ const endpoint = '/api/chat';
 <style is:global>
   .bobbychat__launch {
     cursor: pointer;
+  }
+
+  /* Disabled state (CHAT_ENABLED = false in src/lib/chat/enabled.ts): dashed
+     border reads as "not clickable yet", paired with an inline "In development"
+     badge instead of the usual solid secondary-button look. */
+  .bobbychat__launch--disabled {
+    cursor: default;
+    border-style: dashed;
+  }
+
+  .bobbychat__launch--disabled:hover {
+    background: transparent;
+    border-color: var(--color-border-strong);
+    color: var(--color-text);
+  }
+
+  .bobbychat__badge {
+    pointer-events: none;
   }
 
   .bobbychat__dialog {

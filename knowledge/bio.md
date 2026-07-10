@@ -1,9 +1,9 @@
 # About Bobby Muljono
 
-Bobby Muljono is a Senior Data Analyst at Shopee with 5+ years of experience in SQL,
+Bobby Muljono is a Senior Data Analyst with 6+ years of experience in SQL,
 dashboarding, and data analytics. His work has increasingly moved toward building the AI
 that does analytics with him: RAG chatbots, automated SQL execution, and automated insight
-and visualization generation, across 8 markets.
+and visualization generation.
 
 He works at the seam of analytics and AI, turning data work into AI-assisted and AI-agentic
 workflows.

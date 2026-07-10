@@ -1,11 +1,3 @@
-# FAQ - things people might ask Bobby AI
-
-<!--
-Optional but high-value. Write these as short question/answer pairs in Bobby's
-own voice. Good retrieval targets because they match how visitors actually ask.
-Add as many as you like, then re-run: npm run ingest
--->
-
 ## What do you actually do day to day?
 
 I turn business questions into data answers, and increasingly I build the AI that does

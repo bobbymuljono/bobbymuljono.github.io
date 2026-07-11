@@ -22,17 +22,28 @@ There is no test suite and no separate lint script configured. Running the chatb
 
 Two named routines the user triggers by phrase. Treat any close paraphrase as the trigger (e.g. "let's start", "kick off", "spin up" → **start**; "prep handover", "wrap up", "hand off" → **prepare handover**).
 
+### Sub-agent routing (auto-delegate)
+
+Standing instruction from Bobby (2026-07-11): **automatically delegate the mechanical tasks below to their sub-agents** (`.claude/agents/`), without waiting to be told to use them by name. This is a durable, pre-authorized request to spawn, so treat these task types as an exception to the "don't spawn unless asked" default — the ask is standing, right here.
+
+- **Git routines → `git-ops` (Haiku).** The session-start git bootstrap (step 1 below), the git half of "prepare handover" (stage/commit/push, step 2 below), and any ad-hoc git command the user asks for (pull, status, branch, commit, push). Hand it the specifics it needs (today's date, the exact commit message). **Keep on the main thread:** deciding *what* to commit and *writing* the commit message — the agent executes, you supply intent.
+- **Chatbot KB rebuild → `kb-ingest` (Haiku).** After `knowledge/` files are edited or a write-up is published (`draft: false`), delegate the `npm run ingest` + verify cycle. **Keep on the main thread:** writing/judging KB content and tuning retrieval quality.
+- **Prune stale docs → `docs-sync` (Sonnet).** The "prepare handover" doc-prune step (step 1 below): reconciling `CLAUDE.md`/`TODO.md`/`DESIGN_NOTES.md`/`README.md` with what changed and converting relative dates to absolute. Hand it a summary of what changed this session + today's date. **Keep on the main thread:** design/direction decisions (it reconciles, it doesn't set direction).
+- **Verify a previewable change → `build-verify` (Sonnet, read-only).** After a change the dev server can render/serve/log, delegate the build + preview-drive + console/network inspection. It reports file:line + evidence and **cannot edit** — you make any fix it surfaces. Skip it (and don't delegate) for changes with no runtime surface (pure types, tooling, docs).
+
+Do **not** auto-delegate anything else — design/token work, write-up voice, and chatbot internals stay on the main thread. If a git/KB task is a genuine trivial one-off where a fresh spawn would cost more than doing it inline, use judgment; otherwise default to delegating per this instruction. If a sub-agent isn't in the roster (e.g. it was added mid-session and needs a restart to load), say so and fall back to doing it inline rather than silently skipping the task.
+
 ### On "start" (or similar)
 
-1. **Git bootstrap.** `git checkout main`, `git pull`, then create and switch to a fresh session branch named `session/<YYYY-MM-DD>` (today's date; append `-b`, `-c`, … if that branch already exists). This matches the existing `session/<date>` convention.
+1. **Git bootstrap** *(delegate to `git-ops`)*. `git checkout main`, `git pull`, then create and switch to a fresh session branch named `session/<YYYY-MM-DD>` (today's date; append `-b`, `-c`, … if that branch already exists). This matches the existing `session/<date>` convention.
 2. **Design context.** Read `DESIGN_NOTES.md` — it is the canonical, distilled form of the Claude design-system handoff, kept in sync with the tokens in `src/styles/global.css`. Do **not** wait for a zip. Only ingest a raw handoff bundle when the user explicitly says a *new/updated* design handoff has arrived; in that case, read the zip they provide, then re-distill the changes into `DESIGN_NOTES.md` + the relevant tokens rather than leaving the site pointed at a binary. Raw handoff zips are not committed to the repo (the distilled text is the source of truth).
 3. **Get up to speed.** Read `TODO.md` (the living checklist + decisions log) and skim `README.md` and any other top-level `*.md` touched recently.
 4. **Report.** Summarize `TODO.md` — what's done, what's outstanding — and recommend the next low-hanging-fruit item (small, unblocked, high-signal) to tackle this session.
 
 ### On "prepare handover" (or similar)
 
-1. **Prune stale docs.** Review `CLAUDE.md`, `TODO.md`, `DESIGN_NOTES.md`, and `README.md` against what actually changed this session; remove or correct anything now stale (finished items, superseded decisions, outdated status lines). Convert relative dates to absolute.
-2. **Sync git.** Stage and commit all session work with a clear message, ensure the working tree is clean (`git status`), then push the session branch to `origin`. Stop short of opening a PR — the user decides when to merge. Report the branch name and what was committed.
+1. **Prune stale docs** *(delegate to `docs-sync`; hand it a summary of what changed + today's date)*. Review `CLAUDE.md`, `TODO.md`, `DESIGN_NOTES.md`, and `README.md` against what actually changed this session; remove or correct anything now stale (finished items, superseded decisions, outdated status lines). Convert relative dates to absolute.
+2. **Sync git** *(you write the commit message, then delegate stage/commit/push to `git-ops`)*. Stage and commit all session work with a clear message, ensure the working tree is clean (`git status`), then push the session branch to `origin`. Stop short of opening a PR — the user decides when to merge. Report the branch name and what was committed.
 
 ## Architecture
 

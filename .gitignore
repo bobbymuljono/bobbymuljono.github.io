@@ -44,5 +44,12 @@ Thumbs.db
 # local scratch scripts (not part of the site)
 test_chat.*
 
+# pdf2md staging: raw, unreviewed PDF extractions pending human review + promotion
+# into knowledge/. Transient scratch (may hold third-party PDF content) — never versioned.
+knowledge/_staging/
+# transient PDFs dropped into the root for `npm run pdf2md` (the script deletes them
+# after conversion; this guards against a failed run leaving one committed)
+/*.pdf
+
 # personal git cheat sheet (not part of the site)
 GIT_CHEATSHEET.md

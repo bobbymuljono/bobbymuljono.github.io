@@ -14,6 +14,7 @@ Requires Node >=22.12.0.
 - `npm run preview` — serve the production build locally
 - `npm run astro -- check` — type-check `.astro` files and content collection schemas without a full build
 - `npm run ingest` — re-chunk + embed `knowledge/` + published write-ups into Supabase pgvector (run after editing the chatbot KB; reads secrets from `.env`)
+- `npm run pdf2md` — KB-prep helper (dev-only, not shipped): extract a PDF into a draft `.md` in `knowledge/_staging/` for human review before it ever reaches the ingest pipeline. No-arg form converts every `*.pdf` in the project root then deletes the source from the root; `npm run pdf2md -- <path>` targets a specific PDF (never deleted unless it sits in the root); `--dry` previews without writing, `--keep` skips deletion. See `scripts/pdf-to-md.mjs`. **The ingest pipeline stays markdown-only** — this is a deliberate staging step (extraction is noisy: bullets flatten, headers/footers need trimming), so promotion from `knowledge/_staging/` into `knowledge/` is a manual, reviewed decision. `knowledge/_staging/` and root `*.pdf` are git-ignored.
 
 There is no test suite and no separate lint script configured. Running the chatbot in `npm run dev` requires a local `.env` (copy `.env.example`).
 

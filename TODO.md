@@ -130,6 +130,16 @@ Bio + project copy were populated from the bundle's sample content.
     the `documents` table — run `npm run ingest` after editing the KB. Schema in
     `supabase/schema.sql` (`documents` + `conversations` tables, HNSW index, `match_documents` RPC,
     service_role grants) — applied manually in the Supabase SQL editor.
+  - **PDF → KB helper (added 2026-07-11)**: `scripts/pdf-to-md.mjs` (`npm run pdf2md`, `pdfjs-dist`
+    devDependency) extracts a PDF into a draft `.md` under `knowledge/_staging/` for review, so the
+    ingest pipeline itself stays markdown-only. No-arg form converts every `*.pdf` in the project
+    root then deletes the source from the root; explicit-path form (`-- <path>`) targets one PDF and
+    only deletes it if it lives in the root; `--dry` previews, `--keep` skips deletion. Extraction is
+    intentionally staged because it's noisy (bullet lists flatten onto one line, running
+    headers/footers need trimming) — promote `knowledge/_staging/*.md` into `knowledge/` (set
+    `draft: false`) only after a human cleanup pass, then `npm run ingest`. `knowledge/_staging/` and
+    root `*.pdf` are git-ignored. _Deferred nicety:_ auto-split `● …` bullet runs into markdown list
+    items during extraction to cut manual cleanup (skipped for now — review step handles it).
   - **Env vars** (local `.env`, git-ignored; also set in Vercel → Production): `CHAT_PROVIDER`,
     `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`. The
     service-role key is server-side only — never `PUBLIC_`-prefixed, never in the browser.

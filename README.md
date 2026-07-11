@@ -29,8 +29,11 @@ Design decisions and their reasoning live in [DESIGN_NOTES.md](./DESIGN_NOTES.md
 | `npm run build`    | Build the production site to `./dist/`       |
 | `npm run preview`  | Preview the production build locally         |
 | `npm run ingest`   | Re-chunk + embed `knowledge/` + write-ups into Supabase (run after editing the chatbot KB) |
+| `npm run pdf2md`   | Extract a PDF into a draft markdown file in `knowledge/_staging/` for review (KB prep helper) |
 
 Running the chatbot locally (`npm run dev`) needs a `.env` file — copy `.env.example` and fill in the keys.
+
+**Adding a PDF to the chatbot KB:** drop the `.pdf` into the project root and run `npm run pdf2md` — it extracts + cleans the text into `knowledge/_staging/<name>.md` (stamped `draft: true`) and deletes the source PDF from the root. Review and clean the staged markdown (fix flattened bullet lists, trim noise), move it up into `knowledge/`, set `draft: false`, then run `npm run ingest`. The `knowledge/_staging/` folder and root `*.pdf` files are git-ignored (transient scratch). You can also target a PDF anywhere with `npm run pdf2md -- "path/to/file.pdf"` (a PDF outside the root is never deleted), and add `--dry` to preview without writing.
 
 ## Adding a project
 

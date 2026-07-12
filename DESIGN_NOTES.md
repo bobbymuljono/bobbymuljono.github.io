@@ -49,6 +49,20 @@ tokens, type, and palette they describe are no longer in `global.css`.
   not as its own screen. The nav still wires only real destinations (Work) with a "Get in touch"
   CTA — the bundle's signature "Chat with my AI" *nav* CTA was deliberately not restored (the
   chat launches from the hero instead). **Writing** (blog) remains Phase 2 (see `TODO.md`).
+- **Default OG share image (2026-07-13).** `public/og-default.png` (1200x630) is rendered via an
+  HTML `<canvas>` using the site's own self-hosted webfonts rather than an image generator, so it
+  reads as a direct extension of the on-site design system: oat background, an inset hairline
+  frame, the forest-green period on the wordmark plus a short forest accent rule, an italic-serif
+  "Senior Data Analyst" eyebrow, a Newsreader headline, a muted subtitle, and "bobbymuljono" in the
+  bottom right. Wired as the `image` prop default in `BaseLayout.astro`, so every page now emits
+  `og:image`/`twitter:image` and a `summary_large_image` card.
+- **Chatbot streaming + starter chips (2026-07-13).** Streamed replies in `ChatBot.astro` now
+  reveal via a typewriter-style buffer (a few characters per animation frame, adaptive so it can
+  catch up on bursty chunks) instead of snapping the full chunk in at once; it still respects
+  `prefers-reduced-motion` (renders instantly) per the site's progressive-enhancement rule. The
+  empty state also shows four clickable starter-question chips (`.bobbychat__chip`), styled with
+  the same hairline-border-to-accent-border-plus-sage-wash hover cue used elsewhere for interactive
+  cards, so the new control reads as native to the existing system rather than a one-off.
 - **"In development" disabled-button pattern (2026-07-10).** When a feature needs to be
   temporarily hidden without deleting its CTA (e.g. the chat launch button while reworking the
   persona/KB), render a `disabled` `.button` variant with a **dashed border** instead of the

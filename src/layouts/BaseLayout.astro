@@ -11,7 +11,9 @@ interface Props {
   image?: string;
 }
 
-const { title, description, image } = Astro.props;
+// Default social share image (1200×630, on-brand — regenerate via the canvas
+// render documented in DESIGN_NOTES). Pages can override with the `image` prop.
+const { title, description, image = '/og-default.png' } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const ogImageURL = image ? new URL(image, Astro.site) : undefined;
 ---

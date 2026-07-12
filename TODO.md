@@ -51,9 +51,15 @@ Bio + project copy were populated from the bundle's sample content.
   tags are gone; the two above-the-fold latin faces (Hanken 400 body, Newsreader 600 hero) are
   `preload`ed. Regenerate with `scripts/fetch-fonts.ps1` if the weights/axes change. Restores
   the near-zero-network goal (no third-party font request).
-- [ ] **Optional visual assets**: per-project cover screenshots, a real default OG share image
-  (`public/og-default.png` doesn't exist yet — the `image` prop on `BaseLayout` is optional and
-  currently unused).
+- [x] **Default OG share image** (2026-07-13): `public/og-default.png` (1200x630) shipped, rendered
+  via an HTML `<canvas>` using the site's own self-hosted webfonts (not an image generator) so it
+  matches the design tokens: oat background, inset hairline frame, forest-green period on the
+  wordmark + a short forest accent rule, italic-serif "Senior Data Analyst" eyebrow, Newsreader
+  headline, muted subtitle, bottom-right "bobbymuljono". Wired as the `image` prop default on
+  `BaseLayout`, so every page now emits `og:image`/`twitter:image` and a `summary_large_image`
+  Twitter card (pages can still override via the `image` prop).
+- [ ] **Optional visual assets**: per-project cover screenshots (still outstanding; the default
+  OG image above is done).
 - [~] **Project write-ups: first real rewrite done; three still placeholders** (updated
   2026-07-10). The four write-ups started as sample copy from the design bundle. **One is now a
   real, published rewrite**: `data-analyst-ai-agent.md` ("An AI agent did half a day of my
@@ -157,6 +163,31 @@ Bio + project copy were populated from the bundle's sample content.
   `.badge` token, no new colors) instead of the launch button + dialog, and `POST /api/chat`
   short-circuits with a `503` so the endpoint can't be hit directly while hidden. Currently **off**
   while Bobby reworks the persona/KB.
+
+- [~] **Chatbot persona rework (2026-07-13, one iteration, more expected)**: replaced the old
+  thin 5-rule `PERSONA` constant in `src/pages/api/chat.ts` with a structured one: a Voice section
+  (warm coffee-chat colleague, a light casual Singlish rhythm via short affirmatives like "yea
+  can"/"ok can" but explicitly no particles lah/leh/meh, framed as a speaking style only "not a
+  fact to announce", occasional follow-up questions, no emoji), a Length cap (2-4 sentences
+  default, don't pad), a Grounding+privacy section (facts only from CONTEXT; personal/demographic
+  details, location, nationality, birthplace, age, family, availability, are private unless present
+  in CONTEXT), and Boundaries (no internal metrics/dollar figures/client/team/market-count
+  specifics). Driven by testing against the live Supabase conversation log (replies were running
+  too long, and the bot had volunteered location/nationality by inference). The chatbot remains
+  **toggled off** (`CHAT_ENABLED = false`). The KB is still thin (only `knowledge/bio.md` +
+  `knowledge/faq.md`); a career-story KB file was discussed but not yet added.
+- [x] **Chatbot streaming UX (2026-07-13)**: `ChatBot.astro` replaced the immediate per-chunk
+  `textContent = full` render with a typewriter "pump" that buffers incoming network text and
+  reveals a few characters per animation frame (adaptive, speeds up to catch up on bursty chunks),
+  so the stream reads naturally instead of lurching. Respects `prefers-reduced-motion` (renders
+  instantly, no typewriter) and only auto-scrolls the log when the reader is already at the bottom.
+- [x] **Chatbot starter questions (2026-07-13)**: added four clickable predefined starter-question
+  chips (`data-chat-starters` container, `data-chat-starter` buttons) shown in the chat's empty
+  state to guide visitors. Clicking a chip sends that hard-coded question through a shared
+  `sendMessage()` path (form submit now calls the same function); chips are removed once a
+  conversation begins. New `.bobbychat__starters` / `.bobbychat__chip` styles (hairline border that
+  shifts to accent-border + sage-wash on hover, matching the interactive-card hover cue). Still
+  vanilla-TS, no new dependencies.
 
 - [ ] **Blog / Writing**: second content collection under `src/content/blog`, frontmatter
   `{ title, description, date, tags, draft }`. The last deferred screen from the design bundle.

@@ -22,6 +22,17 @@ const ogImageURL = image ? new URL(image, Astro.site) : undefined;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Set the theme before first paint to avoid a flash. Defaults to light for
+         every new visitor; dark only when they have explicitly toggled it before
+         (persisted in localStorage). Mirrored by the toggle in Header. -->
+    <script is:inline>
+      (function () {
+        try {
+          var theme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonicalURL} />
     <meta name="generator" content={Astro.generator} />

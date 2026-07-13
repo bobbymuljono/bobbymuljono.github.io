@@ -36,7 +36,7 @@ draft: false
 .arch__row { display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: center; align-items: stretch; }
 .arch__group {
   border: 1px solid var(--color-border); border-radius: var(--radius-md);
-  padding: var(--space-4); background: color-mix(in oklab, var(--oat-raised) 55%, transparent);
+  padding: var(--space-4); background: color-mix(in oklab, var(--color-surface) 55%, transparent);
 }
 .arch__grouplabel {
   display: block; text-align: center; margin-bottom: var(--space-3);

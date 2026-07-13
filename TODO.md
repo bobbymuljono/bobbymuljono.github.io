@@ -155,13 +155,16 @@ Bio + project copy were populated from the bundle's sample content.
     but hits transient 503s. This is why `CHAT_PROVIDER=anthropic` is the working default — resolve
     Gemini billing before switching the provider to gemini.
 
-- [x] **Chatbot on/off toggle (shipped 2026-07-10)**: built as a single source-level flag rather
-  than an env var (simpler, no Vercel dashboard step needed) — `export const CHAT_ENABLED = false`
-  in `src/lib/chat/enabled.ts`, imported by both `ChatBot.astro` and `pages/api/chat.ts`. Flip that
-  one line + redeploy to bring it back. When `false`: the hero renders a disabled, dashed-border
-  button reading "Chat with Bobby AI · *In development*" (the italic badge reuses the existing
-  `.badge` token, no new colors) instead of the launch button + dialog, and `POST /api/chat`
-  short-circuits with a `503` so the endpoint can't be hit directly while hidden. Currently **off**
+- [x] **Chatbot on/off toggle (shipped 2026-07-10, updated 2026-07-13)**: built as a single
+  source-level flag rather than an env var (simpler, no Vercel dashboard step needed) —
+  `src/lib/chat/enabled.ts` now exports `CHAT_ENABLED = import.meta.env.DEV || ENABLED_IN_PROD`,
+  imported by both `ChatBot.astro` and `pages/api/chat.ts`. The chatbot is **always enabled under
+  `npm run dev`** so it can be tested locally without touching the prod flag; production is gated
+  solely by the source-level `ENABLED_IN_PROD` boolean (flip it + redeploy to bring it back). When
+  disabled: the launch button renders as a disabled, dashed-border button reading "Chat with Bobby
+  AI · *In development*" (the italic badge reuses the existing `.badge` token, no new colors)
+  instead of the launch button + dialog, and `POST /api/chat` short-circuits with a `503` so the
+  endpoint can't be hit directly while hidden. Currently `ENABLED_IN_PROD = false` (prod **off**)
   while Bobby reworks the persona/KB.
 
 - [~] **Chatbot persona rework (2026-07-13, one iteration, more expected)**: replaced the old
@@ -191,6 +194,31 @@ Bio + project copy were populated from the bundle's sample content.
 
 - [ ] **Blog / Writing**: second content collection under `src/content/blog`, frontmatter
   `{ title, description, date, tags, draft }`. The last deferred screen from the design bundle.
+
+- [x] **Contact form (2026-07-13)**: added a Resend-backed on-demand endpoint
+  (`src/pages/api/contact.ts`, `prerender = false`) and a `<dialog>` island
+  (`src/components/ContactForm.astro`); the site now has two on-demand routes (`/api/chat` and
+  `/api/contact`). Requires `RESEND_API_KEY` in Vercel Production (optional `CONTACT_TO`/
+  `CONTACT_FROM` overrides).
+- [x] **Header CTA restructure (2026-07-13)**: the hero's standalone "Get in touch" button was
+  removed (it now lives header-only, at `/#contact`); the header gained a primary "Chat with Bobby
+  AI" CTA. `ChatBot.astro` picked up `sm`/`primary` props to support the header (small) vs. hero
+  (full-size) placements, both with the on-brand inline-SVG sparkle.
+- [x] **Dark mode (2026-07-14)**: full dark theme added. `:root[data-theme='dark']` in
+  `src/styles/global.css` remaps the semantic tokens (plus `--sage-wash`) to warm, forest-derived
+  dark surfaces (never pure black) with the accent lifted for contrast, so component CSS inverts
+  automatically. An anti-flash inline script in `BaseLayout.astro`'s `<head>` applies the stored
+  theme before paint; new visitors default to **light** and the site does not follow
+  `prefers-color-scheme`, dark only appears once a visitor toggles it (persisted in
+  `localStorage` under `theme`). The toggle is a slider switch in the sticky header
+  (`Header.astro`), left of the Work link. Also fixed in this pass: the `.arch__group` background
+  in `data-analyst-ai-agent.md` was hardcoded to the light-only `--oat-raised` token (stayed pale
+  and unreadable in dark) and now uses the semantic `--color-surface`; the hero portrait in
+  `index.astro` gets a dark-mode override (drops the bottom mask-fade, restores a full border,
+  adds `--shadow-md`, slight brightness/contrast filter) so the light studio photo seats against
+  the dark page, light mode unchanged. The hero's tag list was also removed from `index.astro`
+  (declutter), so the hero body now holds only the CTA row. See `DESIGN_NOTES.md` for the full
+  reasoning.
 
 ## Repo setup reminders
 

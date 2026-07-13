@@ -5,13 +5,22 @@
 // does nothing (the site's content is unaffected).
 import { CHAT_ENABLED } from '../lib/chat/enabled';
 const endpoint = '/api/chat';
+// `sm` renders the compact launch button (matches the header's small CTA); the
+// hero uses the default full-size button. `primary` renders the green accent
+// button (the header's focus CTA) instead of the outlined secondary style.
+const { sm = false, primary = false } = Astro.props;
+const variant = primary ? 'button--primary' : 'button--secondary';
 ---
 
 <div class="bobbychat" data-endpoint={endpoint}>
   {CHAT_ENABLED ? (
     <>
-      <button class="button button--secondary bobbychat__launch" type="button" data-chat-open>
+      <button class:list={['button', variant, 'bobbychat__launch', { 'button--sm': sm }]} type="button" data-chat-open>
         Chat with Bobby AI
+        <svg class="bobbychat__spark" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M12 2c.4 3.6 2.4 5.6 6 6-3.6.4-5.6 2.4-6 6-.4-3.6-2.4-5.6-6-6 3.6-.4 5.6-2.4 6-6Z" fill="currentColor" />
+          <path d="M18.5 13c.2 1.6 1 2.4 2.5 2.6-1.5.2-2.3 1-2.5 2.4-.2-1.6-1-2.4-2.5-2.6 1.5-.2 2.3-1 2.5-2.4Z" fill="currentColor" opacity="0.7" />
+        </svg>
       </button>
 
       <dialog class="bobbychat__dialog" data-chat-dialog aria-label="Chat with Bobby AI">
@@ -51,12 +60,17 @@ const endpoint = '/api/chat';
     </>
   ) : (
     <button
-      class="button button--secondary bobbychat__launch bobbychat__launch--disabled"
+      class:list={['button', variant, 'bobbychat__launch', 'bobbychat__launch--disabled', { 'button--sm': sm }]}
       type="button"
       disabled
       aria-disabled="true"
     >
-      Chat with Bobby AI <span class="badge bobbychat__badge">In development</span>
+      Chat with Bobby AI
+      <svg class="bobbychat__spark" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 2c.4 3.6 2.4 5.6 6 6-3.6.4-5.6 2.4-6 6-.4-3.6-2.4-5.6-6-6 3.6-.4 5.6-2.4 6-6Z" fill="currentColor" />
+        <path d="M18.5 13c.2 1.6 1 2.4 2.5 2.6-1.5.2-2.3 1-2.5 2.4-.2-1.6-1-2.4-2.5-2.6 1.5-.2 2.3-1 2.5-2.4Z" fill="currentColor" opacity="0.7" />
+      </svg>
+      <span class="badge bobbychat__badge">In development</span>
     </button>
   )}
 </div>
@@ -231,15 +245,30 @@ const endpoint = '/api/chat';
      namespaced (bobbychat__*), so global scope is collision-safe. -->
 <style is:global>
   .bobbychat__launch {
+    display: inline-flex;
+    align-items: center;
+    /* Tight gap so the sparkle hugs "AI" rather than floating off it. */
+    gap: var(--space-1);
     cursor: pointer;
   }
 
-  /* Disabled state (CHAT_ENABLED = false in src/lib/chat/enabled.ts): dashed
-     border reads as "not clickable yet", paired with an inline "In development"
-     badge instead of the usual solid secondary-button look. */
+  /* Sparkle glyph — an on-brand SVG (inherits the button's text color via
+     currentColor: white on the green primary CTA, forest text on secondary)
+     standing in for the ✨ emoji, since the design system bans emoji. */
+  .bobbychat__spark {
+    flex-shrink: 0;
+  }
+
+  /* Disabled state (CHAT_ENABLED resolves false — prod with ENABLED_IN_PROD off):
+     dashed border reads as "not clickable yet", paired with an inline "In
+     development" badge. Force the muted look regardless of the primary/secondary
+     variant, so the prod header CTA isn't a green dashed button. */
   .bobbychat__launch--disabled {
     cursor: default;
     border-style: dashed;
+    background: transparent;
+    color: var(--color-text);
+    border-color: var(--color-border-strong);
   }
 
   .bobbychat__launch--disabled:hover {

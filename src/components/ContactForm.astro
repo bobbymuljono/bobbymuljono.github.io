@@ -1,0 +1,296 @@
+---
+// ContactForm.astro — "Shoot me an email" dialog.
+// A vanilla-TS <dialog> modal (same island pattern as ChatBot) with name / email
+// / message fields that POST to /api/contact, which emails Bobby via Resend.
+// Progressive enhancement: the launcher is a plain button; with JS off it does
+// nothing (the GitHub / LinkedIn links beside it still work).
+const endpoint = '/api/contact';
+---
+
+<div class="contactform" data-endpoint={endpoint}>
+  <button class="button button--secondary contactform__launch" type="button" data-contact-open>
+    Shoot me an email
+  </button>
+
+  <dialog class="contactform__dialog" data-contact-dialog aria-label="Send Bobby an email">
+    <header class="contactform__head">
+      <div>
+        <span class="contactform__title">Shoot me an email</span>
+        <span class="contactform__sub">goes straight to my inbox</span>
+      </div>
+      <button class="contactform__close" type="button" data-contact-close aria-label="Close">&times;</button>
+    </header>
+
+    <form class="contactform__form" data-contact-form>
+      <!-- Honeypot: hidden from humans, catches bots. Kept out of the tab order. -->
+      <div class="contactform__hp" aria-hidden="true">
+        <label>Company<input type="text" name="company" tabindex="-1" autocomplete="off" /></label>
+      </div>
+
+      <label class="contactform__field">
+        <span class="contactform__label">Name</span>
+        <input class="contactform__input" type="text" name="name" maxlength="120" autocomplete="name" required />
+      </label>
+
+      <label class="contactform__field">
+        <span class="contactform__label">Email</span>
+        <input class="contactform__input" type="email" name="email" maxlength="200" autocomplete="email" required />
+      </label>
+
+      <label class="contactform__field">
+        <span class="contactform__label">Message</span>
+        <textarea class="contactform__input contactform__textarea" name="message" rows="4" maxlength="4000" required></textarea>
+      </label>
+
+      <p class="contactform__status" data-contact-status role="status" aria-live="polite"></p>
+
+      <div class="contactform__actions">
+        <button class="button button--primary button--sm" type="submit" data-contact-send>Send message</button>
+      </div>
+    </form>
+
+    <div class="contactform__done" data-contact-done hidden>
+      <p class="contactform__donetitle">Thanks, your message is on its way.</p>
+      <p class="contactform__donesub">I'll reply to the email you gave me. Talk soon.</p>
+      <button class="button button--secondary button--sm" type="button" data-contact-close>Close</button>
+    </div>
+  </dialog>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.contactform').forEach(setup);
+
+  function setup(el: HTMLElement) {
+    const endpoint = el.dataset.endpoint || '/api/contact';
+    const dialog = el.querySelector('[data-contact-dialog]') as HTMLDialogElement;
+    const form = el.querySelector('[data-contact-form]') as HTMLFormElement;
+    const openBtn = el.querySelector('[data-contact-open]') as HTMLButtonElement;
+    const sendBtn = el.querySelector('[data-contact-send]') as HTMLButtonElement;
+    const statusEl = el.querySelector('[data-contact-status]') as HTMLElement;
+    const doneEl = el.querySelector('[data-contact-done]') as HTMLElement;
+    const closeBtns = el.querySelectorAll<HTMLButtonElement>('[data-contact-close]');
+    if (!dialog || !form || !openBtn) return;
+
+    openBtn.addEventListener('click', () => {
+      // Reset to a clean form each time it opens.
+      form.hidden = false;
+      doneEl.hidden = true;
+      statusEl.textContent = '';
+      statusEl.classList.remove('is-error');
+      dialog.showModal();
+      (form.querySelector('input[name="name"]') as HTMLInputElement)?.focus();
+    });
+    closeBtns.forEach((b) => b.addEventListener('click', () => dialog.close()));
+
+    let busy = false;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (busy) return;
+
+      const data = new FormData(form);
+      const body = {
+        name: String(data.get('name') || '').trim(),
+        email: String(data.get('email') || '').trim(),
+        message: String(data.get('message') || '').trim(),
+        company: String(data.get('company') || ''), // honeypot
+      };
+
+      busy = true;
+      sendBtn.disabled = true;
+      statusEl.classList.remove('is-error');
+      statusEl.textContent = 'Sending…';
+
+      // Backstop the request so a hung connection can't leave the button stuck on
+      // "Sending…" forever. Slightly longer than the server's own Resend timeout,
+      // so the server's friendly error usually wins; this only fires if the whole
+      // request hangs.
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 15000);
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(body),
+          signal: controller.signal,
+        });
+
+        if (res.ok) {
+          form.hidden = true;
+          doneEl.hidden = false;
+        } else {
+          let msg = 'Something went wrong. Please try again.';
+          try {
+            const err = await res.json();
+            if (err?.error) msg = err.error;
+          } catch {}
+          statusEl.textContent = msg;
+          statusEl.classList.add('is-error');
+        }
+      } catch (err) {
+        const timedOut = err instanceof DOMException && err.name === 'AbortError';
+        statusEl.textContent = timedOut
+          ? 'That took too long. Please try again, or reach out via GitHub or LinkedIn.'
+          : 'Could not reach the server. Please try again.';
+        statusEl.classList.add('is-error');
+      } finally {
+        clearTimeout(timer);
+        busy = false;
+        sendBtn.disabled = false;
+      }
+    });
+  }
+</script>
+
+<style>
+  .contactform__launch {
+    cursor: pointer;
+  }
+
+  .contactform__dialog {
+    width: min(460px, calc(100vw - 2rem));
+    max-width: 460px;
+    padding: 0;
+    border: var(--border-hairline);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+
+  .contactform__dialog::backdrop {
+    background: color-mix(in oklab, var(--forest-black) 32%, transparent);
+  }
+
+  .contactform__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    border-bottom: var(--border-hairline);
+  }
+
+  .contactform__title {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    color: var(--color-text);
+  }
+
+  .contactform__sub {
+    display: block;
+    font-family: var(--font-label);
+    font-style: italic;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .contactform__close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 0 var(--space-1);
+  }
+  .contactform__close:hover {
+    color: var(--color-text);
+  }
+
+  .contactform__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-5);
+  }
+
+  /* The `hidden` attribute must win over the flex `display` rules on the form and
+     the success panel — otherwise `el.hidden = true` in JS does nothing (an
+     explicit `display` beats `[hidden]`'s UA `display:none`), leaving both the
+     form and the "message on its way" panel visible at once. */
+  .contactform__form[hidden],
+  .contactform__done[hidden] {
+    display: none;
+  }
+
+  /* Honeypot — visually and functionally hidden from real users. */
+  .contactform__hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .contactform__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .contactform__label {
+    font-family: var(--font-label);
+    font-style: italic;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .contactform__input {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    padding: var(--space-2) var(--space-3);
+    border: var(--border-hairline);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
+    width: 100%;
+  }
+  .contactform__input:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-focus);
+  }
+
+  .contactform__textarea {
+    resize: vertical;
+    min-height: 6rem;
+  }
+
+  .contactform__status {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    min-height: 1.2em;
+  }
+  .contactform__status.is-error {
+    color: var(--color-accent);
+  }
+
+  .contactform__actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .contactform__done {
+    padding: var(--space-6) var(--space-5);
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .contactform__donetitle {
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    margin: 0;
+  }
+
+  .contactform__donesub {
+    color: var(--color-text-muted);
+    margin: 0 0 var(--space-3);
+  }
+</style>

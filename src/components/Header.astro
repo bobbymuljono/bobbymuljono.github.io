@@ -1,6 +1,7 @@
 ---
 // Site navigation — wordmark + section links + primary CTA, per the design system.
-// Chat / Writing are Phase 2, so the nav wires only real destinations for now.
+// Writing is Phase 2, so the nav wires only real destinations for now.
+import ChatBot from './ChatBot.astro';
 const { pathname } = Astro.url;
 // 'Contact' is intentionally omitted — the 'Get in touch' button below points to the
 // same #contact anchor, so a separate text link would be redundant.
@@ -15,6 +16,48 @@ const isActive = (href: string) =>
   <div class="wrapper site-header__inner">
     <a href="/" class="site-header__mark">Bobby Muljono</a>
     <nav aria-label="Primary" class="site-header__nav">
+      <button
+        type="button"
+        id="theme-toggle"
+        class="theme-toggle"
+        role="switch"
+        aria-checked="false"
+        aria-label="Switch to dark mode"
+      >
+        <span class="theme-toggle__track">
+          <span class="theme-toggle__knob">
+            <svg
+              class="theme-toggle__icon theme-toggle__icon--sun"
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+            </svg>
+            <svg
+              class="theme-toggle__icon theme-toggle__icon--moon"
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          </span>
+        </span>
+      </button>
       {
         navLinks.map((link) => (
           <a
@@ -26,7 +69,8 @@ const isActive = (href: string) =>
           </a>
         ))
       }
-      <a href="/#contact" class="button button--primary button--sm">Get in touch</a>
+      <a href="/#contact" class="site-header__link">Get in touch</a>
+      <ChatBot sm primary />
     </nav>
   </div>
 </header>
@@ -63,7 +107,9 @@ const isActive = (href: string) =>
   .site-header__nav {
     display: flex;
     align-items: center;
-    gap: var(--space-6);
+    /* Row gap kept tight so wrapped rows on narrow screens don't drift apart;
+       column gap gives the text links + CTA a bit of breathing room. */
+    gap: var(--space-3) var(--space-5);
     flex-wrap: wrap;
   }
 
@@ -87,4 +133,99 @@ const isActive = (href: string) =>
     font-weight: var(--weight-semibold);
     border-bottom-color: var(--color-accent);
   }
+
+  /* ChatBot renders a wrapper div; flatten it so its launch button sits directly
+     in the nav flex row alongside the Work link and the Get in touch CTA. */
+  .site-header__nav :global(.bobbychat) {
+    display: contents;
+  }
+
+  /* Dark-mode toggle — a small slider switch. Knob sits left (light) and slides
+     right (dark); the knob carries the sun in light mode, the moon in dark. */
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--radius-pill);
+  }
+
+  .theme-toggle__track {
+    position: relative;
+    display: block;
+    width: 46px;
+    height: 24px;
+    background: var(--color-surface-sunk);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-pill);
+    transition: background var(--dur-base) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out);
+  }
+
+  .theme-toggle:hover .theme-toggle__track {
+    border-color: var(--color-accent);
+  }
+
+  .theme-toggle__knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg);
+    border-radius: 50%;
+    box-shadow: var(--shadow-sm);
+    color: var(--color-text-muted);
+    transition: transform var(--dur-base) var(--ease-out),
+      color var(--dur-base) var(--ease-out);
+  }
+
+  :global(:root[data-theme='dark']) .theme-toggle__knob {
+    transform: translateX(22px);
+    color: var(--color-accent);
+  }
+
+  /* Sun rides the knob in light mode, moon in dark mode. */
+  .theme-toggle__icon--moon {
+    display: none;
+  }
+
+  :global(:root[data-theme='dark']) .theme-toggle__icon--sun {
+    display: none;
+  }
+
+  :global(:root[data-theme='dark']) .theme-toggle__icon--moon {
+    display: block;
+  }
 </style>
+
+<script>
+  const btn = document.getElementById('theme-toggle');
+  if (btn) {
+    const root = document.documentElement;
+    const sync = (theme: string) => {
+      btn.setAttribute(
+        'aria-label',
+        theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+      );
+      btn.setAttribute('aria-checked', String(theme === 'dark'));
+    };
+    // Reflect whatever the head script already applied.
+    sync(root.getAttribute('data-theme') || 'light');
+    btn.addEventListener('click', () => {
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try {
+        localStorage.setItem('theme', next);
+      } catch (e) {
+        /* private mode / storage blocked — toggle still works for the session */
+      }
+      sync(next);
+    });
+  }
+</script>

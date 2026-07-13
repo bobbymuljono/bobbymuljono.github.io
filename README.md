@@ -10,15 +10,22 @@ Design decisions and their reasoning live in [DESIGN_NOTES.md](./DESIGN_NOTES.md
 
 ## Stack
 
-- [Astro](https://astro.build) (TypeScript strict) — static pages, near-zero JS. The one
-  interactive island is the chatbot (vanilla TS, no framework); the rest ships no JS.
+- [Astro](https://astro.build) (TypeScript strict) — static pages, near-zero JS. The interactive
+  islands are the chatbot and the contact-form dialog (both vanilla TS, no framework); the rest
+  ships no JS.
 - Content collections for project write-ups (`src/content/projects`)
 - No component/animation library — hand-written CSS tokens in `src/styles/global.css`
 - Self-hosted webfonts (Newsreader / Hanken Grotesk / IBM Plex Mono) in `src/styles/fonts.css` — no third-party font requests
+- Light and dark theme, toggled from the sticky header. New visitors see light by default (the
+  site does not follow OS `prefers-color-scheme`); dark only appears once toggled, and the choice
+  persists in `localStorage`.
 - **Chatbot (`src/pages/api/chat.ts` + `src/components/ChatBot.astro`)**: RAG over Supabase
   pgvector, Gemini embeddings, streamed generation from Claude Haiku or Gemini (switchable via
   `CHAT_PROVIDER`). Needs an on-demand server route — hence the `@astrojs/vercel` adapter.
-  Toggle on/off via `CHAT_ENABLED` in `src/lib/chat/enabled.ts` (currently off).
+  Toggle on/off via `CHAT_ENABLED` in `src/lib/chat/enabled.ts`; currently off in production
+  (always on in local dev).
+- **Contact form (`src/pages/api/contact.ts` + `src/components/ContactForm.astro`)**: another
+  on-demand route, sends mail via Resend (`RESEND_API_KEY`).
 
 ## Commands
 
@@ -41,9 +48,9 @@ Copy `src/content/projects/_template.md` to a new file in the same folder (filen
 
 ## Deployment
 
-**Vercel (canonical).** Pushing to `main` auto-builds Astro via the `@astrojs/vercel` adapter and deploys. Static pages are prerendered; the chatbot route (`src/pages/api/chat.ts`, `prerender = false`) is bundled as a serverless function. Currently live at `https://bobbymuljono-github-io.vercel.app`.
+**Vercel (canonical).** Pushing to `main` auto-builds Astro via the `@astrojs/vercel` adapter and deploys. Static pages are prerendered; the chatbot route (`src/pages/api/chat.ts`) and the contact-form route (`src/pages/api/contact.ts`), both `prerender = false`, are bundled as serverless functions. Currently live at `https://bobbymuljono-github-io.vercel.app`.
 
-Required setup in **Vercel → Project → Settings → Environment Variables** (Production scope): `CHAT_PROVIDER`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`. Without them the chatbot endpoint returns a "Server is not configured" error. None may be `PUBLIC_`-prefixed — they're server-side secrets.
+Required setup in **Vercel → Project → Settings → Environment Variables** (Production scope): `CHAT_PROVIDER`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` for the chatbot, plus `RESEND_API_KEY` (optional `CONTACT_TO`/`CONTACT_FROM` overrides) for the contact form. Without them the relevant endpoint returns a "Server is not configured" error. None may be `PUBLIC_`-prefixed — they're server-side secrets.
 
 Still to do:
 

@@ -41,6 +41,24 @@ tokens, type, and palette they describe are no longer in `global.css`.
 - **No emoji.** Warmth comes from type, color, and copy. Unicode middot (`·`) and arrows
   (`→`) are used lightly for editorial flourish.
 
+**Dark mode (added 2026-07-14).** The original handoff bundle was light-only; a dark variant was
+not part of it and is a later addition. A `:root[data-theme='dark']` block in `global.css`
+remaps only the semantic aliases (plus `--sage-wash`) rather than introducing a parallel token
+set, so every component built on the semantic tokens inverts for free. The dark surfaces are
+warm and forest-derived (never pure black), keeping the same "warm, not corporate-cold" feel as
+the light palette, and the forest-green accent is lifted for contrast against the darker
+background. New visitors default to light and the site deliberately does not read
+`prefers-color-scheme`; dark only appears once someone toggles it, persisted in `localStorage`.
+The toggle is a small slider switch (sun/moon knob) in the sticky header, to the left of the
+Work link, styled from the same hairline/pill/shadow tokens as the rest of the header rather than
+a one-off control. Two places needed explicit dark-mode treatment rather than inverting cleanly:
+the hero portrait (the light mode bottom mask-fade dissolve reads muddy on a dark surface, so
+dark mode instead keeps a full border, adds `--shadow-md`, and applies a slight
+brightness/contrast filter to reseat the light studio photo against the darker page) and the
+`.arch__group` background in `data-analyst-ai-agent.md` (was hardcoded to the light-only
+`--oat-raised` token, so it stayed pale and unreadable in dark mode; switched to the semantic
+`--color-surface` so it now adapts like the rest of the system).
+
 **Adaptations / flagged gaps (things the bundle left open):**
 
 - **Deferred screens.** The bundle ships four screens — Home, Work, Writing, Chat.

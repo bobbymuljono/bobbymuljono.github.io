@@ -118,6 +118,36 @@
   --dur-slow: 320ms;
 }
 
+/* ---- Dark theme ----
+   The brand palette is authored light; a dark mode necessarily introduces dark
+   surface tones. These stay warm and forest-derived (never pure black) and keep
+   the forest-green accent identity, lifted for legible contrast on dark. Only
+   the semantic aliases (plus --sage-wash, used directly by ::selection) are
+   remapped — component CSS reads the aliases, so it inverts automatically. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-bg: #181c15;
+  --color-surface: #20261c;
+  --color-surface-sunk: #12150f;
+  --color-surface-accent: #22301f;
+
+  --color-text: #e9e8e2;
+  --color-text-muted: #a3a898;
+  --color-text-on-accent: #16190f;
+  --color-text-on-wash: #bcd6c4;
+
+  --color-accent: #6cae86;
+  --color-accent-deep: #86c49e;
+
+  --color-border: #333a2c;
+  --color-border-strong: #4b5341;
+
+  --color-focus: color-mix(in oklab, #6cae86 55%, transparent);
+
+  --sage-wash: #22301f;
+}
+
 *,
 *::before,
 *::after {

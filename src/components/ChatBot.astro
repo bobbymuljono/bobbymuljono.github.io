@@ -277,8 +277,13 @@ const variant = primary ? 'button--primary' : 'button--secondary';
     color: var(--color-text);
   }
 
-  .bobbychat__badge {
+  /* Inherit the button's own foreground so the label always contrasts: white on
+     the green primary CTA (dark text in dark mode via --color-text-on-accent),
+     and the normal text color on the outlined secondary button. The scoped
+     selector beats the base .badge accent color regardless of stylesheet order. */
+  .bobbychat__launch--disabled .bobbychat__badge {
     pointer-events: none;
+    color: inherit;
   }
 
   .bobbychat__dialog {

@@ -2,12 +2,11 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ChatBot from '../components/ChatBot.astro';
+import ContactForm from '../components/ContactForm.astro';
 
 const featured = (await getCollection('projects', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 2);
-
-const heroTags = ['Presto SQL', 'Python', 'LangChain', 'LLM integration', 'A/B testing', 'Data Visualization'];
 ---
 
 <BaseLayout
@@ -36,15 +35,12 @@ const heroTags = ['Presto SQL', 'Python', 'LangChain', 'LLM integration', 'A/B t
       />
     </div>
     <div class="hero__body">
-      <!-- Buttons share one row: See my work (primary) + Get in touch + Chat with Bobby AI -->
+      <!-- Buttons share one row: See my work (primary) + Chat with Bobby AI.
+           "Get in touch" lives only in the sticky header now (was redundant here). -->
       <div class="hero__cta">
         <a class="button button--primary" href="/projects/">See my work</a>
-        <a class="button button--secondary" href="#contact">Get in touch</a>
         <ChatBot />
       </div>
-      <ul class="tag-list hero__tags">
-        {heroTags.map((tag) => <li class="tag">{tag}</li>)}
-      </ul>
     </div>
   </section>
 
@@ -118,6 +114,7 @@ const heroTags = ['Presto SQL', 'Python', 'LangChain', 'LLM integration', 'A/B t
     <div class="contact__actions">
       <a class="button button--secondary" href="https://github.com/bobbymuljono">GitHub</a>
       <a class="button button--secondary" href="https://www.linkedin.com/in/bobbymul">LinkedIn</a>
+      <ContactForm />
     </div>
   </section>
 </BaseLayout>
@@ -180,10 +177,6 @@ const heroTags = ['Presto SQL', 'Python', 'LangChain', 'LLM integration', 'A/B t
     display: contents;
   }
 
-  .hero__tags {
-    margin-top: var(--space-6);
-  }
-
   /* Portrait panel — sage-wash box, photo fills it and fades gently into the sage at the bottom. */
   .hero__portrait {
     grid-area: portrait;
@@ -206,6 +199,21 @@ const heroTags = ['Presto SQL', 'Python', 'LangChain', 'LLM integration', 'A/B t
     /* Subtle bottom fade only — opaque to 80%, then dissolves into the sage panel. */
     -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 80%, rgba(0, 0, 0, 0) 100%);
     mask-image: linear-gradient(to bottom, #000 0%, #000 80%, rgba(0, 0, 0, 0) 100%);
+  }
+
+  /* Dark mode: the bottom dissolve reads as the subject fading into shadow, and
+     the photo's light studio background glares against the dark page. Frame the
+     portrait cleanly (full border, no fade) and dim it a touch so it seats. */
+  :global(:root[data-theme='dark']) .hero__portrait {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow-md);
+  }
+
+  :global(:root[data-theme='dark']) .hero__portrait img {
+    -webkit-mask-image: none;
+    mask-image: none;
+    filter: brightness(0.9) contrast(1.03);
   }
 
   /* Experience — minimalist progression list (inspired by henrylin.io):
@@ -300,6 +308,12 @@ const heroTags = ['Presto SQL', 'Python', 'LangChain', 'LLM integration', 'A/B t
     flex-wrap: wrap;
     gap: var(--space-3);
     margin-top: var(--space-5);
+  }
+
+  /* ContactForm renders a wrapper div; flatten it so its "Shoot me an email"
+     launch button sits in the flex row beside the GitHub / LinkedIn buttons. */
+  .contact__actions :global(.contactform) {
+    display: contents;
   }
 
   @media (max-width: 52rem) {

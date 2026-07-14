@@ -122,9 +122,9 @@ brightness/contrast filter to reseat the light studio photo against the darker p
 - **Contact links.** GitHub is real; LinkedIn + public email are still placeholders
   (`href="#"`) — the bundle left these as `#` and no real values were provided.
 - **Project copy.** The write-ups started as the bundle's `site-data` sample copy. As of
-  2026-07-10 the first is a real rewrite (`data-analyst-ai-agent.md`); the other three remain
-  representative placeholders and are now `draft: true`. Run the confidentiality check in
-  `TODO.md` before treating any as final. See `TODO.md` for status.
+  2026-07-15 two are real rewrites (`data-analyst-ai-agent.md` and `chat-recommendation-copilot.md`);
+  the other three remain representative placeholders and are `draft: true`. Run the confidentiality
+  check in `TODO.md` before treating any as final. See `TODO.md` for status.
 - **Project detail header (2026-07-10).** The `[slug].astro` header leads with the title and a
   muted, formatted `date` beneath it. The `kind` eyebrow and the "Status" meta line were removed
   there (they read as clutter above a title, and the back-link already sat awkwardly beside the
@@ -137,6 +137,12 @@ brightness/contrast filter to reseat the light studio photo against the darker p
   or type), no shadows or gradients, and only gentle glyphs (`·`, `→`, `↓`; no heavy symbols like
   a big X). `data-analyst-ai-agent.md` is the reference; the `portfolio-writeup` skill documents
   the pattern. Prose in write-ups also avoids em-dashes and en-dashes (a standing content rule).
+  **Branching variant (2026-07-14).** `chat-recommendation-copilot.md` extended the pattern with a
+  branching layout on top of the original linear top-down flow: two side-by-side path groups
+  (`.arch__row > .arch__group { flex: 1 1 220px }`), a horizontal split node with a right-side
+  "exit" branch kept centered on the spine via a 3-column grid (`.arch__split`, `.arch__exit`,
+  `.arch__exitnote`), and standalone arrow connectors. Still self-contained inline HTML/CSS drawn
+  from the design tokens, no image-generator output.
 
 The tokens/components live in `src/styles/global.css` (single file consumed by
 `BaseLayout`). Utility classes mirror the bundle's React primitives: `.button`

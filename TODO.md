@@ -60,17 +60,27 @@ Bio + project copy were populated from the bundle's sample content.
   Twitter card (pages can still override via the `image` prop).
 - [ ] **Optional visual assets**: per-project cover screenshots (still outstanding; the default
   OG image above is done).
-- [~] **Project write-ups: first real rewrite done; three still placeholders** (updated
-  2026-07-10). The four write-ups started as sample copy from the design bundle. **One is now a
-  real, published rewrite**: `data-analyst-ai-agent.md` ("An AI agent did half a day of my
-  analyst work in 3 minutes"), a journey piece (Boko → Astro → Clyde) with four inline HTML/CSS
-  architecture diagrams (the `.arch` pattern), written with Bobby via brain-dump + interview and
-  cleared through the confidentiality gate (`draft: false`, live). It **replaced and deleted** the
-  old `support-rag-chatbot.md` (URL changed to `/projects/data-analyst-ai-agent`). The other three
+- [~] **Project write-ups: two real rewrites done; three still placeholders** (updated
+  2026-07-15). The four original write-ups started as sample copy from the design bundle. **Two
+  are now real, published rewrites**: `data-analyst-ai-agent.md` ("An AI agent did half a day of
+  my analyst work in 3 minutes"), a journey piece (Boko → Astro → Clyde) with four inline HTML/CSS
+  architecture diagrams (the `.arch` pattern), and `chat-recommendation-copilot.md` ("One-click
+  magic: a multi-agent item recommendation copilot for chat support", published 2026-07-14), a
+  case study on an AI item-recommendation copilot for shop-chat support agents. Both were written
+  with Bobby via brain-dump + interview and cleared through the confidentiality gate (`draft:
+  false`, live). `data-analyst-ai-agent.md` **replaced and deleted** the old
+  `support-rag-chatbot.md` (URL changed to `/projects/data-analyst-ai-agent`). For
+  `chat-recommendation-copilot.md`, confidentiality was cleared by softening internal metrics (a
+  productivity lift described as "low single digits across multiple regions", the "no
+  order-conversion hit" claim kept but qualitative), describing the internal AI builder generically
+  ("think Coze"), keeping model names generic ("one of the leading frontier models" / "a
+  lightweight model"), redacting a relevance-score threshold into plain English ("clears a high
+  bar"), and omitting screenshots in favor of an inline architecture diagram; that diagram also
+  introduced a branching variant of the `.arch` pattern (see `DESIGN_NOTES.md`). The other three
   (`ops-copilot-multi-agent`, `marketplace-health-dashboard`, `checkout-ab-framework`) are still
-  placeholder scaffolding and were flipped to **`draft: true`** (hidden from the live Work list)
-  until Bobby rewrites each in his own words. Confidentiality still applies to each rewrite. **Use
-  the `portfolio-writeup` skill** (see below) to draft/rework these.
+  placeholder scaffolding and remain **`draft: true`** (hidden from the live Work list) until Bobby
+  rewrites each in his own words. Confidentiality still applies to each rewrite. **Use the
+  `portfolio-writeup` skill** (see below) to draft/rework these.
 - [x] **Content-writing skill** (2026-07-08): built a project `portfolio-writeup` skill at
   `.claude/skills/portfolio-writeup/SKILL.md` for writing impactful, lean, illustrative work
   showcases. Two modes (interview-first + rough-notes→draft), flexible per-project structure,
@@ -177,8 +187,11 @@ Bio + project copy were populated from the bundle's sample content.
   in CONTEXT), and Boundaries (no internal metrics/dollar figures/client/team/market-count
   specifics). Driven by testing against the live Supabase conversation log (replies were running
   too long, and the bot had volunteered location/nationality by inference). The chatbot remains
-  **toggled off** (`CHAT_ENABLED = false`). The KB is still thin (only `knowledge/bio.md` +
-  `knowledge/faq.md`); a career-story KB file was discussed but not yet added.
+  **toggled off** (`CHAT_ENABLED = false`). The KB is still thin (`knowledge/bio.md` +
+  `knowledge/faq.md`); a career-story KB file was discussed but not yet added. **Re-ingested
+  2026-07-15** after `chat-recommendation-copilot.md` went live: the Supabase `documents` table now
+  holds 29 chunks from 4 sources (the two knowledge files plus the two published write-ups), and an
+  agent smoke-test confirmed the new article answers from retrieval.
 - [x] **Chatbot streaming UX (2026-07-13)**: `ChatBot.astro` replaced the immediate per-chunk
   `textContent = full` render with a typewriter "pump" that buffers incoming network text and
   reveals a few characters per animation frame (adaptive, speeds up to catch up on bursty chunks),
@@ -191,6 +204,16 @@ Bio + project copy were populated from the bundle's sample content.
   conversation begins. New `.bobbychat__starters` / `.bobbychat__chip` styles (hairline border that
   shifts to accent-border + sage-wash on hover, matching the interactive-card hover cue). Still
   vanilla-TS, no new dependencies.
+
+- [ ] **Chatbot cost / abuse protection before prod (added 2026-07-15)**: before flipping
+  `ENABLED_IN_PROD` to `true`, figure out how to stop sustained or abusive chatting from burning
+  Anthropic/Gemini API tokens once the bot is public. There's already an in-app per-session rate
+  limit (12 msgs / 60s, `RATE_LIMIT_MAX` in `src/pages/api/chat.ts`), but it keys off a
+  client-supplied `sessionId` (spoofable) and won't stop a determined abuser hammering `/api/chat`.
+  Investigate Vercel-side controls: **Vercel Firewall / WAF rate limiting** on the `/api/chat`
+  route, IP-based limits, a **spend cap / usage alert**, plus **provider-side spend limits**
+  (Anthropic usage caps, Gemini billing quota). Decide + configure the guardrail, then it's safe to
+  take the chatbot live in prod.
 
 - [ ] **Blog / Writing**: second content collection under `src/content/blog`, frontmatter
   `{ title, description, date, tags, draft }`. The last deferred screen from the design bundle.

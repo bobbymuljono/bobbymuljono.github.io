@@ -113,12 +113,13 @@ Bio + project copy were populated from the bundle's sample content.
   only `/api/chat` becomes a serverless function), updated `site` to
   `https://bobbymuljono-github-io.vercel.app`, and **removed `.github/workflows/deploy.yml`**
   (the Pages CI could not build the server route). Push to `main` now auto-deploys to Vercel with
-  the env vars set in the dashboard. Verified live 2026-07-10. _Still open:_ (1) attach a **custom
-  domain** in Vercel → Domains, then update `site` in `astro.config.mjs` to it (drives canonical
-  URLs, sitemap, absolute OG URLs) — DNS differs from the old GH Pages A-record recipe
-  (185.199.108/109/110/111.153 + `www` CNAME no longer apply); (2) **rotate the Gemini + Anthropic
-  API keys** before wider promotion (both were exposed during setup) and update them in Vercel +
-  local `.env`.
+  the env vars set in the dashboard. Verified live 2026-07-10. _Still open:_ **rotate the Gemini +
+  Anthropic API keys** before wider promotion (both were exposed during setup) and update them in
+  Vercel + local `.env`.
+- [x] **Custom domain attached (2026-07-16)**: `www.bobbymuljono.com` is live and is now the
+  canonical domain. `site` in `astro.config.mjs` was updated from
+  `https://bobbymuljono-github-io.vercel.app` to `https://www.bobbymuljono.com`. _Still open:_
+  confirm in the Vercel dashboard that the apex domain 301-redirects to `www`.
 - [x] **Chatbot backend (built 2026-07-10)**: originally planned as a Supabase Edge Function; **shipped instead as an Astro on-demand endpoint** (`src/pages/api/chat.ts`) running on the Vercel adapter — keeps everything in one codebase/deploy. Supabase is still used, but as the **pgvector store + conversation log** (Postgres), not as the compute. Provider is switchable (Claude Haiku / Gemini) via `CHAT_PROVIDER`. See Phase 2 for the full shape.
 - [x] **Layout redesign (2026-07-07)**: original design read as "plain and uninviting." Reworked to a side-by-side photo hero (placeholder avatar for now), card/bento-grid content sections (Now card, Background timeline, Stack pill-grid, Contact card), and subtle CSS-only hover reveals (animated underline on links, lift + image zoom on project cards) — still zero shipped JS.
 - [x] **Design system import (2026-07-08)**: adopted the Claude Design handoff bundle ("Bobby Muljono editorial design system") — warm stone + single forest-green accent, Newsreader/Source Sans 3/IBM Plex Mono, hairline-driven editorial layout. Replaced the prior warm-clay/system-font tokens in `global.css`; rebuilt nav, footer, Home and Work to match. Fonts now load from Google Fonts CDN (one deliberate webfont request). Writing + Chat screens deferred to Phase 2. See `DESIGN_NOTES.md`.
@@ -165,17 +166,18 @@ Bio + project copy were populated from the bundle's sample content.
     but hits transient 503s. This is why `CHAT_PROVIDER=anthropic` is the working default — resolve
     Gemini billing before switching the provider to gemini.
 
-- [x] **Chatbot on/off toggle (shipped 2026-07-10, updated 2026-07-13)**: built as a single
-  source-level flag rather than an env var (simpler, no Vercel dashboard step needed) —
-  `src/lib/chat/enabled.ts` now exports `CHAT_ENABLED = import.meta.env.DEV || ENABLED_IN_PROD`,
-  imported by both `ChatBot.astro` and `pages/api/chat.ts`. The chatbot is **always enabled under
-  `npm run dev`** so it can be tested locally without touching the prod flag; production is gated
-  solely by the source-level `ENABLED_IN_PROD` boolean (flip it + redeploy to bring it back). When
-  disabled: the launch button renders as a disabled, dashed-border button reading "Chat with Bobby
-  AI · *In development*" (the italic badge reuses the existing `.badge` token, no new colors)
-  instead of the launch button + dialog, and `POST /api/chat` short-circuits with a `503` so the
-  endpoint can't be hit directly while hidden. Currently `ENABLED_IN_PROD = false` (prod **off**)
-  while Bobby reworks the persona/KB.
+- [x] **Chatbot on/off toggle (shipped 2026-07-10, updated 2026-07-13, live in prod 2026-07-16)**:
+  built as a single source-level flag rather than an env var (simpler, no Vercel dashboard step
+  needed) — `src/lib/chat/enabled.ts` now exports
+  `CHAT_ENABLED = import.meta.env.DEV || ENABLED_IN_PROD`, imported by both `ChatBot.astro` and
+  `pages/api/chat.ts`. The chatbot is **always enabled under `npm run dev`** so it can be tested
+  locally without touching the prod flag; production is gated solely by the source-level
+  `ENABLED_IN_PROD` boolean (flip it + redeploy to bring it back). When disabled: the launch button
+  renders as a disabled, dashed-border button reading "Chat with Bobby AI · *In development*" (the
+  italic badge reuses the existing `.badge` token, no new colors) instead of the launch button +
+  dialog, and `POST /api/chat` short-circuits with a `503` so the endpoint can't be hit directly
+  while hidden. **`ENABLED_IN_PROD` was flipped to `true` on 2026-07-16** — the chatbot is now
+  live in production.
 
 - [~] **Chatbot persona rework (2026-07-13, one iteration, more expected)**: replaced the old
   thin 5-rule `PERSONA` constant in `src/pages/api/chat.ts` with a structured one: a Voice section
@@ -186,12 +188,21 @@ Bio + project copy were populated from the bundle's sample content.
   details, location, nationality, birthplace, age, family, availability, are private unless present
   in CONTEXT), and Boundaries (no internal metrics/dollar figures/client/team/market-count
   specifics). Driven by testing against the live Supabase conversation log (replies were running
-  too long, and the bot had volunteered location/nationality by inference). The chatbot remains
-  **toggled off** (`CHAT_ENABLED = false`). The KB is still thin (`knowledge/bio.md` +
-  `knowledge/faq.md`); a career-story KB file was discussed but not yet added. **Re-ingested
-  2026-07-15** after `chat-recommendation-copilot.md` went live: the Supabase `documents` table now
-  holds 29 chunks from 4 sources (the two knowledge files plus the two published write-ups), and an
-  agent smoke-test confirmed the new article answers from retrieval.
+  too long, and the bot had volunteered location/nationality by inference). The chatbot is now
+  **live in production** (`ENABLED_IN_PROD = true` as of 2026-07-16). **Re-ingested 2026-07-15**
+  after `chat-recommendation-copilot.md` went live: the Supabase `documents` table held 29 chunks
+  from 4 sources (the two knowledge files plus the two published write-ups), and an agent
+  smoke-test confirmed the new article answers from retrieval. **KB enriched and re-ingested again
+  2026-07-16**: added `knowledge/career-story.md` (first-person career narrative: First Code
+  Academy to ISS to Shopee, the mid-2025 pivot into AI, how he works, lessons, what's next) and
+  expanded `knowledge/faq.md` from 3 to 11 Q&As (adds: what he's best at, working style, why
+  AI+analytics, tools/stack, what he's learning, open-to-opportunities/freelance, outside-work).
+  The `documents` table now holds 37 chunks from 5 sources (`bio.md`, `faq.md`, `career-story.md`,
+  `data-analyst-ai-agent.md`, `chat-recommendation-copilot.md`). **Deferred next step**: add
+  `views.md`, an opinions/POV knowledge file (what makes an AI agent useful vs. a demo, telling
+  good output from slop, where analytics is heading, when to reach for AI, contrarian opinions).
+  Interview questions are drafted, Bobby's brain-dump is pending. This is the last high-value KB
+  content file planned after career-story + faq.
 - [x] **Chatbot streaming UX (2026-07-13)**: `ChatBot.astro` replaced the immediate per-chunk
   `textContent = full` render with a typewriter "pump" that buffers incoming network text and
   reveals a few characters per animation frame (adaptive, speeds up to catch up on bursty chunks),
@@ -205,15 +216,28 @@ Bio + project copy were populated from the bundle's sample content.
   shifts to accent-border + sage-wash on hover, matching the interactive-card hover cue). Still
   vanilla-TS, no new dependencies.
 
-- [ ] **Chatbot cost / abuse protection before prod (added 2026-07-15)**: before flipping
-  `ENABLED_IN_PROD` to `true`, figure out how to stop sustained or abusive chatting from burning
-  Anthropic/Gemini API tokens once the bot is public. There's already an in-app per-session rate
-  limit (12 msgs / 60s, `RATE_LIMIT_MAX` in `src/pages/api/chat.ts`), but it keys off a
+- [ ] **Chatbot cost / abuse protection (added 2026-07-15, chatbot went live in prod 2026-07-16
+  regardless)**: figure out how to stop sustained or abusive chatting from burning
+  Anthropic/Gemini API tokens now that the bot is public. There's already an in-app per-session
+  rate limit (12 msgs / 60s, `RATE_LIMIT_MAX` in `src/pages/api/chat.ts`), but it keys off a
   client-supplied `sessionId` (spoofable) and won't stop a determined abuser hammering `/api/chat`.
-  Investigate Vercel-side controls: **Vercel Firewall / WAF rate limiting** on the `/api/chat`
-  route, IP-based limits, a **spend cap / usage alert**, plus **provider-side spend limits**
-  (Anthropic usage caps, Gemini billing quota). Decide + configure the guardrail, then it's safe to
-  take the chatbot live in prod.
+  The new `device_hash` (server-derived HMAC of a persistent client device id, see the
+  conversation-analytics item below) is a better, less-spoofable candidate rate-limit key than
+  `sessionId`, worth switching to once it's flowing. Also still worth investigating Vercel-side
+  controls: **Vercel Firewall / WAF rate limiting** on the `/api/chat` route, IP-based limits, a
+  **spend cap / usage alert**, plus **provider-side spend limits** (Anthropic usage caps, Gemini
+  billing quota).
+
+- [ ] **Chatbot conversation analytics (added 2026-07-16)**: the Supabase `conversations` table
+  gained two columns: `country` (from Vercel's `x-vercel-ip-country` geo header, null under local
+  dev) and `device_hash` (a one-way HMAC-SHA256 hash, via `node:crypto`, of a persistent client
+  device id; the raw id is never stored). `ChatBot.astro` now generates/sends a persistent
+  `deviceId` (localStorage key `bobbychat_device`); `src/pages/api/chat.ts` reads the geo header
+  and hashes the device id with a new `DEVICE_ID_SALT` env var and includes both in the insert.
+  `supabase/schema.sql` was updated with the columns plus idempotent `ALTER` statements, and
+  `.env.example` gained `DEVICE_ID_SALT`. **Two manual steps still outstanding**: (1) run the
+  `ALTER` statements in the Supabase SQL editor; (2) set `DEVICE_ID_SALT` in Vercel Production and
+  local `.env`.
 
 - [ ] **Blog / Writing**: second content collection under `src/content/blog`, frontmatter
   `{ title, description, date, tags, draft }`. The last deferred screen from the design bundle.
@@ -247,7 +271,7 @@ Bio + project copy were populated from the bundle's sample content.
 
 - Local: `.obsidian/` and `.claude/` are intentionally kept on disk but gitignored — don't expect them on a fresh clone.
 - Local `.env` is required to run the chatbot in `npm run dev` (git-ignored — copy `.env.example` and fill in the secrets). `test_chat.*` scratch scripts are git-ignored too.
-- Deploy is **Vercel** (auto-builds on push to `main`). Set the 5 chatbot env vars in the Vercel dashboard (Production scope) — see Phase 2. GitHub Pages is retired (`deploy.yml` removed).
+- Deploy is **Vercel** (auto-builds on push to `main`). Set the 6 chatbot env vars (including `DEVICE_ID_SALT`, added 2026-07-16) in the Vercel dashboard (Production scope) — see Phase 2. GitHub Pages is retired (`deploy.yml` removed).
 
 ## Working agreements
 

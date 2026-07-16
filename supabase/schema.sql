@@ -23,6 +23,8 @@ create index if not exists documents_embedding_idx
   on documents using hnsw (embedding vector_cosine_ops);
 
 -- 3. Conversation log: session-only memory + analytics
+--    country:     ISO country code from Vercel's geo header (null under local dev).
+--    device_hash: one-way HMAC hash of the client device id (raw id is never stored).
 create table if not exists conversations (
   id             bigint generated always as identity primary key,
   created_at     timestamptz not null default now(),
@@ -32,8 +34,14 @@ create table if not exists conversations (
   input_tokens   int,
   output_tokens  int,
   model          text,
+  country        text,
+  device_hash    text,
   flagged        boolean not null default false
 );
+
+-- If the table predates the country/device_hash columns, add them in place:
+alter table conversations add column if not exists country     text;
+alter table conversations add column if not exists device_hash text;
 
 create index if not exists conversations_session_idx
   on conversations (session_id, created_at desc);

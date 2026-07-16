@@ -108,6 +108,19 @@ const variant = primary ? 'button--primary' : 'button--secondary';
       sessionId = crypto.randomUUID();
     }
 
+    // Stable per-device id (persists across sessions on this browser). Sent raw to the
+    // server, which stores it only as an HMAC hash (never in plaintext) for analytics.
+    let deviceId = '';
+    try {
+      deviceId = localStorage.getItem('bobbychat_device') || '';
+      if (!deviceId) {
+        deviceId = crypto.randomUUID();
+        localStorage.setItem('bobbychat_device', deviceId);
+      }
+    } catch {
+      deviceId = crypto.randomUUID();
+    }
+
     openBtn?.addEventListener('click', () => {
       dialog.showModal();
       input.focus();
@@ -155,7 +168,7 @@ const variant = primary ? 'button--primary' : 'button--secondary';
         const res = await fetch(endpoint, {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ message, history, sessionId }),
+          body: JSON.stringify({ message, history, sessionId, deviceId }),
         });
 
         if (!res.ok || !res.body) {

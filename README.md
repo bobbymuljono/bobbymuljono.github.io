@@ -3,8 +3,9 @@
 Personal portfolio site — About/bio, selected project write-ups, and an AI persona chatbot
 ("Bobby AI"), built with [Astro](https://astro.build).
 
-> **Deployed on Vercel** (as of 2026-07-10). Vercel auto-builds on push to `main`. A custom
-> domain is still to be attached. See [Deployment](#deployment).
+> **Deployed on Vercel** (as of 2026-07-10) at [www.bobbymuljono.com](https://www.bobbymuljono.com)
+> (custom domain attached 2026-07-16). Vercel auto-builds on push to `main`. See
+> [Deployment](#deployment).
 
 Design decisions and their reasoning live in [DESIGN_NOTES.md](./DESIGN_NOTES.md).
 
@@ -22,8 +23,8 @@ Design decisions and their reasoning live in [DESIGN_NOTES.md](./DESIGN_NOTES.md
 - **Chatbot (`src/pages/api/chat.ts` + `src/components/ChatBot.astro`)**: RAG over Supabase
   pgvector, Gemini embeddings, streamed generation from Claude Haiku or Gemini (switchable via
   `CHAT_PROVIDER`). Needs an on-demand server route — hence the `@astrojs/vercel` adapter.
-  Toggle on/off via `CHAT_ENABLED` in `src/lib/chat/enabled.ts`; currently off in production
-  (always on in local dev).
+  Toggle on/off via `CHAT_ENABLED` in `src/lib/chat/enabled.ts`; live in production as of
+  2026-07-16 (always on in local dev).
 - **Contact form (`src/pages/api/contact.ts` + `src/components/ContactForm.astro`)**: another
   on-demand route, sends mail via Resend (`RESEND_API_KEY`).
 
@@ -48,14 +49,13 @@ Copy `src/content/projects/_template.md` to a new file in the same folder (filen
 
 ## Deployment
 
-**Vercel (canonical).** Pushing to `main` auto-builds Astro via the `@astrojs/vercel` adapter and deploys. Static pages are prerendered; the chatbot route (`src/pages/api/chat.ts`) and the contact-form route (`src/pages/api/contact.ts`), both `prerender = false`, are bundled as serverless functions. Currently live at `https://bobbymuljono-github-io.vercel.app`.
+**Vercel (canonical).** Pushing to `main` auto-builds Astro via the `@astrojs/vercel` adapter and deploys. Static pages are prerendered; the chatbot route (`src/pages/api/chat.ts`) and the contact-form route (`src/pages/api/contact.ts`), both `prerender = false`, are bundled as serverless functions. Currently live at `https://www.bobbymuljono.com` (custom domain attached 2026-07-16; `site` in [`astro.config.mjs`](./astro.config.mjs) points at it, canonical is `www`).
 
-Required setup in **Vercel → Project → Settings → Environment Variables** (Production scope): `CHAT_PROVIDER`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` for the chatbot, plus `RESEND_API_KEY` (optional `CONTACT_TO`/`CONTACT_FROM` overrides) for the contact form. Without them the relevant endpoint returns a "Server is not configured" error. None may be `PUBLIC_`-prefixed — they're server-side secrets.
+Required setup in **Vercel → Project → Settings → Environment Variables** (Production scope): `CHAT_PROVIDER`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `DEVICE_ID_SALT` for the chatbot, plus `RESEND_API_KEY` (optional `CONTACT_TO`/`CONTACT_FROM` overrides) for the contact form. Without them the relevant endpoint returns a "Server is not configured" error. None may be `PUBLIC_`-prefixed — they're server-side secrets.
 
 Still to do:
 
-1. Attach a **custom domain** (Vercel dashboard → Project → Domains walks through the DNS records).
-2. Update `site` in [`astro.config.mjs`](./astro.config.mjs) from the `.vercel.app` URL to the final domain — it drives canonical URLs, the sitemap, and absolute OG image URLs.
+1. Confirm in the Vercel dashboard that the apex domain 301-redirects to `www`.
 
 GitHub Pages has been retired (`deploy.yml` removed) — the chatbot needs a server runtime that Pages can't provide.
 

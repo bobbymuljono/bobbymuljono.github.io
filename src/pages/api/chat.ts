@@ -16,6 +16,7 @@
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
+import { createHmac } from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import { getChatProvider, type Turn, type Usage } from '../../lib/chat';
 import { CHAT_ENABLED } from '../../lib/chat/enabled';
@@ -26,6 +27,15 @@ const ANTHROPIC_API_KEY = import.meta.env.ANTHROPIC_API_KEY;
 const CHAT_PROVIDER = import.meta.env.CHAT_PROVIDER;
 const SUPABASE_URL = import.meta.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+// Secret salt for hashing the client device id. If unset, device_hash is stored null
+// (the raw device id is never persisted regardless).
+const DEVICE_ID_SALT = import.meta.env.DEVICE_ID_SALT;
+
+/** One-way HMAC-SHA256 of a raw device id, so it's never stored in plaintext. */
+function hashDeviceId(deviceId: string | undefined): string | null {
+  if (!deviceId || !DEVICE_ID_SALT) return null;
+  return createHmac('sha256', DEVICE_ID_SALT).update(deviceId).digest('hex');
+}
 
 const MAX_MESSAGE_CHARS = 2000;
 const MAX_HISTORY_TURNS = 6; // trailing turns sent as context (session-only memory)
@@ -101,7 +111,7 @@ export const POST: APIRoute = async ({ request }) => {
     return json(500, { error: 'Chat provider is not configured.' });
   }
 
-  let payload: { message?: string; history?: Turn[]; sessionId?: string };
+  let payload: { message?: string; history?: Turn[]; sessionId?: string; deviceId?: string };
   try {
     payload = await request.json();
   } catch {
@@ -111,6 +121,12 @@ export const POST: APIRoute = async ({ request }) => {
   const message = (payload.message ?? '').trim();
   const sessionId = (payload.sessionId ?? 'anon').slice(0, 100);
   const history = Array.isArray(payload.history) ? payload.history.slice(-MAX_HISTORY_TURNS) : [];
+
+  // Analytics metadata. `country` comes from Vercel's geo header (present only on the
+  // deployed function, null under `astro dev`); `device_hash` is a one-way hash of the
+  // client device id (raw id is never stored).
+  const country = request.headers.get('x-vercel-ip-country') || null;
+  const deviceHash = hashDeviceId(payload.deviceId);
 
   if (!message) return json(400, { error: 'Message is required.' });
   if (message.length > MAX_MESSAGE_CHARS) {
@@ -178,6 +194,8 @@ export const POST: APIRoute = async ({ request }) => {
             input_tokens: usage.inputTokens,
             output_tokens: usage.outputTokens,
             model: provider.model,
+            country,
+            device_hash: deviceHash,
           })
           .then(({ error }) => { if (error) console.error('Log failed:', error); });
       }

@@ -36,11 +36,13 @@ Thumbs.db
 !.claude/skills/
 !.claude/agents/
 
-# .env variants (keep example files tracked)
+# .env variants — ignore all .env files EXCEPT the tracked example template.
+# The `!.env.example` negation must come AFTER the broad `.env*` rule, otherwise
+# that rule re-ignores it (later patterns win in gitignore).
 .env.*
-!.env.example
 .vercel
 .env*
+!.env.example
 
 # local scratch scripts (not part of the site)
 test_chat.*

@@ -67,7 +67,13 @@ export function ArchNode({
 }
 
 export function ArchArrow() {
-  return <div className="arch__arrow">↓</div>;
+  // Decorative connector — the figure/figcaption carries the meaning, so keep
+  // the glyph out of the screen-reader's node-to-node reading.
+  return (
+    <div className="arch__arrow" aria-hidden="true">
+      ↓
+    </div>
+  );
 }
 
 export function ArchNote({ children }: { children: ReactNode }) {
@@ -105,7 +111,9 @@ export function ArchSplit({ children }: { children: ReactNode }) {
 export function ArchExit({ note }: { note: string }) {
   return (
     <div className="arch__exit">
-      <span className="arch__arrow">→</span>
+      <span className="arch__arrow" aria-hidden="true">
+        →
+      </span>
       <span className="arch__exitnote">{note}</span>
     </div>
   );

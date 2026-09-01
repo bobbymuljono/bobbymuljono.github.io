@@ -9,6 +9,7 @@
   --stone: #5e655a;        /* muted text */
   --forest: #2e5e43;       /* forest green — the single accent */
   --forest-deep: #234a34;  /* darker accent, for text on tinted surfaces */
+  --clay: #983a26;         /* warm brick — the one reserved danger note, errors only */
   --sage-wash: #e4ebdf;    /* soft accent wash / tinted surface */
   --hairline: #d6d2c4;     /* hairline borders & rules */
   --white: #ffffff;
@@ -29,6 +30,7 @@
 
   --color-accent: var(--forest);
   --color-accent-deep: var(--forest-deep);
+  --color-danger: var(--clay);
 
   --color-border: var(--hairline);
   --color-border-strong: color-mix(in oklab, var(--hairline) 70%, var(--forest-black));
@@ -139,6 +141,7 @@
 
   --color-accent: #6cae86;
   --color-accent-deep: #86c49e;
+  --color-danger: #e08a72;   /* brick lifted for legible contrast on dark surfaces */
 
   --color-border: #333a2c;
   --color-border-strong: #4b5341;

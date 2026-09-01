@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import ChatBot from '@/components/ChatBot';
 import './not-found.css';
 
 export const metadata: Metadata = {
@@ -9,11 +10,20 @@ export const metadata: Metadata = {
 export default function NotFound() {
   return (
     <section className="not-found">
-      <h1>Page not found</h1>
+      <h1>This page wandered off.</h1>
       <p>
-        The page you&apos;re looking for doesn&apos;t exist.{' '}
-        <a href="/">Back home</a>.
+        The link is broken or the page has moved. No dead end, though. Here are a
+        few ways back in.
       </p>
+      <div className="not-found__actions">
+        <a className="button button--primary" href="/">
+          Back home
+        </a>
+        <a className="button button--secondary" href="/projects/">
+          See my work
+        </a>
+        <ChatBot />
+      </div>
     </section>
   );
 }

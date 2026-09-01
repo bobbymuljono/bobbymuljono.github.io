@@ -120,7 +120,13 @@
   min-height: 1.2em;
 }
 .contactform__status.is-error {
-  color: var(--color-accent);
+  color: var(--color-danger);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.contactform__erricon {
+  flex-shrink: 0;
 }
 
 .contactform__actions {

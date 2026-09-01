@@ -1,4 +1,30 @@
 .not-found {
-  padding-block: var(--space-7);
+  padding-block: var(--space-9);
+  max-width: var(--container-narrow);
+  margin-inline: auto;
   text-align: center;
+}
+
+.not-found h1 {
+  font-size: var(--text-3xl);
+  margin: 0 0 var(--space-3);
+}
+
+.not-found p {
+  color: var(--color-text-muted);
+  max-width: 46ch;
+  margin: 0 auto var(--space-5);
+}
+
+.not-found__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: center;
+}
+
+/* ChatBot renders a wrapper div; flatten it so its launch button sits in the
+   recovery row alongside the two links. */
+.not-found__actions .bobbychat {
+  display: contents;
 }

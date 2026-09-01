@@ -36,7 +36,10 @@ export default function Header() {
               {link.label}
             </a>
           ))}
-          <a href="/#contact" className="site-header__link">
+          <a
+            href="/#contact"
+            className="site-header__link site-header__link--contact"
+          >
             Get in touch
           </a>
           <ChatBot sm primary />

@@ -10,7 +10,13 @@ import './ChatBot.css';
 // it stays compatible with /api/chat.
 
 type Turn = { role: 'user' | 'model'; text: string };
-type Msg = { id: number; role: 'user' | 'bot'; text: string; streaming: boolean };
+type Msg = {
+  id: number;
+  role: 'user' | 'bot';
+  text: string;
+  streaming: boolean;
+  error?: boolean;
+};
 
 const endpoint = '/api/chat';
 
@@ -42,6 +48,29 @@ const Spark = () => (
   </svg>
 );
 
+// Warning glyph for failed replies — the one place the reserved danger color
+// appears, paired with a shape so the error doesn't rely on color alone.
+const AlertIcon = () => (
+  <svg
+    className="bobbychat__erricon"
+    width="15"
+    height="15"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path
+      d="M12 3 1.5 21h21L12 3Z"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinejoin="round"
+    />
+    <path d="M12 10v4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    <circle cx="12" cy="17.6" r="1.1" fill="currentColor" />
+  </svg>
+);
+
 export default function ChatBot({
   sm = false,
   primary = false,
@@ -65,6 +94,10 @@ export default function ChatBot({
   const [showStarters, setShowStarters] = useState(true);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
+  // Politely announced to screen readers when a reply (or error) is complete,
+  // so the flagship feature isn't silent — without re-announcing every
+  // typewriter frame the way an aria-live on the visible log would.
+  const [announce, setAnnounce] = useState('');
 
   // Per-visitor ids (client-only). sessionId: session memory + rate-limit key.
   // deviceId: stable per-device, sent raw, stored server-side only as an HMAC hash.
@@ -111,6 +144,14 @@ export default function ChatBot({
     setMessages((prev) =>
       prev.map((m) => (m.id === id ? { ...m, streaming: false } : m)),
     );
+  const setBotError = (id: number, text: string) => {
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === id ? { ...m, text, streaming: false, error: true } : m,
+      ),
+    );
+    setAnnounce(text);
+  };
 
   const sendMessage = useCallback(
     async (message: string) => {
@@ -147,7 +188,7 @@ export default function ChatBot({
             const err = await res.json();
             if (err?.error) msg = err.error;
           } catch {}
-          setBotText(botId, msg);
+          setBotError(botId, msg);
         } else {
           const reader = res.body.getReader();
           const dec = new TextDecoder();
@@ -201,12 +242,10 @@ export default function ChatBot({
 
           historyRef.current.push({ role: 'user', text: message });
           historyRef.current.push({ role: 'model', text: full });
+          setAnnounce(full);
         }
       } catch {
-        setBotText(
-          botId,
-          'Sorry, I could not reach the server. Please try again.',
-        );
+        setBotError(botId, 'Sorry, I could not reach the server. Please try again.');
       } finally {
         if (rafId) cancelAnimationFrame(rafId);
         finishBot(botId);
@@ -294,11 +333,19 @@ export default function ChatBot({
               key={m.id}
               className={clsx('bobbychat__msg', `bobbychat__msg--${m.role}`, {
                 'is-streaming': m.streaming,
+                'is-error': m.error,
               })}
             >
+              {m.error && <AlertIcon />}
               {m.text}
             </div>
           ))}
+        </div>
+
+        {/* Off-screen live region: the completed reply is announced once here,
+            keeping the visible typewriter free of aria-live churn. */}
+        <div className="bobbychat__sr" role="status" aria-live="polite">
+          {announce}
         </div>
 
         <form

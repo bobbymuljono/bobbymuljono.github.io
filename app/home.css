@@ -30,7 +30,9 @@
 }
 
 .hero h1 {
-  font-size: var(--text-4xl);
+  /* Scales down on narrow screens so the headline doesn't push the CTAs far
+     below the fold; caps at the --text-4xl display size on wider viewports. */
+  font-size: clamp(2.5rem, 9vw, var(--text-4xl));
   margin: 18px 0 20px;
 }
 

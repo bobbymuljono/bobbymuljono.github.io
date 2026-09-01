@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { SITE_URL, DEFAULT_OG_IMAGE } from '@/lib/site';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -79,6 +80,7 @@ export default function RootLayout({
         <Footer />
         <ScrollReveal />
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

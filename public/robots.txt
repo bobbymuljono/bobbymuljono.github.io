@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://bobbymuljono.github.io/sitemap-index.xml
+Sitemap: https://www.bobbymuljono.com/sitemap.xml

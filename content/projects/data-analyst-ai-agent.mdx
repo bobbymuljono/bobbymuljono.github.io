@@ -1,0 +1,200 @@
+---
+title: "AI did half a day of my analyst work in 3 minutes"
+description: "The data analyst role is changing fast. Three tools, one I built and two that beat it, and what I learned about staying useful."
+kind: "AI Analytics"
+date: 2026-07-09
+techStack: ["RAG", "LangChain", "Automated Analytics", "Presto SQL"]
+featured: true
+status: "live"
+draft: false
+---
+
+A few weeks ago I pasted a stakeholder's question into a powerful internal data analytics
+agent and watched it hand back a full report in under three minutes. Writing that SQL and
+Python by hand would have cost me half a day. I felt two things at once: how good this is, and
+a small cold drop of *what does this mean for me?*
+
+I've done this job for years, and I've come to believe it's changing faster than most of us
+want to admit. The analysts who learn to work with these tools are about to pull well ahead of
+the ones who don't. That belief is why I'm writing this. What follows is the honest version
+from the inside: three tools, one I built, two that beat it, and what I learned about staying
+useful while the work gets automated out from under me.
+
+## The bottleneck was never SQL
+
+Start with what the job actually was, because it isn't what people picture. The hard part was
+never writing SQL. In a warehouse with thousands of tables, the hard part is knowing which one
+truly answers the question, then trusting it once you've found it. Every request runs the same
+quiet gauntlet: hunt down a candidate table, validate it for nulls and duplicates, sanity-check
+that the values even make sense (you expect an order count near a thousand, you sum the column,
+you get ten thousand, and now you have a mystery on your hands), and only then write the query
+with the right filters and join keys and build a pivot to see whether the numbers follow the
+business story. A pull I knew well took minutes. One where I didn't know the table could eat
+the better part of a day.
+
+## Five steps, and AI is coming for four
+
+Every ad-hoc data request runs through the same five steps. Only the first is truly human:
+turning a vague business ask into the real question, often from a stakeholder who can't quite
+tell you which number they need. The other four are pattern work, and pattern work is exactly
+what these tools have gotten good at. Four of the five steps are already automatable. Step one
+holds, for now, and only until the context in people's heads gets written down.
+
+<Arch caption="An ad-hoc data request, start to finish. Only step 1 is safe from AI, for now.">
+  <ArchFlow>
+    <ArchNode variant="accent" title="1 · Understand the business need" sub="turn a vague ask into the real question" tag="human edge" />
+    <ArchNote>the rest is pattern work ↓</ArchNote>
+    <ArchGroup label="what AI is now good at">
+      <ArchFlow>
+        <ArchNode title="2 · Find the table" sub="the right source among thousands" />
+        <ArchArrow />
+        <ArchNode title="3 · Validate it" sub="nulls, dupes, does the column mean what you think" />
+        <ArchArrow />
+        <ArchNode title="4 · Write the SQL" sub="filters, join keys, the query itself" />
+        <ArchArrow />
+        <ArchNode title="5 · Package it" sub="charts, pivots, then a first-pass insight" />
+      </ArchFlow>
+    </ArchGroup>
+  </ArchFlow>
+</Arch>
+
+## Boko: a bot that knew where things were
+
+I started small. I built a lightweight assistant (I'll call it Boko) into our internal
+chat app, on an internal low-code AI-builder (think Coze). It followed a LangChain
+supervisor-subagent pattern: a cheap router model greeted you and handed off to a per-function
+sub-agent (Customer Service, Return & Refunds, Seller Operations), and each sub-agent answered
+only from its own function's documentation, retrieved from an enterprise vector database. Little
+code; a lot of documentation.
+
+The answering sub-agents ran on Claude Haiku, which made Boko cheap, light, and fast. It also
+set the ceiling. Boko was great at "what does *user contact* actually mean?" or "what's the
+calculation logic behind this OKR?" Those are the logic and discovery questions that used to
+land in my DMs. It could even draft SQL for people to run themselves, though on a small model
+that came with a real hallucination rate, so I never let it pretend to be authoritative on
+queries it couldn't check.
+
+It worked better than I expected. To date Boko has answered 400+ questions from 60+ people, and
+at its peak it was clearing around a hundred a month. The reach was deliberately narrow (you
+needed to be at least SQL-curious to get value), but it did something I didn't plan for: it made
+the team better at documentation, because now the docs had a job. Other functions started handing
+me their knowledge bases to onboard too.
+
+<Arch caption="Boko: a LangChain supervisor routing to per-function RAG sub-agents.">
+  <ArchFlow>
+    <ArchNode title="User" sub="asks in the internal chat app" />
+    <ArchArrow />
+    <ArchNode variant="accent" title="Supervisor" sub="greets · routes · hands off" tag="GPT-mini" />
+    <ArchNote>routes to the right business function ↓</ArchNote>
+    <ArchRow>
+      <ArchNode title="Customer Service" sub="sub-agent" tag="Claude Haiku" />
+      <ArchNode title="Return & Refunds" sub="sub-agent" tag="Claude Haiku" />
+      <ArchNode title="Seller Operations" sub="sub-agent" tag="Claude Haiku" />
+      <ArchNode title="…" sub="more functions" />
+    </ArchRow>
+    <ArchNote>each sub-agent retrieves only from its own function's docs ↓</ArchNote>
+    <ArchNode variant="store" title="Enterprise vector DB" sub="per-function documentation (knowledge base)" />
+    <ArchArrow />
+    <ArchNode title="Grounded answer in chat" />
+  </ArchFlow>
+</Arch>
+
+## Then two better tools beat it, and I was glad
+
+Around April 2026 our data infrastructure team shipped two tools that, frankly, ran circles around
+Boko. Both used frontier models far better at tool-calling than Haiku, and both did the thing Boko
+never safely could: run the query.
+
+The first (call it Astro) let you upload the tables you already knew, then wrote and executed SQL
+on the spot, generated charts, and explained the results in plain language. Watching it turn an
+upload into a chart in seconds was the first time I really felt the ground move. Its catch was
+structure: everything was siloed by topic, so a question spanning one person's tables and another's
+meant standing up a whole new topic. Fine for a glimpse of the future; not how analytics actually
+works day to day.
+
+<Arch caption="Astro: fast inside a topic, but each topic's tables stay siloed.">
+  <ArchNote>you upload tables you can already access into a topic ↓</ArchNote>
+  <ArchRow>
+    <ArchGroup label="Topic 1">
+      <ArchFlow>
+        <ArchNode title="Tables X · Y · Z" sub="+ business glossary & rules" />
+        <ArchArrow />
+        <ArchNode variant="accent" title="Astro" sub="writes & runs SQL · built-in charts" tag="frontier model" />
+        <ArchArrow />
+        <ArchNode title="Chart + plain-language insight" />
+      </ArchFlow>
+    </ArchGroup>
+    <ArchGroup label="Topic 2">
+      <ArchFlow>
+        <ArchNode title="Tables E · F · G" sub="+ its own glossary & rules" />
+        <ArchArrow />
+        <ArchNode title="the same loop" sub="in its own silo" />
+      </ArchFlow>
+    </ArchGroup>
+  </ArchRow>
+  <ArchCross>a question needing table X and table E can't cross topics, so you'd stand up a third</ArchCross>
+</Arch>
+
+The second (Clyde) was copilot-style, like Cursor or Claude Code for the warehouse: you could
+extend it with rules, skills, and MCP connectors. It explored the warehouse, recommended the right
+table, and wrote and ran the query. It was Boko's job done properly. I could have felt precious
+about being out-built. I didn't. I'd wanted a tool that could *execute* since the day I started
+Boko. Its retirement was inevitable, and I was glad to see it come.
+
+## What I actually built into Clyde
+
+Here's the part that matters: Clyde was only as good as what you gave it, and for my users, what
+it got was mine. I solo-built the skills and connectors that made it an expert on our data.
+
+Four skills, each encoding a piece of that gauntlet from the top. One reads our documented table
+catalogue *before* writing any SQL, so Clyde picks from vetted definitions instead of guessing. One
+is a memory bank that records confirmed resolutions and reuses them, so a question solved once stays
+solved. One renders our house-styled charts in matplotlib, collapsing what used to be a full day of
+building a report by hand. And one makes Clyde interrogate the request before answering. That's the
+oldest analyst instinct there is: make sure you understand the business question first. Two MCP
+connectors let it read external context on demand: our shared spreadsheets and internal wiki pages.
+I stopped writing most of my own SQL.
+
+<Arch caption="Clyde: the platform's copilot, made an expert by the skills, rules, and connectors I gave it.">
+  <ArchFlow>
+    <ArchNode title="User" sub="asks in natural language" />
+    <ArchArrow />
+    <ArchGroup label="what I built: skills fire on demand, auto or manual">
+      <ArchRow>
+        <ArchNode title="Clarify first" sub="pin down the real question" />
+        <ArchNode title="Query support" sub="the right tables, filters, join keys" />
+        <ArchNode title="Memory bank" sub="reuse solved questions (I curate)" />
+        <ArchNode title="Charts" sub="matplotlib, house style" />
+      </ArchRow>
+      <ArchRow>
+        <ArchTag>Rules · grill-me on · get_xx CTEs · lowercase · t1…tn</ArchTag>
+        <ArchTag>MCP · spreadsheets · internal wiki</ArchTag>
+      </ArchRow>
+    </ArchGroup>
+    <ArchNote>my skills, rules & connectors steer the copilot ↓</ArchNote>
+    <ArchNode variant="accent" title="Clyde: the platform's copilot" sub="explores the warehouse · recommends the table · writes & runs SQL" tag="frontier model · built by data infra" />
+    <ArchArrow />
+    <ArchNode variant="store" title="Data warehouse" sub="native access · real table discovery, no uploads" />
+    <ArchArrow />
+    <ArchNode title="Answer + chart" sub="confirmed solutions saved back to the memory bank" />
+  </ArchFlow>
+</Arch>
+
+Notice what carried across all three tools. The models changed completely: a small one, then two
+frontier ones. What stayed, and what made each one useful, was the documented knowledge and the
+workflow I'd captured. The moat was never the bot. It was the structure.
+
+## The hard part was people
+
+The technology was the easy half. The hard half was getting people to use it, especially the less
+technical folks and the old hands, who'd still rather DM me than ask a bot. I never fought it. I
+answer them, and I answer by sending back the Clyde conversation link that already solved it, so
+they get their number *and* they see, in one move, that the tool exists and does this well.
+
+So is the data analyst finished? I don't think so, but the job is not the one I trained for. The
+pull-the-numbers labour is going to AI, and it should. What survives is the analytical structure a
+good analyst brings: knowing which table to trust, what to validate, how a metric is really
+defined. That structure is exactly what these tools need to be any good, and it is portable
+straight into them. The people who thrive will be the ones who stop guarding that structure and
+start pouring it into the tools. I spent years being the person who knew where things were. Now I
+spend it teaching the tools where to look, and honestly, that's a better job.

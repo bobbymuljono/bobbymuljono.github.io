@@ -1,9 +1,13 @@
-.home section {
+/* `:where(section)` keeps the section rule at .home's specificity (0,1,0) so the
+   later `.hero` rule (also 0,1,0) still wins the hero's taller padding-top —
+   mirroring Astro's scoped cascade, where bare `section` lost to `.hero`.
+   Without :where(), `.home section` (0,1,1) would clobber the hero override. */
+.home :where(section) {
   padding-block: var(--space-8);
   border-top: 1px solid var(--color-border);
 }
 
-.home section:first-child {
+.home :where(section):first-child {
   border-top: none;
 }
 

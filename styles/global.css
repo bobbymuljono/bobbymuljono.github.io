@@ -282,7 +282,12 @@ hr {
 .wrapper {
   max-width: var(--container);
   margin: 0 auto;
-  padding: 0 var(--space-6);
+  /* Horizontal gutter only. Must NOT be the `padding: 0 …` shorthand: that sets
+     an explicit vertical 0 which (as global CSS) ties on specificity with and
+     beats component rules like .site-header__inner / .site-footer__inner that
+     set their own padding-block. Under Astro those were scoped (+1 specificity)
+     and won; here they only win if .wrapper leaves the block axis untouched. */
+  padding-inline: var(--space-6);
 }
 
 /* ---- Eyebrow / kicker (editorial italic byline — italic Newsreader, sentence case) ---- */

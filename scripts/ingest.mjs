@@ -55,11 +55,13 @@ function chunkText(text) {
   return chunks;
 }
 
-/** Collect { source, title, body } records from a directory of .md files. */
+/** Collect { source, title, body } records from a directory of .md / .mdx files. */
 function readMarkdownDir(dir, { skipUnderscore = false } = {}) {
   let entries;
   try {
-    entries = readdirSync(dir).filter((f) => f.endsWith('.md'));
+    entries = readdirSync(dir).filter(
+      (f) => f.endsWith('.md') || f.endsWith('.mdx'),
+    );
   } catch {
     return [];
   }
@@ -88,7 +90,7 @@ async function embedOne(text) {
 async function main() {
   const records = [
     ...readMarkdownDir(join(ROOT, 'knowledge')),
-    ...readMarkdownDir(join(ROOT, 'src', 'content', 'projects'), { skipUnderscore: true }),
+    ...readMarkdownDir(join(ROOT, 'content', 'projects'), { skipUnderscore: true }),
   ];
 
   // Build the chunk list with metadata

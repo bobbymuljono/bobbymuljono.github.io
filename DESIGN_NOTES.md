@@ -24,11 +24,12 @@ tokens, type, and palette they describe are no longer in `global.css`.
   grotesque over a neutral default sans), and the label/kicker treatment moved from mono
   UPPERCASE to italic-serif (`tokens/typography.css` + the "Labels & kickers" type card).
   **Self-hosted (2026-07-08).** The fonts previously loaded from the Google Fonts CDN via a
-  `<link>` in `BaseLayout`; they are now self-hosted from `public/fonts/` (latin + latin-ext
-  `woff2` subsets) via `@font-face` in `src/styles/fonts.css`. This closes the one deliberate
+  `<link>` in the root layout; they are now self-hosted from `public/fonts/` (latin + latin-ext
+  `woff2` subsets) via `@font-face` in `styles/fonts.css`. This closes the one deliberate
   departure from the "no webfont request" rule and restores near-zero-network — no third-party
   request, no CDN privacy/reliability dependency, same fonts. Two above-the-fold latin faces
-  (Hanken 400 body, Newsreader 600 hero) are `preload`ed in `BaseLayout` to avoid FOUT.
+  (Hanken 400 body, Newsreader 600 hero) are `preload`ed in the root layout (`app/layout.tsx`,
+  after the 2026-09-01 Next.js migration; was `BaseLayout.astro` under Astro) to avoid FOUT.
   Regenerate the files + CSS with `scripts/fetch-fonts.ps1` if the weights/axes change.
 - **Layout.** Left-aligned, generous whitespace, 1120px container (`--container`), prose
   capped ~68ch. Structure comes from hairline `1px` borders (`#D6D2C4`), not shadows.
@@ -55,7 +56,7 @@ a one-off control. Two places needed explicit dark-mode treatment rather than in
 the hero portrait (the light mode bottom mask-fade dissolve reads muddy on a dark surface, so
 dark mode instead keeps a full border, adds `--shadow-md`, and applies a slight
 brightness/contrast filter to reseat the light studio photo against the darker page) and the
-`.arch__group` background in `data-analyst-ai-agent.md` (was hardcoded to the light-only
+`.arch__group` background in `data-analyst-ai-agent.mdx` (was hardcoded to the light-only
 `--oat-raised` token, so it stayed pale and unreadable in dark mode; switched to the semantic
 `--color-surface` so it now adapts like the rest of the system).
 
@@ -72,21 +73,24 @@ brightness/contrast filter to reseat the light studio photo against the darker p
   reads as a direct extension of the on-site design system: oat background, an inset hairline
   frame, the forest-green period on the wordmark plus a short forest accent rule, an italic-serif
   "Senior Data Analyst" eyebrow, a Newsreader headline, a muted subtitle, and "bobbymuljono" in the
-  bottom right. Wired as the `image` prop default in `BaseLayout.astro`, so every page now emits
-  `og:image`/`twitter:image` and a `summary_large_image` card.
-- **Chatbot streaming + starter chips (2026-07-13).** Streamed replies in `ChatBot.astro` now
-  reveal via a typewriter-style buffer (a few characters per animation frame, adaptive so it can
-  catch up on bursty chunks) instead of snapping the full chunk in at once; it still respects
-  `prefers-reduced-motion` (renders instantly) per the site's progressive-enhancement rule. The
-  empty state also shows four clickable starter-question chips (`.bobbychat__chip`), styled with
-  the same hairline-border-to-accent-border-plus-sage-wash hover cue used elsewhere for interactive
-  cards, so the new control reads as native to the existing system rather than a one-off.
+  bottom right. Wired as the default OG image via the Next Metadata API in the root layout
+  (`app/layout.tsx`; was the `image` prop default on `BaseLayout.astro` under Astro), so every
+  page still emits `og:image`/`twitter:image` and a `summary_large_image` card.
+- **Chatbot streaming + starter chips (2026-07-13).** Streamed replies in `ChatBot.tsx` (was
+  `ChatBot.astro` under Astro) reveal via a typewriter-style buffer (a few characters per
+  animation frame, adaptive so it can catch up on bursty chunks) instead of snapping the full
+  chunk in at once; it still respects `prefers-reduced-motion` (renders instantly) per the
+  site's progressive-enhancement rule. The empty state also shows four clickable starter-question
+  chips (`.bobbychat__chip`), styled with the same hairline-border-to-accent-border-plus-sage-wash
+  hover cue used elsewhere for interactive cards, so the new control reads as native to the
+  existing system rather than a one-off.
 - **"In development" disabled-button pattern (2026-07-10).** When a feature needs to be
   temporarily hidden without deleting its CTA (e.g. the chat launch button while reworking the
   persona/KB), render a `disabled` `.button` variant with a **dashed border** instead of the
   usual solid one, plus an inline `.badge` reading "In development" (reuses the existing italic
-  accent badge token, no new colors). See `.bobbychat__launch--disabled` in `ChatBot.astro` for
-  the reference implementation; reuse this pattern for any other feature-flagged CTA.
+  accent badge token, no new colors). See `.bobbychat__launch--disabled` in `ChatBot.tsx` (was
+  `ChatBot.astro` under Astro) for the reference implementation; reuse this pattern for any
+  other feature-flagged CTA.
 - **Header — sticky + de-duplicated (2026-07-08).** The top bar is `position: sticky; top: 0`
   with a **solid** stone background (`--color-bg`) and the hairline bottom rule — deliberately
   not a translucent/blurred bar, since the system bans glassmorphism. The old `Contact` text
@@ -107,7 +111,8 @@ brightness/contrast filter to reseat the light studio photo against the darker p
   after the intro paragraph and before the CTAs (not pushed to the bottom), capped at 320×380
   and centered. Image file is untouched — all treatment is CSS.
 - **Experience list (2026-07-08).** The Home page carries an Experience section directly below
-  the hero (`.experience` / `.exp-list` in `src/pages/index.astro`, page-scoped styles). It's a
+  the hero (`.experience` / `.exp-list` in `app/page.tsx`, was `src/pages/index.astro` under
+  Astro, component-scoped styles). It's a
   deliberately **minimalist progression list**, styled after the henrylin.io reference Bobby
   supplied: each entry is the company (serif `h3`) with the year range right-aligned and muted on
   the same line, an italic-serif role kicker (`--font-label`, accent), and a one-line description
@@ -122,30 +127,42 @@ brightness/contrast filter to reseat the light studio photo against the darker p
 - **Contact links.** GitHub is real; LinkedIn + public email are still placeholders
   (`href="#"`) — the bundle left these as `#` and no real values were provided.
 - **Project copy.** The write-ups started as the bundle's `site-data` sample copy. As of
-  2026-07-15 two are real rewrites (`data-analyst-ai-agent.md` and `chat-recommendation-copilot.md`);
+  2026-07-15 two are real rewrites (`data-analyst-ai-agent.mdx` and `chat-recommendation-copilot.mdx`,
+  renamed from `.md` to `.mdx` in the 2026-09-01 Next.js migration);
   the other three remain representative placeholders and are `draft: true`. Run the confidentiality
   check in `TODO.md` before treating any as final. See `TODO.md` for status.
-- **Project detail header (2026-07-10).** The `[slug].astro` header leads with the title and a
+- **Project detail header (2026-07-10).** The project detail page (`app/projects/[slug]/page.tsx`,
+  was `[slug].astro` under Astro) leads with the title and a
   muted, formatted `date` beneath it. The `kind` eyebrow and the "Status" meta line were removed
   there (they read as clutter above a title, and the back-link already sat awkwardly beside the
   eyebrow); `kind` still labels the Work listing cards. Only the `Stack` meta line remains under
   the date.
-- **In-write-up diagrams (2026-07-10).** Architecture diagrams inside a project write-up are
-  built as self-contained inline HTML/CSS, namespaced under `.arch`, and styled entirely from the
-  design tokens (hairline borders, one forest-green accent, sage-wash for a highlighted node,
-  `--font-*`, `--radius-md`, `--space-*`). No image-generator output (it can't match the palette
-  or type), no shadows or gradients, and only gentle glyphs (`·`, `→`, `↓`; no heavy symbols like
-  a big X). `data-analyst-ai-agent.md` is the reference; the `portfolio-writeup` skill documents
-  the pattern. Prose in write-ups also avoids em-dashes and en-dashes (a standing content rule).
-  **Branching variant (2026-07-14).** `chat-recommendation-copilot.md` extended the pattern with a
+- **In-write-up diagrams (2026-07-10).** Architecture diagrams inside a project write-up
+  originally shipped as self-contained inline HTML/CSS, namespaced under `.arch`, and styled
+  entirely from the design tokens (hairline borders, one forest-green accent, sage-wash for a
+  highlighted node, `--font-*`, `--radius-md`, `--space-*`). No image-generator output (it can't
+  match the palette or type), no shadows or gradients, and only gentle glyphs (`·`, `→`, `↓`; no
+  heavy symbols like a big X). `data-analyst-ai-agent.mdx` is the reference; the
+  `portfolio-writeup` skill documents the pattern. Prose in write-ups also avoids em-dashes and
+  en-dashes (a standing content rule).
+  **Branching variant (2026-07-14).** `chat-recommendation-copilot.mdx` extended the pattern with a
   branching layout on top of the original linear top-down flow: two side-by-side path groups
   (`.arch__row > .arch__group { flex: 1 1 220px }`), a horizontal split node with a right-side
   "exit" branch kept centered on the spine via a 3-column grid (`.arch__split`, `.arch__exit`,
-  `.arch__exitnote`), and standalone arrow connectors. Still self-contained inline HTML/CSS drawn
-  from the design tokens, no image-generator output.
+  `.arch__exitnote`), and standalone arrow connectors. Same tokens, no image-generator output.
+  **Migrated to a component kit (2026-09-01).** With the Astro to Next.js migration, the inline
+  HTML/CSS was rebuilt as a reusable React component kit at `components/arch/` (`Arch`,
+  `ArchFlow`, `ArchNode`, `ArchArrow`, `ArchNote`, `ArchRow`, `ArchGroup`, `ArchCross`, `ArchTag`,
+  plus the branching `ArchSplit`/`ArchExit`), with the shared `.arch` CSS lifted out of the
+  markdown and into `styles/arch.css` (global, token-driven, dark-mode-adaptive; same visual
+  rules as before, no shadows or gradients, gentle glyphs only). The two published write-ups are
+  now `.mdx` so the components drop straight into the prose. This is a net authoring win: new
+  write-ups stay plain markdown, diagrams are components instead of hand-written CSS, and
+  because content is MDX, React demos or gifs can be embedded directly in a write-up going
+  forward.
 
-The tokens/components live in `src/styles/global.css` (single file consumed by
-`BaseLayout`). Utility classes mirror the bundle's React primitives: `.button`
+The tokens/components live in `styles/global.css` (single file consumed by
+the root layout, `app/layout.tsx`; was `BaseLayout.astro` under Astro). Utility classes mirror the bundle's React primitives: `.button`
 (`--primary`/`--secondary`/`--ghost`/`--sm`), `.card` (`--interactive`/`--wash`), `.tag`
 (`--outline`/`--solid`), `.badge`, `.eyebrow`, `.avatar-placeholder`.
 

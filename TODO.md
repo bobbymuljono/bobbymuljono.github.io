@@ -9,25 +9,40 @@ handoff bundle) — see `DESIGN_NOTES.md`. The first pass covered **Home + Work*
 persona shipped 2026-07-10 (see Phase 2 below). **Writing** (blog) is the last deferred screen.
 Bio + project copy were populated from the bundle's sample content.
 
+## Framework migration: Astro → Next.js (2026-09-01, cutover pending)
+
+The codebase was migrated to **Next.js 15** (App Router) + React 19, TypeScript strict, on the
+`feature/nextjs-migration` integration branch (this docs pass is `docs/nextjs-migration`,
+stacked on it). The full file-by-file structure mapping is documented in `CLAUDE.md` →
+Architecture. **The migration is done on that branch; the cutover (merge to `main` plus the
+Vercel production redeploy) is still pending.** Production keeps serving the existing Astro
+build until the cutover happens. The legacy Astro source stays on disk in the meantime
+(`src/pages_astro_legacy/`, renamed from `src/pages`; `src/components/*.astro`; `src/layouts/`;
+`src/content.config.ts`; the old `src/lib/chat/enabled.ts`), excluded from `tsconfig.json`, and
+will be deleted once cutover lands. **Blog remains the last deferred Phase 2 screen**,
+unaffected by the migration. See `README.md` → Deployment for current production status.
+
 ## Content checklist (blocking a real launch)
 
-- [x] **Bio content** (`src/pages/index.astro`): hero, lead paragraph, and contact section
+- [x] **Bio content** (`app/page.tsx`, was `src/pages/index.astro` under Astro): hero, lead paragraph, and contact section
   populated from the design bundle's first-person copy (Senior Data Analyst at Shopee, 5+ yrs,
   RAG / multi-agent / 8 markets). Skill tags regrounded in the real resume (Presto SQL, Python,
   LangChain, RAG, Multi-agent, Claude agents & skills, A/B testing) — no longer generic. Removed
   the "Available for AI & analytics work" badge and the "8 markets" skill/tech tags per review.
 - [x] **Contact details**: GitHub and LinkedIn (`linkedin.com/in/bobbymul`) are wired real in
-  both `src/pages/index.astro` and `src/components/Footer.astro`. Email was intentionally removed
+  both `app/page.tsx` and `components/Footer.tsx` (was `src/pages/index.astro` and
+  `src/components/Footer.astro` under Astro). Email was intentionally removed
   everywhere (hero contact row + footer) — not published. `bobbymul93@gmail.com` is on file from
   the resume if a mail link is ever wanted again.
 - [x] **Résumé PDF — won't do** (2026-07-08): decided not to host the résumé on the site (it
   evolves over time). It's parsed in as context for copy instead; there's no link to wire up.
-- [x] **3-5 real projects** (`src/content/projects/`): four write-ups added (support-rag-chatbot,
+- [x] **3-5 real projects** (`content/projects/`, was `src/content/projects/` under Astro): four write-ups added (support-rag-chatbot,
   ops-copilot-multi-agent, marketplace-health-dashboard, checkout-ab-framework) with `kind`,
   description, techStack, and Problem/Approach/Technical decisions/What I learned prose. Add
   real `liveUrl`/`repoUrl` where they exist.
 - [x] **Experience section** (2026-07-08): added a minimalist progression list on the Home page
-  directly below the hero (`.experience` / `.exp-list` in `src/pages/index.astro`), styled after
+  directly below the hero (`.experience` / `.exp-list` in `app/page.tsx`, was
+  `src/pages/index.astro` under Astro), styled after
   the henrylin.io reference Bobby supplied. Each entry is company (serif) + year range (right,
   muted) on one line, an italic-serif role, and a one-liner — reverse-chronological, whitespace-
   separated, no dividers; year drops below company on mobile. Entries: Shopee — Senior Data Analyst
@@ -39,7 +54,8 @@ Bio + project copy were populated from the bundle's sample content.
   only. Education (NTU, Singapore Polytechnic) is intentionally left out to keep the list minimal
   (confirmed 2026-07-08 — keep it off).
 - [x] **Headshot photo** (2026-07-08): real headshot added at `public/bobby-headshot.png` and
-  wired into the hero on `src/pages/index.astro` — the `.avatar-placeholder` ("BM") monogram is
+  wired into the hero on `app/page.tsx` (was `src/pages/index.astro` under Astro) — the
+  `.avatar-placeholder` ("BM") monogram is
   gone. The photo fills the 320×400 sage-wash panel (`object-fit: cover`, `object-position:
   center top`) with a subtle CSS bottom-fade mask that dissolves it into the sage (image file
   untouched). Hero markup was split into `.hero__intro` / `.hero__portrait` / `.hero__body` and
@@ -47,7 +63,8 @@ Bio + project copy were populated from the bundle's sample content.
   mobile. `.avatar-placeholder` remains in `global.css` as the documented monogram fallback.
 - [x] **Self-host fonts** (2026-07-08): Newsreader / Hanken Grotesk / IBM Plex Mono are now
   self-hosted from `public/fonts/` (latin + latin-ext `woff2` subsets) via `@font-face` in
-  `src/styles/fonts.css`, imported by `BaseLayout`. The Google Fonts `<link>` + `preconnect`
+  `styles/fonts.css`, imported by the root layout (`app/layout.tsx`, was `BaseLayout.astro`
+  under Astro). The Google Fonts `<link>` + `preconnect`
   tags are gone; the two above-the-fold latin faces (Hanken 400 body, Newsreader 600 hero) are
   `preload`ed. Regenerate with `scripts/fetch-fonts.ps1` if the weights/axes change. Restores
   the near-zero-network goal (no third-party font request).
@@ -55,22 +72,26 @@ Bio + project copy were populated from the bundle's sample content.
   via an HTML `<canvas>` using the site's own self-hosted webfonts (not an image generator) so it
   matches the design tokens: oat background, inset hairline frame, forest-green period on the
   wordmark + a short forest accent rule, italic-serif "Senior Data Analyst" eyebrow, Newsreader
-  headline, muted subtitle, bottom-right "bobbymuljono". Wired as the `image` prop default on
-  `BaseLayout`, so every page now emits `og:image`/`twitter:image` and a `summary_large_image`
-  Twitter card (pages can still override via the `image` prop).
+  headline, muted subtitle, bottom-right "bobbymuljono". Wired as the default OG image via the
+  Next Metadata API in the root layout (`app/layout.tsx`; was the `image` prop default on
+  `BaseLayout.astro` under Astro), so every page still emits `og:image`/`twitter:image` and a
+  `summary_large_image` Twitter card (pages can still override).
 - [ ] **Optional visual assets**: per-project cover screenshots (still outstanding; the default
   OG image above is done).
 - [~] **Project write-ups: two real rewrites done; three still placeholders** (updated
   2026-07-15). The four original write-ups started as sample copy from the design bundle. **Two
-  are now real, published rewrites**: `data-analyst-ai-agent.md` ("An AI agent did half a day of
-  my analyst work in 3 minutes"), a journey piece (Boko → Astro → Clyde) with four inline HTML/CSS
-  architecture diagrams (the `.arch` pattern), and `chat-recommendation-copilot.md` ("One-click
+  are now real, published rewrites**: `data-analyst-ai-agent.mdx` (renamed from `.md` in the
+  2026-09-01 Next.js migration; "An AI agent did half a day of
+  my analyst work in 3 minutes"), a journey piece (Boko → Astro → Clyde, internal tool codenames,
+  unrelated to the site's own Astro-to-Next.js migration) with four architecture diagrams (the
+  `.arch` pattern, now built from the `components/arch/` kit), and `chat-recommendation-copilot.mdx`
+  (also renamed from `.md`; "One-click
   magic: a multi-agent item recommendation copilot for chat support", published 2026-07-14), a
   case study on an AI item-recommendation copilot for shop-chat support agents. Both were written
   with Bobby via brain-dump + interview and cleared through the confidentiality gate (`draft:
-  false`, live). `data-analyst-ai-agent.md` **replaced and deleted** the old
+  false`, live). `data-analyst-ai-agent.mdx` **replaced and deleted** the old
   `support-rag-chatbot.md` (URL changed to `/projects/data-analyst-ai-agent`). For
-  `chat-recommendation-copilot.md`, confidentiality was cleared by softening internal metrics (a
+  `chat-recommendation-copilot.mdx`, confidentiality was cleared by softening internal metrics (a
   productivity lift described as "low single digits across multiple regions", the "no
   order-conversion hit" claim kept but qualitative), describing the internal AI builder generically
   ("think Coze"), keeping model names generic ("one of the leading frontier models" / "a
@@ -91,7 +112,8 @@ Bio + project copy were populated from the bundle's sample content.
   and travels to other devices on clone, while local `.claude` files (launch.json,
   settings.local.json) stay ignored.
 - [x] **Skill expanded from the first real write-up** (2026-07-10): after drafting
-  `data-analyst-ai-agent.md`, folded the lessons back into `portfolio-writeup/SKILL.md`. New
+  `data-analyst-ai-agent.mdx` (`.md` at the time; renamed to `.mdx` in the 2026-09-01 Next.js
+  migration), folded the lessons back into `portfolio-writeup/SKILL.md`. New
   guidance: an **Illustrations & diagrams** section (build diagrams as self-contained inline
   HTML/CSS in the `.md` using the design tokens, not image-gen; lock the architecture with Bobby
   first; the `.arch` reference pattern; preview-verify workflow; gentle glyphs only, no aggressive
@@ -105,6 +127,10 @@ Bio + project copy were populated from the bundle's sample content.
 ## Decisions log
 
 - [x] **Framework**: Astro (TypeScript strict) — ships ~0KB JS, static output for GitHub Pages.
+  **Migrated to Next.js 15 (2026-09-01, cutover pending)**: see the "Framework migration" section
+  near the top of this file and `CLAUDE.md` → Architecture for the full structural mapping. The
+  `@astrojs/vercel` adapter is dropped, Next.js deploys to Vercel natively. Cutover (merge to
+  `main`, production redeploy) has not happened yet.
 - [x] **License**: MIT (switched from GPL-3.0, 2026-07-07) — copyleft was a poor fit for a portfolio.
 - [x] **Hosting / domain — migrated to Vercel (2026-07-10)**: **Vercel is now canonical.** The
   chatbot needs a server runtime (the `/api/chat` endpoint is `prerender = false`), which GitHub
@@ -120,7 +146,7 @@ Bio + project copy were populated from the bundle's sample content.
   canonical domain. `site` in `astro.config.mjs` was updated from
   `https://bobbymuljono-github-io.vercel.app` to `https://www.bobbymuljono.com`. _Still open:_
   confirm in the Vercel dashboard that the apex domain 301-redirects to `www`.
-- [x] **Chatbot backend (built 2026-07-10)**: originally planned as a Supabase Edge Function; **shipped instead as an Astro on-demand endpoint** (`src/pages/api/chat.ts`) running on the Vercel adapter — keeps everything in one codebase/deploy. Supabase is still used, but as the **pgvector store + conversation log** (Postgres), not as the compute. Provider is switchable (Claude Haiku / Gemini) via `CHAT_PROVIDER`. See Phase 2 for the full shape.
+- [x] **Chatbot backend (built 2026-07-10)**: originally planned as a Supabase Edge Function; **shipped instead as an on-demand server endpoint** (`app/api/chat/route.ts`, was `src/pages/api/chat.ts` on the Astro adapter before the 2026-09-01 Next.js migration) — keeps everything in one codebase/deploy. Supabase is still used, but as the **pgvector store + conversation log** (Postgres), not as the compute. Provider is switchable (Claude Haiku / Gemini) via `CHAT_PROVIDER`. See Phase 2 for the full shape.
 - [x] **Layout redesign (2026-07-07)**: original design read as "plain and uninviting." Reworked to a side-by-side photo hero (placeholder avatar for now), card/bento-grid content sections (Now card, Background timeline, Stack pill-grid, Contact card), and subtle CSS-only hover reveals (animated underline on links, lift + image zoom on project cards) — still zero shipped JS.
 - [x] **Design system import (2026-07-08)**: adopted the Claude Design handoff bundle ("Bobby Muljono editorial design system") — warm stone + single forest-green accent, Newsreader/Source Sans 3/IBM Plex Mono, hairline-driven editorial layout. Replaced the prior warm-clay/system-font tokens in `global.css`; rebuilt nav, footer, Home and Work to match. Fonts now load from Google Fonts CDN (one deliberate webfont request). Writing + Chat screens deferred to Phase 2. See `DESIGN_NOTES.md`.
 - [x] **Scroll-reveal + elevated cards (2026-07-07)**: added a small vanilla-JS `IntersectionObserver` (inlined, no separate `.js` file) that fades in About sections and project cards on scroll — fully progressive enhancement, content is visible immediately with no JS or `prefers-reduced-motion` set. Cards moved from a flat border to a shadow-based elevation (softer radius, resting + hover shadow tokens), inspired by the Supercharged Design agency site the user shared, kept deliberately more restrained than that reference. See `DESIGN_NOTES.md`.
@@ -129,21 +155,27 @@ Bio + project copy were populated from the bundle's sample content.
 
 ## Phase 2
 
-- [x] **Chatbot — "Bobby AI" (shipped 2026-07-10)**: a vanilla-TS `<dialog>` island launched from
-  a **hero CTA button** ("Chat with Bobby AI", `src/components/ChatBot.astro`) — no UI framework,
-  streaming fetch, session-id in localStorage. It calls an **Astro on-demand endpoint**
-  (`src/pages/api/chat.ts`, `prerender = false`), not the originally-planned Supabase Edge Function
-  — the adapter route was simpler to keep in one codebase. Per request the endpoint: validates +
+- [x] **Chatbot — "Bobby AI" (shipped 2026-07-10)**: a client-component `<dialog>` island launched
+  from a **hero CTA button** ("Chat with Bobby AI", `components/ChatBot.tsx`, was
+  `src/components/ChatBot.astro` before the 2026-09-01 Next.js migration), using streaming fetch
+  and a session-id in localStorage. It calls a **Next.js route handler**
+  (`app/api/chat/route.ts`, `runtime: 'nodejs'`, `dynamic: 'force-dynamic'`; was
+  `src/pages/api/chat.ts`, `prerender = false`, under Astro), not the originally-planned
+  Supabase Edge Function (keeping it in one codebase was simpler either way). Per request the
+  endpoint: validates +
   rate-limits (12 msgs / 60s per session via a recent-row count), embeds the question, retrieves
   the top-5 matching chunks from Supabase pgvector, assembles the persona system prompt + context +
   recent history, streams the reply, and logs the turn to a `conversations` table.
   - **Provider-switchable** via `CHAT_PROVIDER` env var: `anthropic` → Claude Haiku
-    (`claude-haiku-4-5`), else Gemini (`gemini-3.5-flash`). Abstraction lives in `src/lib/chat/`
-    (`types.ts`, `gemini.ts`, `anthropic.ts`, `index.ts` selector). Currently set to `anthropic`.
+    (`claude-haiku-4-5`), else Gemini (`gemini-3.5-flash`). Abstraction lives in `lib/chat/`
+    (was `src/lib/chat/` under Astro; `types.ts`, `gemini.ts`, `anthropic.ts`, `index.ts`
+    selector). Currently set to `anthropic`.
   - **Embeddings are always Gemini** (`gemini-embedding-001`, 768-dim) — Anthropic has no
     embeddings API — regardless of `CHAT_PROVIDER`. So `GEMINI_API_KEY` is *always* required.
   - **RAG corpus**: `knowledge/` (`bio.md` seeded; `faq.md` + `resume.md` are stubs for Bobby to
-    fill) plus published project write-ups. `scripts/ingest.mjs` chunks + embeds them and rebuilds
+    fill) plus published project write-ups (read from `content/projects/`, `.md` and `.mdx`, as
+    of the 2026-09-01 Next.js migration; was `src/content/projects/`, `.md` only, under Astro).
+    `scripts/ingest.mjs` chunks + embeds them and rebuilds
     the `documents` table — run `npm run ingest` after editing the KB. Schema in
     `supabase/schema.sql` (`documents` + `conversations` tables, HNSW index, `match_documents` RPC,
     service_role grants) — applied manually in the Supabase SQL editor.
@@ -162,15 +194,20 @@ Bio + project copy were populated from the bundle's sample content.
     service-role key is server-side only — never `PUBLIC_`-prefixed, never in the browser.
     `.env.example` is the tracked template (no real secrets).
   - _Gemini generation quota:_ the current Gemini key's project has **zero free-tier *generation*
-    quota** (`limit: 0` on `gemini-2.0-flash`); embeddings work fine. `gemini-3.5-flash` has quota
+    quota** (`limit: 0` on `gemini-2.0-flash`). `gemini-3.5-flash` has quota
     but hits transient 503s. This is why `CHAT_PROVIDER=anthropic` is the working default — resolve
     Gemini billing before switching the provider to gemini.
+  - _Gemini embeddings quota (open issue, added 2026-09-01):_ the same Gemini project is now also
+    hitting a **429 on embeddings** (`gemini-embedding-001`), which previously "worked fine." See
+    the dedicated open item below in this Phase 2 section for the full impact and fix.
 
 - [x] **Chatbot on/off toggle (shipped 2026-07-10, updated 2026-07-13, live in prod 2026-07-16)**:
   built as a single source-level flag rather than an env var (simpler, no Vercel dashboard step
-  needed) — `src/lib/chat/enabled.ts` now exports
-  `CHAT_ENABLED = import.meta.env.DEV || ENABLED_IN_PROD`, imported by both `ChatBot.astro` and
-  `pages/api/chat.ts`. The chatbot is **always enabled under `npm run dev`** so it can be tested
+  needed) — `lib/chat/enabled.ts` now exports
+  `CHAT_ENABLED = process.env.NODE_ENV !== 'production' || ENABLED_IN_PROD` (was
+  `import.meta.env.DEV || ENABLED_IN_PROD`, `src/lib/chat/enabled.ts`, under Astro), imported by
+  both `ChatBot.tsx` and the `app/api/chat/route.ts` handler. The chatbot is **always enabled
+  outside production** so it can be tested
   locally without touching the prod flag; production is gated solely by the source-level
   `ENABLED_IN_PROD` boolean (flip it + redeploy to bring it back). When disabled: the launch button
   renders as a disabled, dashed-border button reading "Chat with Bobby AI · *In development*" (the
@@ -180,7 +217,8 @@ Bio + project copy were populated from the bundle's sample content.
   live in production.
 
 - [~] **Chatbot persona rework (2026-07-13, one iteration, more expected)**: replaced the old
-  thin 5-rule `PERSONA` constant in `src/pages/api/chat.ts` with a structured one: a Voice section
+  thin 5-rule `PERSONA` constant in `app/api/chat/route.ts` (was `src/pages/api/chat.ts` under
+  Astro) with a structured one: a Voice section
   (warm coffee-chat colleague, a light casual Singlish rhythm via short affirmatives like "yea
   can"/"ok can" but explicitly no particles lah/leh/meh, framed as a speaking style only "not a
   fact to announce", occasional follow-up questions, no emoji), a Length cap (2-4 sentences
@@ -198,12 +236,13 @@ Bio + project copy were populated from the bundle's sample content.
   expanded `knowledge/faq.md` from 3 to 11 Q&As (adds: what he's best at, working style, why
   AI+analytics, tools/stack, what he's learning, open-to-opportunities/freelance, outside-work).
   The `documents` table now holds 37 chunks from 5 sources (`bio.md`, `faq.md`, `career-story.md`,
-  `data-analyst-ai-agent.md`, `chat-recommendation-copilot.md`). **Deferred next step**: add
+  `data-analyst-ai-agent.mdx`, `chat-recommendation-copilot.mdx`). **Deferred next step**: add
   `views.md`, an opinions/POV knowledge file (what makes an AI agent useful vs. a demo, telling
   good output from slop, where analytics is heading, when to reach for AI, contrarian opinions).
   Interview questions are drafted, Bobby's brain-dump is pending. This is the last high-value KB
   content file planned after career-story + faq.
-- [x] **Chatbot streaming UX (2026-07-13)**: `ChatBot.astro` replaced the immediate per-chunk
+- [x] **Chatbot streaming UX (2026-07-13)**: `ChatBot.tsx` (was `ChatBot.astro` before the
+  2026-09-01 Next.js migration) replaced the immediate per-chunk
   `textContent = full` render with a typewriter "pump" that buffers incoming network text and
   reveals a few characters per animation frame (adaptive, speeds up to catch up on bursty chunks),
   so the stream reads naturally instead of lurching. Respects `prefers-reduced-motion` (renders
@@ -219,7 +258,8 @@ Bio + project copy were populated from the bundle's sample content.
 - [ ] **Chatbot cost / abuse protection (added 2026-07-15, chatbot went live in prod 2026-07-16
   regardless)**: figure out how to stop sustained or abusive chatting from burning
   Anthropic/Gemini API tokens now that the bot is public. There's already an in-app per-session
-  rate limit (12 msgs / 60s, `RATE_LIMIT_MAX` in `src/pages/api/chat.ts`), but it keys off a
+  rate limit (12 msgs / 60s, `RATE_LIMIT_MAX` in `app/api/chat/route.ts`, was
+  `src/pages/api/chat.ts` under Astro), but it keys off a
   client-supplied `sessionId` (spoofable) and won't stop a determined abuser hammering `/api/chat`.
   The new `device_hash` (server-derived HMAC of a persistent client device id, see the
   conversation-analytics item below) is a better, less-spoofable candidate rate-limit key than
@@ -228,42 +268,63 @@ Bio + project copy were populated from the bundle's sample content.
   **spend cap / usage alert**, plus **provider-side spend limits** (Anthropic usage caps, Gemini
   billing quota).
 
+- [ ] **Chatbot RAG retrieval degraded: Gemini embeddings quota (added 2026-09-01, open,
+  independent of the migration)**: the `GEMINI_API_KEY` project is now hitting a **429 on
+  embeddings** calls (`gemini-embedding-001`), separate from the long-known zero *generation*
+  quota above. Since embeddings are always Gemini regardless of `CHAT_PROVIDER`, a failed embed
+  means retrieval returns no context, so the chatbot answers ungrounded (still within persona and
+  boundaries, just without RAG facts to draw on). This is affecting the live production chatbot
+  right now. Fix: get a fresh `GEMINI_API_KEY` or request a quota bump, then verify retrieval with
+  a smoke-test question that should hit the KB.
+
 - [ ] **Chatbot conversation analytics (added 2026-07-16)**: the Supabase `conversations` table
   gained two columns: `country` (from Vercel's `x-vercel-ip-country` geo header, null under local
   dev) and `device_hash` (a one-way HMAC-SHA256 hash, via `node:crypto`, of a persistent client
-  device id; the raw id is never stored). `ChatBot.astro` now generates/sends a persistent
-  `deviceId` (localStorage key `bobbychat_device`); `src/pages/api/chat.ts` reads the geo header
-  and hashes the device id with a new `DEVICE_ID_SALT` env var and includes both in the insert.
+  device id; the raw id is never stored). `ChatBot.tsx` (was `ChatBot.astro` under Astro) now
+  generates/sends a persistent
+  `deviceId` (localStorage key `bobbychat_device`); `app/api/chat/route.ts` (was
+  `src/pages/api/chat.ts`) reads the geo header
+  and hashes the device id with a `DEVICE_ID_SALT` env var and includes both in the insert. The
+  fire-and-forget `conversations` insert is now wrapped in `waitUntil` (from `@vercel/functions`,
+  added during the 2026-09-01 Next.js migration) so it survives after the response closes on
+  Vercel; the Astro adapter didn't need this.
   `supabase/schema.sql` was updated with the columns plus idempotent `ALTER` statements, and
   `.env.example` gained `DEVICE_ID_SALT`. **Two manual steps still outstanding**: (1) run the
   `ALTER` statements in the Supabase SQL editor; (2) set `DEVICE_ID_SALT` in Vercel Production and
   local `.env`.
 
-- [ ] **Blog / Writing**: second content collection under `src/content/blog`, frontmatter
-  `{ title, description, date, tags, draft }`. The last deferred screen from the design bundle.
+- [ ] **Blog / Writing**: second content collection under `content/blog` (was `src/content/blog`
+  under Astro), frontmatter
+  `{ title, description, date, tags, draft }`. The last deferred screen from the design bundle;
+  unaffected by the Next.js migration.
 
 - [x] **Contact form (2026-07-13)**: added a Resend-backed on-demand endpoint
-  (`src/pages/api/contact.ts`, `prerender = false`) and a `<dialog>` island
-  (`src/components/ContactForm.astro`); the site now has two on-demand routes (`/api/chat` and
+  (`app/api/contact/route.ts`, was `src/pages/api/contact.ts` under Astro) and a `<dialog>` island
+  (`components/ContactForm.tsx`, was `src/components/ContactForm.astro`); the site now has two
+  on-demand routes (`/api/chat` and
   `/api/contact`). Requires `RESEND_API_KEY` in Vercel Production (optional `CONTACT_TO`/
-  `CONTACT_FROM` overrides).
+  `CONTACT_FROM` overrides, now also documented in `.env.example`).
 - [x] **Header CTA restructure (2026-07-13)**: the hero's standalone "Get in touch" button was
   removed (it now lives header-only, at `/#contact`); the header gained a primary "Chat with Bobby
-  AI" CTA. `ChatBot.astro` picked up `sm`/`primary` props to support the header (small) vs. hero
+  AI" CTA. `ChatBot.tsx` (was `ChatBot.astro`) picked up `sm`/`primary` props to support the
+  header (small) vs. hero
   (full-size) placements, both with the on-brand inline-SVG sparkle.
 - [x] **Dark mode (2026-07-14)**: full dark theme added. `:root[data-theme='dark']` in
-  `src/styles/global.css` remaps the semantic tokens (plus `--sage-wash`) to warm, forest-derived
+  `styles/global.css` (was `src/styles/global.css` under Astro) remaps the semantic tokens
+  (plus `--sage-wash`) to warm, forest-derived
   dark surfaces (never pure black) with the accent lifted for contrast, so component CSS inverts
-  automatically. An anti-flash inline script in `BaseLayout.astro`'s `<head>` applies the stored
+  automatically. An anti-flash inline script in `app/layout.tsx`'s `<head>` (was
+  `BaseLayout.astro`'s) applies the stored
   theme before paint; new visitors default to **light** and the site does not follow
   `prefers-color-scheme`, dark only appears once a visitor toggles it (persisted in
-  `localStorage` under `theme`). The toggle is a slider switch in the sticky header
-  (`Header.astro`), left of the Work link. Also fixed in this pass: the `.arch__group` background
-  in `data-analyst-ai-agent.md` was hardcoded to the light-only `--oat-raised` token (stayed pale
+  `localStorage` under `theme`). The toggle is a slider switch, now `components/ThemeToggle.tsx`,
+  in the sticky header
+  (`components/Header.tsx`, was `Header.astro`), left of the Work link. Also fixed in this pass: the `.arch__group` background
+  in `data-analyst-ai-agent.mdx` was hardcoded to the light-only `--oat-raised` token (stayed pale
   and unreadable in dark) and now uses the semantic `--color-surface`; the hero portrait in
-  `index.astro` gets a dark-mode override (drops the bottom mask-fade, restores a full border,
+  `app/page.tsx` (was `index.astro`) gets a dark-mode override (drops the bottom mask-fade, restores a full border,
   adds `--shadow-md`, slight brightness/contrast filter) so the light studio photo seats against
-  the dark page, light mode unchanged. The hero's tag list was also removed from `index.astro`
+  the dark page, light mode unchanged. The hero's tag list was also removed from `app/page.tsx`
   (declutter), so the hero body now holds only the CTA row. See `DESIGN_NOTES.md` for the full
   reasoning.
 
@@ -272,6 +333,7 @@ Bio + project copy were populated from the bundle's sample content.
 - Local: `.obsidian/` and `.claude/` are intentionally kept on disk but gitignored — don't expect them on a fresh clone.
 - Local `.env` is required to run the chatbot in `npm run dev` (git-ignored — copy `.env.example` and fill in the secrets). `test_chat.*` scratch scripts are git-ignored too.
 - Deploy is **Vercel** (auto-builds on push to `main`). Set the 6 chatbot env vars (including `DEVICE_ID_SALT`, added 2026-07-16) in the Vercel dashboard (Production scope) — see Phase 2. GitHub Pages is retired (`deploy.yml` removed).
+- The Astro to Next.js migration lives on `feature/nextjs-migration` (see "Framework migration" near the top of this file); cutover to `main` is still pending, so `main` and production are still Astro as of 2026-09-01.
 
 ## Working agreements
 

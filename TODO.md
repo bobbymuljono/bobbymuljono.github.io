@@ -9,18 +9,32 @@ handoff bundle) — see `DESIGN_NOTES.md`. The first pass covered **Home + Work*
 persona shipped 2026-07-10 (see Phase 2 below). **Writing** (blog) is the last deferred screen.
 Bio + project copy were populated from the bundle's sample content.
 
-## Framework migration: Astro → Next.js (2026-09-01, cutover pending)
+## Framework migration: Astro → Next.js (2026-09-01, cutover complete)
 
 The codebase was migrated to **Next.js 15** (App Router) + React 19, TypeScript strict, on the
-`feature/nextjs-migration` integration branch (this docs pass is `docs/nextjs-migration`,
-stacked on it). The full file-by-file structure mapping is documented in `CLAUDE.md` →
-Architecture. **The migration is done on that branch; the cutover (merge to `main` plus the
-Vercel production redeploy) is still pending.** Production keeps serving the existing Astro
-build until the cutover happens. The legacy Astro source stays on disk in the meantime
-(`src/pages_astro_legacy/`, renamed from `src/pages`; `src/components/*.astro`; `src/layouts/`;
-`src/content.config.ts`; the old `src/lib/chat/enabled.ts`), excluded from `tsconfig.json`, and
-will be deleted once cutover lands. **Blog remains the last deferred Phase 2 screen**,
-unaffected by the migration. See `README.md` → Deployment for current production status.
+`feature/nextjs-migration` integration branch. The full file-by-file structure mapping is
+documented in `CLAUDE.md` → Architecture. **The migration is complete and the cutover landed on
+2026-09-01**: `feature/nextjs-migration` was fast-forward-merged to `main` (`876475a → 6c0403b`)
+and pushed, triggering the Vercel production redeploy, so **production now serves the Next.js
+build**. The dormant legacy Astro source is still on disk (`src/pages_astro_legacy/`, renamed
+from `src/pages`; `src/components/*.astro`; `src/layouts/`; `src/content.config.ts`; the old
+`src/lib/chat/enabled.ts`), excluded from `tsconfig.json` and with zero runtime effect — deleting
+it is a pending cleanup follow-up (separate PR). **Blog remains the last deferred Phase 2
+screen**, unaffected by the migration. See `README.md` → Deployment for production status.
+
+## Next up (planned, 2026-09-01)
+
+- [ ] **"Currently building" surface**: show what Bobby is actively working on — right now the
+  **personal budgeting app** — somewhere on the site (e.g. a "Now" / "Building" block on Home, or
+  a lightweight dedicated section). Keep it low-effort to update as the current project changes.
+  Scope + placement TBD.
+- [ ] **Write-up cleanup**: a polish pass over the existing project write-ups in
+  `content/projects/` — tighten prose, fix anything stale, align voice. Distinct from drafting the
+  three remaining `draft: true` placeholders (that's the `portfolio-writeup` content item above).
+- [ ] **Built-in "inspect element" tool, ported from the personal budget app**: bring over the
+  built-in inspect / element-picker capability Bobby built in his personal **budgeting-app**
+  project and inherit it here. **Blocked on Bobby**: he will supply a detailed prompt for this and
+  first needs to pull the implementation details from that other project's Claude Code session.
 
 ## Content checklist (blocking a real launch)
 
@@ -333,7 +347,7 @@ unaffected by the migration. See `README.md` → Deployment for current producti
 - Local: `.obsidian/` and `.claude/` are intentionally kept on disk but gitignored — don't expect them on a fresh clone.
 - Local `.env` is required to run the chatbot in `npm run dev` (git-ignored — copy `.env.example` and fill in the secrets). `test_chat.*` scratch scripts are git-ignored too.
 - Deploy is **Vercel** (auto-builds on push to `main`). Set the 6 chatbot env vars (including `DEVICE_ID_SALT`, added 2026-07-16) in the Vercel dashboard (Production scope) — see Phase 2. GitHub Pages is retired (`deploy.yml` removed).
-- The Astro to Next.js migration lives on `feature/nextjs-migration` (see "Framework migration" near the top of this file); cutover to `main` is still pending, so `main` and production are still Astro as of 2026-09-01.
+- The Astro to Next.js migration was **cut over to `main` on 2026-09-01** (fast-forward merge + push, Vercel redeploy) — see "Framework migration" near the top of this file. Production now serves Next.js; the dormant legacy Astro tree on disk is a pending cleanup.
 
 ## Working agreements
 

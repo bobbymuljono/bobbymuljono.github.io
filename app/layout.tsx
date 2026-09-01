@@ -43,11 +43,20 @@ const bootScript = `(function () {
   } catch (e) {}
 })();`;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Dev-only, imported dev-only: the `NODE_ENV` constant folds to `false` in a
+  // production build, so this whole branch (and the dynamic import within it) is
+  // dead-code-eliminated — DevInspector never enters the production bundle graph,
+  // not merely its rendered output. See DevInspector.tsx / next.config.mjs.
+  const DevInspector =
+    process.env.NODE_ENV === 'development'
+      ? (await import('@/components/DevInspector')).DevInspector
+      : null;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -70,6 +79,10 @@ export default function RootLayout({
         />
       </head>
       <body>
+        {/* Dev-only: Alt+click any element to open its source in VS Code.
+            Paired with the JSX-runtime shim in next.config.mjs; both are stripped
+            from production by the NODE_ENV guard and the build-time alias. */}
+        {DevInspector && <DevInspector />}
         <a href="#main" className="skip-link">
           Skip to content
         </a>

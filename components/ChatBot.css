@@ -1,0 +1,204 @@
+/* All classes are uniquely namespaced (bobbychat__*), so global scope is
+   collision-safe. Ported verbatim from the Astro island's is:global block. */
+.bobbychat__launch {
+  display: inline-flex;
+  align-items: center;
+  /* Tight gap so the sparkle hugs "AI" rather than floating off it. */
+  gap: var(--space-1);
+  cursor: pointer;
+}
+
+/* Sparkle glyph — an on-brand SVG (inherits the button's text color via
+   currentColor) standing in for the ✨ emoji, since the design system bans emoji. */
+.bobbychat__spark {
+  flex-shrink: 0;
+}
+
+/* Disabled state (CHAT_ENABLED false — prod with ENABLED_IN_PROD off): dashed
+   border reads as "not clickable yet", paired with an inline "In development"
+   badge. Force the muted look regardless of the primary/secondary variant. */
+.bobbychat__launch--disabled {
+  cursor: default;
+  border-style: dashed;
+  background: transparent;
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+}
+
+.bobbychat__launch--disabled:hover {
+  background: transparent;
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+}
+
+.bobbychat__launch--disabled .bobbychat__badge {
+  pointer-events: none;
+  color: inherit;
+}
+
+.bobbychat__dialog {
+  width: min(440px, calc(100vw - 2rem));
+  max-width: 440px;
+  padding: 0;
+  border: var(--border-hairline);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.bobbychat__dialog::backdrop {
+  background: color-mix(in oklab, var(--forest-black) 32%, transparent);
+}
+
+.bobbychat__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: var(--border-hairline);
+}
+
+.bobbychat__title {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  color: var(--color-text);
+}
+
+.bobbychat__sub {
+  display: block;
+  font-family: var(--font-label);
+  font-style: italic;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.bobbychat__close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0 var(--space-1);
+}
+.bobbychat__close:hover {
+  color: var(--color-text);
+}
+
+.bobbychat__log {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  max-height: min(50vh, 420px);
+  overflow-y: auto;
+}
+
+.bobbychat__msg {
+  max-width: 85%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.bobbychat__msg--bot {
+  align-self: flex-start;
+  background: var(--color-surface-sunk);
+  border: var(--border-hairline);
+}
+
+.bobbychat__msg--user {
+  align-self: flex-end;
+  background: var(--color-surface-accent);
+  color: var(--color-text-on-wash);
+}
+
+/* Starter question chips — shown in the empty state, removed once a conversation
+   begins. Hover mirrors the interactive-card cue (accent border + sage wash). */
+.bobbychat__starters {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.bobbychat__chip {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: 1.3;
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-hairline);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition:
+    color 160ms ease-out,
+    border-color 160ms ease-out,
+    background 160ms ease-out;
+}
+.bobbychat__chip:hover {
+  color: var(--color-text-on-wash);
+  border-color: var(--color-accent);
+  background: var(--color-surface-accent);
+}
+.bobbychat__chip:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-focus);
+}
+
+/* Typing indicator: shown only while an empty bot bubble is streaming. */
+.bobbychat__msg.is-streaming:empty::after {
+  content: '\2022\2022\2022'; /* three dots */
+  letter-spacing: 2px;
+  color: var(--color-text-muted);
+  animation: bobbychat-typing 1.4s ease-in-out infinite;
+}
+
+@keyframes bobbychat-typing {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bobbychat__msg.is-streaming:empty::after {
+    animation: none;
+  }
+}
+
+.bobbychat__form {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: var(--border-hairline);
+  background: var(--color-bg);
+}
+
+.bobbychat__input {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-hairline);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+.bobbychat__input:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-focus);
+}

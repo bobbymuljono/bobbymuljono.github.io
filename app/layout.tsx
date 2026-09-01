@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/next';
 import { SITE_URL, DEFAULT_OG_IMAGE } from '@/lib/site';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import ScrollReveal from '@/components/ScrollReveal';
 import '@/styles/fonts.css';
 import '@/styles/global.css';
@@ -11,7 +13,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: 'Bobby Muljono',
-    template: '%s · Bobby Muljono',
+    template: '%s — Bobby Muljono',
   },
   description:
     'Bobby Muljono — data and AI, building things that ship. Selected work and a live AI persona.',
@@ -70,11 +72,11 @@ export default function RootLayout({
         <a href="#main" className="skip-link">
           Skip to content
         </a>
-        {/* Header — added in Phase 2 (feature/static-pages) */}
+        <Header />
         <main id="main" className="wrapper">
           {children}
         </main>
-        {/* Footer — added in Phase 2 (feature/static-pages) */}
+        <Footer />
         <ScrollReveal />
         <Analytics />
       </body>

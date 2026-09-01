@@ -16,10 +16,11 @@ The codebase was migrated to **Next.js 15** (App Router) + React 19, TypeScript 
 documented in `CLAUDE.md` → Architecture. **The migration is complete and the cutover landed on
 2026-09-01**: `feature/nextjs-migration` was fast-forward-merged to `main` (`876475a → 6c0403b`)
 and pushed, triggering the Vercel production redeploy, so **production now serves the Next.js
-build**. The dormant legacy Astro source is still on disk (`src/pages_astro_legacy/`, renamed
-from `src/pages`; `src/components/*.astro`; `src/layouts/`; `src/content.config.ts`; the old
-`src/lib/chat/enabled.ts`), excluded from `tsconfig.json` and with zero runtime effect — deleting
-it is a pending cleanup follow-up (separate PR). **Blog remains the last deferred Phase 2
+build**. The legacy Astro source (`src/pages_astro_legacy/`, `src/components/*.astro`,
+`src/layouts/`, `src/content.config.ts`, the old `src/lib/chat/enabled.ts`) plus `astro.config.mjs`
+were deleted on 2026-09-01, completing the cutover cleanup. Their leftover presence had been
+breaking `npm run build` (Next.js misresolved the app dir to `src/app` in the generated route-type
+check); the build is green again now. **Blog remains the last deferred Phase 2
 screen**, unaffected by the migration. See `README.md` → Deployment for production status.
 
 ## Next up (planned, 2026-09-01)
@@ -31,10 +32,13 @@ screen**, unaffected by the migration. See `README.md` → Deployment for produc
 - [ ] **Write-up cleanup**: a polish pass over the existing project write-ups in
   `content/projects/` — tighten prose, fix anything stale, align voice. Distinct from drafting the
   three remaining `draft: true` placeholders (that's the `portfolio-writeup` content item above).
-- [ ] **Built-in "inspect element" tool, ported from the personal budget app**: bring over the
-  built-in inspect / element-picker capability Bobby built in his personal **budgeting-app**
-  project and inherit it here. **Blocked on Bobby**: he will supply a detailed prompt for this and
-  first needs to pull the implementation details from that other project's Claude Code session.
+- [x] **Built-in "inspect element" tool, ported from the personal budget app** (done 2026-09-01):
+  a dev-only "Alt+click to open source in VS Code" inspector. Dependency-free, stripped from
+  production. Files: `dev/jsx-dev-runtime.js` (the jsxDEV shim), `components/DevInspector.tsx`, the
+  `webpack` alias in `next.config.mjs`, and the `NODE_ENV`-guarded mount in `app/layout.tsx`.
+  Coverage is client components only (server-rendered markup carries no marker); the noted upgrade
+  path for full-page coverage is a dev-only compile-time SWC/Babel transform. See `CLAUDE.md` →
+  Architecture → "Dev tooling". Do not add `--turbopack` to `next dev` (the wiring is webpack-only).
 
 ## Content checklist (blocking a real launch)
 
@@ -141,10 +145,10 @@ screen**, unaffected by the migration. See `README.md` → Deployment for produc
 ## Decisions log
 
 - [x] **Framework**: Astro (TypeScript strict) — ships ~0KB JS, static output for GitHub Pages.
-  **Migrated to Next.js 15 (2026-09-01, cutover pending)**: see the "Framework migration" section
+  **Migrated to Next.js 15 (2026-09-01, cutover complete)**: see the "Framework migration" section
   near the top of this file and `CLAUDE.md` → Architecture for the full structural mapping. The
   `@astrojs/vercel` adapter is dropped, Next.js deploys to Vercel natively. Cutover (merge to
-  `main`, production redeploy) has not happened yet.
+  `main`, production redeploy) landed on 2026-09-01; production now serves the Next.js build.
 - [x] **License**: MIT (switched from GPL-3.0, 2026-07-07) — copyleft was a poor fit for a portfolio.
 - [x] **Hosting / domain — migrated to Vercel (2026-07-10)**: **Vercel is now canonical.** The
   chatbot needs a server runtime (the `/api/chat` endpoint is `prerender = false`), which GitHub
@@ -347,7 +351,7 @@ screen**, unaffected by the migration. See `README.md` → Deployment for produc
 - Local: `.obsidian/` and `.claude/` are intentionally kept on disk but gitignored — don't expect them on a fresh clone.
 - Local `.env` is required to run the chatbot in `npm run dev` (git-ignored — copy `.env.example` and fill in the secrets). `test_chat.*` scratch scripts are git-ignored too.
 - Deploy is **Vercel** (auto-builds on push to `main`). Set the 6 chatbot env vars (including `DEVICE_ID_SALT`, added 2026-07-16) in the Vercel dashboard (Production scope) — see Phase 2. GitHub Pages is retired (`deploy.yml` removed).
-- The Astro to Next.js migration was **cut over to `main` on 2026-09-01** (fast-forward merge + push, Vercel redeploy) — see "Framework migration" near the top of this file. Production now serves Next.js; the dormant legacy Astro tree on disk is a pending cleanup.
+- The Astro to Next.js migration was **cut over to `main` on 2026-09-01** (fast-forward merge + push, Vercel redeploy); see "Framework migration" near the top of this file. Production now serves Next.js. The legacy Astro `src/` tree and `astro.config.mjs` were deleted on 2026-09-01 (they had been breaking `npm run build`).
 
 ## Working agreements
 

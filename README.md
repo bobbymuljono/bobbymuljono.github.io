@@ -4,10 +4,9 @@ Personal portfolio site — About/bio, selected project write-ups, and an AI per
 ("Bobby AI"), built with [Next.js](https://nextjs.org) (App Router).
 
 > **Deployed on Vercel** (as of 2026-07-10) at [www.bobbymuljono.com](https://www.bobbymuljono.com)
-> (custom domain attached 2026-07-16). Vercel auto-builds on push to `main`. A migration from
-> Astro to Next.js is complete on the `feature/nextjs-migration` integration branch; the cutover
-> merge to `main` and production redeploy are still pending, so production is currently still
-> serving the Astro build. See [Deployment](#deployment).
+> (custom domain attached 2026-07-16). Vercel auto-builds on push to `main`. The migration from
+> Astro to Next.js cut over to `main` on 2026-09-01, and production now serves the Next.js build.
+> See [Deployment](#deployment).
 
 Design decisions and their reasoning live in [DESIGN_NOTES.md](./DESIGN_NOTES.md).
 
@@ -54,14 +53,15 @@ Copy `content/projects/_template.md` to a new file in the same folder (filename 
 
 ## Deployment
 
-**Vercel (canonical), native Next.js on cutover.** The Astro to Next.js migration (App Router, React 19) is complete on the `feature/nextjs-migration` integration branch; merging to `main` and redeploying to production are still pending, so production currently still serves the Astro build (see `TODO.md`). Once cut over, pushing to `main` auto-builds and deploys via Vercel's native Next.js support, no adapter and no `vercel.json`. Static/SSG pages are prerendered; the chatbot route (`app/api/chat/route.ts`) and the contact-form route (`app/api/contact/route.ts`), both Next.js route handlers (`runtime: 'nodejs'`, `dynamic: 'force-dynamic'`), are bundled as serverless functions. `next.config.mjs` sets `trailingSlash: true` so the existing URL shape (`/projects/`, `/projects/<slug>/`) carries over unchanged; requests without a trailing slash 308-redirect. The domain itself does not change: `https://www.bobbymuljono.com` (custom domain attached 2026-07-16; canonical is `www`).
+**Vercel (canonical), native Next.js.** The Astro to Next.js migration (App Router, React 19) cut over to `main` on 2026-09-01 (see `TODO.md`), and production now serves the Next.js build. Pushing to `main` auto-builds and deploys via Vercel's native Next.js support, no adapter and no `vercel.json`. Static/SSG pages are prerendered; the chatbot route (`app/api/chat/route.ts`) and the contact-form route (`app/api/contact/route.ts`), both Next.js route handlers (`runtime: 'nodejs'`, `dynamic: 'force-dynamic'`), are bundled as serverless functions. `next.config.mjs` sets `trailingSlash: true` so the existing URL shape (`/projects/`, `/projects/<slug>/`) carries over unchanged; requests without a trailing slash 308-redirect. The domain itself does not change: `https://www.bobbymuljono.com` (custom domain attached 2026-07-16; canonical is `www`).
 
 Required setup in **Vercel → Project → Settings → Environment Variables** (Production scope): `CHAT_PROVIDER`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `DEVICE_ID_SALT` for the chatbot, plus `RESEND_API_KEY` (optional `CONTACT_TO`/`CONTACT_FROM` overrides) for the contact form. Without them the relevant endpoint returns a "Server is not configured" error. None may be `PUBLIC_`-prefixed — they're server-side secrets (Next.js's client-exposed prefix, `NEXT_PUBLIC_`, is unused here).
 
 Still to do:
 
-1. Merge `feature/nextjs-migration` into `main` and redeploy (the Next.js cutover).
-2. Confirm in the Vercel dashboard that the apex domain 301-redirects to `www`.
+1. Confirm in the Vercel dashboard that the apex domain 301-redirects to `www`.
+
+The dormant legacy Astro source (`src/`) and `astro.config.mjs` were deleted on 2026-09-01, completing the cutover cleanup; their leftover presence had been breaking `npm run build`'s route-type check (Next.js misresolved the app dir to `src/app`), so the build is green again.
 
 GitHub Pages has been retired (`deploy.yml` removed) — the chatbot needs a server runtime that Pages can't provide.
 

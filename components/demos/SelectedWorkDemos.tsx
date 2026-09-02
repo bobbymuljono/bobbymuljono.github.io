@@ -1,8 +1,10 @@
 import './selected-demos.css';
+import AnalyticsStreamingAnswer from './AnalyticsStreamingAnswer';
 
 /**
- * Compact looping visuals for the landing "Selected work" feature cards. Both are
- * pure-CSS server components (zero JS) that loop on a 6s cycle and go static under
+ * Compact looping visuals for the landing "Selected work" feature cards. The
+ * copilot miniature is pure CSS; the analytics answer uses a tiny client-side
+ * typewriter so its reply reads like a real stream. Both go static under
  * prefers-reduced-motion. Chosen per project by slug in app/page.tsx.
  */
 
@@ -71,7 +73,7 @@ export function AnalyticsChatDemo() {
         <div className="amini__row amini__row--r"><div className="amini__bub amini__bub--user">What is the WISMO rate of all CS tickets for SG region last week?</div></div>
         <div className="amini__tool amini__tool--1"><BookMini /> Reading the knowledge base</div>
         <div className="amini__tool amini__tool--2"><DatabaseMini /> Running SQL query</div>
-        <div className="amini__row"><div className="amini__bub amini__bub--agent">The WISMO rate of CS tickets for SG region for the week of 24 August 2026 is <b>30%</b>, a <b>2%</b> markup versus the previous week. Would you like me to dive deeper into the WISMO sub-categories?</div></div>
+        <div className="amini__row"><div className="amini__bub amini__bub--agent"><AnalyticsStreamingAnswer /></div></div>
       </div>
     </div>
   );

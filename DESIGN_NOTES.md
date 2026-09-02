@@ -96,7 +96,9 @@ brightness/contrast filter to reseat the light studio photo against the darker p
   not a translucent/blurred bar, since the system bans glassmorphism. The old `Contact` text
   link was removed: the `Get in touch` primary button already targets `#contact`, so a second
   control to the same anchor was redundant. Nav is now `Work · [Get in touch]`, with the CTA
-  pinned and reachable on scroll (the site's whole job is "make it easy to connect").
+  pinned and reachable on scroll (the site's whole job is "make it easy to connect"). On mobile,
+  `Get in touch` is hidden and the theme toggle, Work link, and compact Bobby AI button share one
+  non-wrapping row beneath the wordmark so the sticky header stays short.
 - **Footer — minimal (2026-07-08).** Dropped the `Site`/`Elsewhere` two-column block, which
   duplicated the header nav (Work/Contact) and the contact section's GitHub/LinkedIn buttons.
   The footer is now just brand + tagline + `©` on the left and a single `GitHub · LinkedIn`
@@ -160,24 +162,32 @@ brightness/contrast filter to reseat the light studio photo against the darker p
   write-ups stay plain markdown, diagrams are components instead of hand-written CSS, and
   because content is MDX, React demos or gifs can be embedded directly in a write-up going
   forward.
-- **Animated demo components (2026-09-02).** A sibling pattern to the arch-diagram kit: pure-CSS
-  looped-timeline recreations of the interactive product surfaces, built as zero-JS server
-  components under `components/demos/`. `CopilotChatDemo` is a full, scripted 11s-loop recreation
+- **Animated demo components (2026-09-02).** A sibling pattern to the arch-diagram kit:
+  looped-timeline recreations of the interactive product surfaces under `components/demos/`.
+  `CopilotChatDemo` is a full, scripted 11s-loop recreation
   of the item-recommendation copilot (buyer message, a "Suggest reply" tap, thinking chip, a
   3-option suggestion panel, an animated cursor editing a draft with a blinking caret, a send
   click, and the reply landing in-thread with a product card), embedded as the lead element of
-  `chat-recommendation-copilot.mdx`. `SelectedWorkDemos` holds two compact mini-demos
+  `chat-recommendation-copilot.mdx`. Its window is a fixed-height stage: the suggestion panel
+  overlays the chat during its turn instead of expanding the figure and pushing the article text
+  down, and the edited iPhone 17 Pro draft streams into its pre-reserved textbox. The sequence
+  waits 750ms after the final character before clicking "Send reply," so the action reads as a
+  response to completed work rather than interrupting the stream. The typing and all downstream
+  states share the same client clock, preventing hydration timing from collapsing that pause.
+  `SelectedWorkDemos` holds two compact mini-demos
   (`CopilotMiniDemo`, `AnalyticsChatDemo`) used on the Home page's feature cards. The whole
-  timeline runs as one shared CSS `infinite` animation (no JS timers, so everything stays in sync
-  and resets together at the loop boundary), stays token-driven so it adapts to dark mode, and
-  goes static under `prefers-reduced-motion`, the same rules as the arch kit. An earlier abstract
+  copilot timelines run as shared CSS `infinite` animations. The analytics demo uses a small,
+  visibility-aware client typewriter synchronized to its 7s CSS sequence so the answer streams
+  into a pre-reserved bubble without shifting the card. It stops offscreen or in a background tab.
+  All demos stay token-driven for dark mode and go static under `prefers-reduced-motion`, the same
+  rules as the arch kit. An earlier abstract
   SVG "analytics motif" sketch (query box, agent, bar chart) was tried for the analytics feature
   card and discarded in this session for reading as decoration rather than a real demo; the
   chatbox-style `AnalyticsChatDemo` replaced it.
 - **Landing page redesign (2026-09-02).** The Home page's `.selected__grid` of plain
   `.card.card--interactive.project-preview` anchors was replaced by a `.selected__stack` of
   two-column feature cards (`.feat`, sides alternating via `.feat--flip`): an animated demo panel
-  on a sage-wash background with a pulsing "Live demo" badge, beside the project copy (kind
+  on a sage-wash background beside the project copy (kind
   eyebrow, serif heading, description, tag list, "Read the write-up" link). Collapses to a single
   stacked column (visual above copy) under 52rem. The demo visual is chosen per project by slug;
   projects without a bespoke demo fall back to a copy-only card. The old `.project-preview` rules

@@ -1,9 +1,9 @@
 /* Copilot chat demo — a looping, scripted product-recommendation walkthrough that
-   opens the chat-recommendation-copilot write-up. Pure CSS animation (no JS): the
-   whole timeline is one shared cycle (--ccd-T) run on `infinite`, so every element
-   resets together at the loop boundary. Tokens are the site's semantic aliases, so
-   it adapts to dark mode automatically. Fully visible and static under
-   prefers-reduced-motion. Namespaced under .ccd so class names never collide. */
+   opens the chat-recommendation-copilot write-up. CSS owns the shared cycle
+   (--ccd-T); a small client component types the edited draft on that same clock.
+   Tokens are the site's semantic aliases, so it adapts to dark mode automatically.
+   Fully visible and static under prefers-reduced-motion. Namespaced under .ccd so
+   class names never collide. */
 
 .ccd {
   --ccd-T: 11000ms;
@@ -13,6 +13,9 @@
 
 .ccd__win {
   position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 720px;
   max-width: 660px;
   margin: 0 auto;
   background: var(--color-surface);
@@ -20,6 +23,12 @@
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
+}
+
+.ccd__stage {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .ccd__bar {
@@ -67,7 +76,8 @@
   margin: 0 2px -4px;
 }
 .ccd__cap--right {
-  align-self: flex-end;
+  margin-left: auto;
+  text-align: right;
 }
 .ccd__row {
   display: flex;
@@ -159,13 +169,15 @@
 }
 
 .ccd__panel {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   margin: 6px 16px 4px;
   border: 1px solid var(--color-accent);
   border-radius: var(--radius-md);
   background: var(--color-surface);
   overflow: hidden;
   opacity: 0;
-  max-height: 0;
 }
 .ccd__panel-top {
   display: flex;
@@ -265,6 +277,16 @@
   left: 11px;
   right: 11px;
   opacity: 0;
+}
+.ccd__draft-stream {
+  display: grid;
+}
+.ccd__draft-stream-reserve,
+.ccd__draft-stream-live {
+  grid-area: 1 / 1;
+}
+.ccd__draft-stream-reserve {
+  visibility: hidden;
 }
 .ccd__caret {
   display: inline-block;
@@ -379,41 +401,35 @@
 @keyframes ccd-agent { 0%, 10% { opacity: 0; transform: translateY(8px); } 13.6% { opacity: 1; transform: none; } 100% { opacity: 1; transform: none; } }
 @keyframes ccd-think { 0%, 30% { opacity: 0; transform: translateY(6px); } 32.7% { opacity: 1; transform: none; } 39% { opacity: 1; } 41.8% { opacity: 0; } 100% { opacity: 0; } }
 @keyframes ccd-panel {
-  0%, 42.7% { opacity: 0; max-height: 0; transform: translateY(8px); }
-  47% { opacity: 1; max-height: 760px; transform: none; }
-  68.2% { opacity: 1; max-height: 760px; }
-  72.9% { opacity: 0; max-height: 0; transform: translateY(-6px); }
-  100% { opacity: 0; max-height: 0; }
+  0%, 42.7% { opacity: 0; transform: translateY(8px); }
+  47% { opacity: 1; transform: none; }
+  100% { opacity: 1; transform: none; }
 }
 @keyframes ccd-rec1 { 0%, 43.8% { opacity: 0; transform: translateY(8px); } 47.5% { opacity: 1; transform: none; } 100% { opacity: 1; } }
 @keyframes ccd-rec2 { 0%, 45.1% { opacity: 0; transform: translateY(8px); } 48.7% { opacity: 1; transform: none; } 100% { opacity: 1; } }
 @keyframes ccd-rec3 { 0%, 46.4% { opacity: 0; transform: translateY(8px); } 50% { opacity: 1; transform: none; } 100% { opacity: 1; } }
-@keyframes ccd-focus { 0%, 53.6% { box-shadow: 0 0 0 0 var(--ccd-focus); } 55.5% { box-shadow: 0 0 0 3px var(--ccd-focus); } 67.3% { box-shadow: 0 0 0 3px var(--ccd-focus); } 68.2% { box-shadow: 0 0 0 0 var(--ccd-focus); } 100% { box-shadow: 0 0 0 0 var(--ccd-focus); } }
+@keyframes ccd-focus { 0%, 53.6% { box-shadow: 0 0 0 0 var(--ccd-focus); } 55.5%, 100% { box-shadow: 0 0 0 3px var(--ccd-focus); } }
 @keyframes ccd-dold { 0%, 55.5% { opacity: 1; } 58.9% { opacity: 0; } 100% { opacity: 0; } }
-@keyframes ccd-dnew { 0%, 57.7% { opacity: 0; } 61.2% { opacity: 1; } 100% { opacity: 1; } }
-@keyframes ccd-caretvis { 0%, 57.4% { visibility: hidden; } 57.5% { visibility: visible; } 68% { visibility: visible; } 68.1% { visibility: hidden; } 100% { visibility: hidden; } }
+@keyframes ccd-dnew { 0%, 57.6% { opacity: 0; } 57.7%, 100% { opacity: 1; } }
 @keyframes ccd-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
 @keyframes ccd-suggest { 0%, 27.5% { transform: scale(1); } 28.3% { transform: scale(0.9); } 29.4% { transform: scale(1); } 100% { transform: scale(1); } }
-@keyframes ccd-send { 0%, 65.6% { transform: scale(1); } 66.4% { transform: scale(0.9); } 67.4% { transform: scale(1); } 100% { transform: scale(1); } }
-@keyframes ccd-lblsend { 0%, 67.8% { opacity: 1; } 68.6% { opacity: 0; } 100% { opacity: 0; } }
-@keyframes ccd-lblsent { 0%, 68% { opacity: 0; } 69.2% { opacity: 1; } 100% { opacity: 1; } }
-@keyframes ccd-sent { 0%, 71.8% { opacity: 0; max-height: 0; transform: translateY(8px); } 74% { max-height: 220px; } 76.9% { opacity: 1; max-height: 220px; transform: none; } 100% { opacity: 1; max-height: 220px; } }
 @keyframes ccd-cursor {
   0% { opacity: 0; transform: translate(150px, 300px) scale(1); }
   18.2% { opacity: 0; transform: translate(150px, 300px) scale(1); }
   21.5% { opacity: 1; transform: translate(150px, 300px) scale(1); }
-  26.4% { opacity: 1; transform: translate(566px, 905px) scale(1); }
-  28% { transform: translate(566px, 905px) scale(0.82); }
-  29.6% { transform: translate(566px, 905px) scale(1); }
-  48.7% { opacity: 1; transform: translate(566px, 905px) scale(1); }
-  54.2% { transform: translate(150px, 556px) scale(1); }
-  60.7% { opacity: 1; transform: translate(150px, 556px) scale(1); }
-  66.2% { transform: translate(470px, 612px) scale(1); }
-  67.3% { transform: translate(470px, 612px) scale(0.82); }
-  68.9% { transform: translate(470px, 612px) scale(1); }
-  71.1% { opacity: 0; transform: translate(470px, 612px) scale(1); }
-  100% { opacity: 0; transform: translate(470px, 612px) scale(1); }
+  26.4% { opacity: 1; transform: translate(566px, 677px) scale(1); }
+  28% { transform: translate(566px, 677px) scale(0.82); }
+  29.6% { transform: translate(566px, 677px) scale(1); }
+  48.7% { opacity: 1; transform: translate(566px, 677px) scale(1); }
+  54.2% { transform: translate(150px, 318px) scale(1); }
+  60.7%, 100% { opacity: 1; transform: translate(150px, 318px) scale(1); }
 }
+@keyframes ccd-cursor-to-send { from { opacity: 1; transform: translate(150px, 318px) scale(1); } to { opacity: 1; transform: translate(570px, 445px) scale(1); } }
+@keyframes ccd-cursor-hide { from { opacity: 1; transform: translate(570px, 445px) scale(1); } to { opacity: 0; transform: translate(570px, 445px) scale(1); } }
+@keyframes ccd-send-click { 0%, 100% { transform: scale(1); } 40% { transform: scale(0.9); } }
+@keyframes ccd-focus-release { from { box-shadow: 0 0 0 3px var(--ccd-focus); } to { box-shadow: 0 0 0 0 var(--ccd-focus); } }
+@keyframes ccd-panel-exit { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(-6px); } }
+@keyframes ccd-sent-enter { 0% { opacity: 0; max-height: 0; transform: translateY(8px); } 40% { max-height: 220px; } 100% { opacity: 1; max-height: 220px; transform: none; } }
 
 .ccd .ccd-buyer { animation: ccd-buyer var(--ccd-T) linear infinite; }
 .ccd .ccd-agent { animation: ccd-agent var(--ccd-T) linear infinite; }
@@ -425,18 +441,40 @@
 .ccd .ccd__draftwrap { animation: ccd-focus var(--ccd-T) linear infinite; }
 .ccd .ccd__dold { animation: ccd-dold var(--ccd-T) linear infinite; }
 .ccd .ccd__dnew { animation: ccd-dnew var(--ccd-T) linear infinite; }
-.ccd .ccd__caret { animation: ccd-caretvis var(--ccd-T) steps(1, end) infinite, ccd-blink 640ms steps(1) infinite; }
+.ccd .ccd__caret { animation: ccd-blink 640ms steps(1) infinite; }
 .ccd .ccd__suggest { animation: ccd-suggest var(--ccd-T) linear infinite; }
-.ccd .ccd__send--pro { animation: ccd-send var(--ccd-T) linear infinite; }
-.ccd .ccd__send--pro .ccd__lbl-send { animation: ccd-lblsend var(--ccd-T) linear infinite; }
-.ccd .ccd__send--pro .ccd__lbl-sent { animation: ccd-lblsent var(--ccd-T) linear infinite; }
-.ccd .ccd__sent { animation: ccd-sent var(--ccd-T) linear infinite; }
 .ccd .ccd__cursor { animation: ccd-cursor var(--ccd-T) linear infinite; }
+
+.ccd.ccd--cursor-to-send .ccd__cursor {
+  animation: ccd-cursor-to-send 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.ccd.ccd--sending .ccd__send--pro {
+  animation: ccd-send-click 300ms var(--ease-out) forwards;
+}
+.ccd.ccd--sending .ccd__draftwrap {
+  animation: ccd-focus-release 180ms var(--ease-out) forwards;
+}
+.ccd.ccd--sent .ccd__cursor {
+  animation: ccd-cursor-hide 180ms var(--ease-out) forwards;
+}
+.ccd.ccd--sent .ccd__lbl-send {
+  opacity: 0;
+}
+.ccd.ccd--sent .ccd__lbl-sent {
+  opacity: 1;
+}
+.ccd.ccd--panel-dismissed .ccd__panel {
+  animation: ccd-panel-exit 440ms var(--ease-out) forwards;
+}
+.ccd.ccd--reply .ccd__sent {
+  animation: ccd-sent-enter 550ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
 
 /* The scripted cursor targets fixed pixel positions in the 660px window; on narrow
    screens the window shrinks and those coords drift, so hide it there. The rest of
    the sequence still reads without it. */
 @media (max-width: 700px) {
+  .ccd__win { height: 860px; }
   .ccd__cursor { display: none; }
 }
 
@@ -446,9 +484,9 @@
   .ccd .ccd-agent,
   .ccd .ccd__panel,
   .ccd .ccd__rec { opacity: 1 !important; transform: none !important; }
-  .ccd .ccd__panel { max-height: none !important; }
   .ccd .ccd__think,
   .ccd .ccd__cursor,
   .ccd .ccd__sent,
-  .ccd .ccd__dnew { display: none !important; }
+  .ccd .ccd__dold { display: none !important; }
+  .ccd .ccd__dnew { opacity: 1 !important; }
 }

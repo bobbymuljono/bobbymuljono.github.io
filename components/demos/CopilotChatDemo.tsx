@@ -1,13 +1,13 @@
 import './copilot-chat-demo.css';
+import CopilotStreamingDraft from './CopilotStreamingDraft';
 
 /**
  * CopilotChatDemo — a looping, scripted walkthrough of the item-recommendation
  * copilot: a buyer asks about stock, the agent taps "Suggest reply", the copilot
  * drafts three options, the agent edits the iPhone 17 Pro draft and sends it, and
- * the reply lands in the thread with a product card. Pure CSS animation, so this is
- * a server component that ships zero JavaScript. The whole timeline is one shared
- * loop (see copilot-chat-demo.css); markup here is static. Fully readable and still
- * under prefers-reduced-motion.
+ * the reply lands in the thread with a product card. CSS owns the shared timeline;
+ * a tiny client component types the edited draft into its reserved textbox.
+ * Fully readable and still under prefers-reduced-motion.
  */
 
 const PhoneIcon = ({ size = 17 }: { size?: number }) => (
@@ -44,42 +44,43 @@ export default function CopilotChatDemo({ caption }: { caption?: string }) {
           <span className="ccd__ctx">viewing: iPhone 16 &middot; 128GB</span>
         </div>
 
-        <div className="ccd__chat">
-          <div className="ccd-buyer">
-            <p className="ccd__cap ccd__cap--right">Buyer</p>
-            <div className="ccd__row ccd__row--right"><div className="ccd__bubble ccd__bubble--buyer">Hi! Is the iPhone 16 still in stock? Been eyeing this one.</div></div>
+        <div className="ccd__stage">
+          <div className="ccd__chat">
+            <div className="ccd-buyer">
+              <p className="ccd__cap ccd__cap--right">Buyer</p>
+              <div className="ccd__row ccd__row--right"><div className="ccd__bubble ccd__bubble--buyer">Hi! Is the iPhone 16 still in stock? Been eyeing this one.</div></div>
+            </div>
+
+            <div className="ccd-agent">
+              <p className="ccd__cap">Support agent</p>
+              <div className="ccd__row"><div className="ccd__bubble ccd__bubble--shop">Hi there, thanks for inquiring, let me check for you.</div></div>
+            </div>
+
+            <div className="ccd__think">Reading the conversation <span className="ccd__dots"><i /><i /><i /></span></div>
+
+            <div className="ccd__sent">
+              <p className="ccd__cap">Support agent</p>
+              <div className="ccd__row"><div className="ccd__msg">
+                <div className="ccd__msg-text">Good news, the 16 is in stock! If you want a step up, the 17 Pro has the same new chip with a sharper display and the pro camera. Want me to send a few photos?</div>
+                <div className="ccd__msg-card">
+                  <span className="ccd__thumb"><PhoneIcon size={15} /></span>
+                  <span className="ccd__msg-name">iPhone 17 Pro</span>
+                  <span className="ccd__msg-price">$1,499</span>
+                </div>
+              </div></div>
+            </div>
           </div>
 
-          <div className="ccd-agent">
-            <p className="ccd__cap">Support agent</p>
-            <div className="ccd__row"><div className="ccd__bubble ccd__bubble--shop">Hi there, thanks for inquiring, let me check for you.</div></div>
-          </div>
+          <div className="ccd__panel">
+            <div className="ccd__panel-top">
+              <span className="ccd__panel-ey">
+                <SparkleIcon />
+                Copilot suggestion &middot; 3 options
+              </span>
+              <span className="ccd__intent">Upsell</span>
+            </div>
 
-          <div className="ccd__think">Reading the conversation <span className="ccd__dots"><i /><i /><i /></span></div>
-
-          <div className="ccd__sent">
-            <p className="ccd__cap">Support agent</p>
-            <div className="ccd__row"><div className="ccd__msg">
-              <div className="ccd__msg-text">Good news, the 16 is in stock! If you want a step up, the 17 Pro has the same new chip with a sharper display and the pro camera. Want me to send a few photos?</div>
-              <div className="ccd__msg-card">
-                <span className="ccd__thumb"><PhoneIcon size={15} /></span>
-                <span className="ccd__msg-name">iPhone 17 Pro</span>
-                <span className="ccd__msg-price">$1,499</span>
-              </div>
-            </div></div>
-          </div>
-        </div>
-
-        <div className="ccd__panel">
-          <div className="ccd__panel-top">
-            <span className="ccd__panel-ey">
-              <SparkleIcon />
-              Copilot suggestion &middot; 3 options
-            </span>
-            <span className="ccd__intent">Upsell</span>
-          </div>
-
-          <div className="ccd-r1 ccd__rec">
+            <div className="ccd-r1 ccd__rec">
             <div className="ccd__rec-head">
               <span className="ccd__thumb"><PhoneIcon /></span>
               <span className="ccd__rec-name">iPhone 17</span>
@@ -87,9 +88,9 @@ export default function CopilotChatDemo({ caption }: { caption?: string }) {
             </div>
             <div className="ccd__draft">Yes, the 16 is in stock! If you want the newest, the 17 just dropped with a better camera and battery for a bit more.</div>
             <div className="ccd__act"><span className="ccd__send">Send reply <ArrowIcon /></span></div>
-          </div>
+            </div>
 
-          <div className="ccd-r2 ccd__rec">
+            <div className="ccd-r2 ccd__rec">
             <div className="ccd__rec-head">
               <span className="ccd__thumb"><PhoneIcon /></span>
               <span className="ccd__rec-name">iPhone 17 Pro</span>
@@ -97,12 +98,12 @@ export default function CopilotChatDemo({ caption }: { caption?: string }) {
             </div>
             <div className="ccd__draft ccd__draftwrap">
               <span className="ccd__dold">We also have the 17 Pro: same new chip, plus a sharper display and the pro camera system. Want me to send the specs?</span>
-              <span className="ccd__dnew">Good news, the 16 is in stock! If you want a step up, the 17 Pro has the same new chip with a sharper display and the pro camera. Want me to send a few photos?<span className="ccd__caret" /></span>
+              <span className="ccd__dnew"><CopilotStreamingDraft /></span>
             </div>
             <div className="ccd__act"><span className="ccd__send ccd__send--pro"><span className="ccd__lbl-send">Send reply <ArrowIcon /></span><span className="ccd__lbl-sent">Sent <CheckIcon /></span></span></div>
-          </div>
+            </div>
 
-          <div className="ccd-r3 ccd__rec">
+            <div className="ccd-r3 ccd__rec">
             <div className="ccd__rec-head">
               <span className="ccd__thumb"><PhoneIcon /></span>
               <span className="ccd__rec-name">iPhone 17 Pro Max</span>
@@ -110,6 +111,7 @@ export default function CopilotChatDemo({ caption }: { caption?: string }) {
             </div>
             <div className="ccd__draft">If you want the top of the line, the 17 Pro Max has the biggest screen and the longest battery. Happy to share the details.</div>
             <div className="ccd__act"><span className="ccd__send">Send reply <ArrowIcon /></span></div>
+            </div>
           </div>
         </div>
 

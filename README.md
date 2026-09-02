@@ -1,70 +1,70 @@
-# bobbymuljono-site
+# Bobby Muljono's personal site
 
-Personal portfolio site — About/bio, selected project write-ups, and an AI persona chatbot
-("Bobby AI"), built with [Next.js](https://nextjs.org) (App Router).
+Welcome. This is the source code behind my personal site: a small home for my story, a few pieces of work I'm proud of, and "Bobby AI", a chatbot that answers questions as me.
 
-> **Deployed on Vercel** (as of 2026-07-10) at [www.bobbymuljono.com](https://www.bobbymuljono.com)
-> (custom domain attached 2026-07-16). Vercel auto-builds on push to `main`. The migration from
-> Astro to Next.js cut over to `main` on 2026-09-01, and production now serves the Next.js build.
-> See [Deployment](#deployment).
+It's live at **[www.bobbymuljono.com](https://www.bobbymuljono.com)**.
 
-Design decisions and their reasoning live in [DESIGN_NOTES.md](./DESIGN_NOTES.md).
+I'm a Senior Data Analyst who now spends most of my time building with AI, and the site reflects that. It's meant to be fast and quiet, hand-built rather than assembled from heavy libraries, with one genuinely interactive piece: an AI version of me you can actually chat with.
 
-## Stack
+## What's inside
 
-- [Next.js](https://nextjs.org) 15 (App Router) with React 19, TypeScript strict — server
-  components by default (near-zero client JS), with small client components used only where
-  interactivity is genuinely needed (the chatbot, the contact-form dialog, the theme toggle,
-  the header nav, scroll reveal). No general-purpose UI or animation library.
-- Content for project write-ups lives in `content/projects` (a `fs` + `gray-matter` + `zod`
-  loader in `lib/content.ts`); the two published write-ups are `.mdx`, the rest are `.md`.
-- No component/animation library — hand-written CSS tokens in `styles/global.css`
-- Self-hosted webfonts (Newsreader / Hanken Grotesk / IBM Plex Mono) in `styles/fonts.css` — no third-party font requests
-- Light and dark theme, toggled from the sticky header (`components/ThemeToggle.tsx`). New
-  visitors see light by default (the site does not follow OS `prefers-color-scheme`); dark only
-  appears once toggled, and the choice persists in `localStorage`.
-- **Chatbot (`app/api/chat/route.ts` + `components/ChatBot.tsx`)**: RAG over Supabase
-  pgvector, Gemini embeddings, streamed generation from Claude Haiku or Gemini (switchable via
-  `CHAT_PROVIDER`). Needs an on-demand server route — Next.js route handlers deploy to Vercel
-  natively, no adapter required. Toggle on/off via `CHAT_ENABLED` in `lib/chat/enabled.ts`; live
-  in production as of 2026-07-16 (always on outside production, i.e. in local dev).
-- **Contact form (`app/api/contact/route.ts` + `components/ContactForm.tsx`)**: another
-  on-demand route, sends mail via Resend (`RESEND_API_KEY`).
+- A short bio and an experience timeline
+- Write-ups of selected projects, with hand-drawn architecture diagrams
+- **Bobby AI**, a chatbot grounded in real facts about my work (how it works is below)
+- A light and dark theme, plus a contact form
+- Almost no JavaScript shipped to your browser, so pages stay quick
 
-## Commands
+## How it all fits together
 
-| Command           | Action                                      |
-| ------------------ | -------------------------------------------- |
-| `npm install`      | Install dependencies                         |
-| `npm run dev`      | Start local dev server at `localhost:3000`   |
-| `npm run build`    | Build the production site (`next build`)     |
-| `npm run start`    | Serve the production build locally (`next start`) |
-| `npm run lint`     | Lint the codebase (`next lint`)              |
-| `npm run ingest`   | Re-chunk + embed `knowledge/` + write-ups (from `content/projects/`) into Supabase (run after editing the chatbot KB) |
-| `npm run pdf2md`   | Extract a PDF into a draft markdown file in `knowledge/_staging/` for review (KB prep helper) |
+The site runs on Next.js and lives on Vercel. Most pages are plain static HTML. Only the parts that truly need to react to you (the chatbot, the contact form, the theme toggle) ship any JavaScript at all.
 
-Running the chatbot locally (`npm run dev`) needs a `.env` file — copy `.env.example` and fill in the keys.
+The diagram below doubles as a map of the code: every box names the real files behind it, so it's a good place to start if you're poking around.
 
-**Adding a PDF to the chatbot KB:** drop the `.pdf` into the project root and run `npm run pdf2md` — it extracts + cleans the text into `knowledge/_staging/<name>.md` (stamped `draft: true`) and deletes the source PDF from the root. Review and clean the staged markdown (fix flattened bullet lists, trim noise), move it up into `knowledge/`, set `draft: false`, then run `npm run ingest`. The `knowledge/_staging/` folder and root `*.pdf` files are git-ignored (transient scratch). You can also target a PDF anywhere with `npm run pdf2md -- "path/to/file.pdf"` (a PDF outside the root is never deleted), and add `--dry` to preview without writing.
+![Site architecture and file map](docs/diagrams/site-architecture.png)
 
-## Adding a project
+_Prefer to click around? Open [`docs/diagrams/site-architecture.html`](./docs/diagrams/site-architecture.html) in a browser for the interactive version (trace connections, switch light and dark)._
 
-Copy `content/projects/_template.md` to a new file in the same folder (filename becomes the URL slug), fill in the frontmatter, and set `draft: false` once it's ready to publish. Use a `.mdx` extension instead of `.md` if the write-up needs to embed a React component (for example, an architecture diagram from `components/arch/`).
+Reading it left to right: your browser loads a static page. When a project write-up needs its words, a small content loader reads them from Markdown. The two interactive pieces each talk to a tiny serverless function, one for the chatbot and one for the contact form. Everything inside the dashed box runs on Vercel; the boxes outside it are the outside services I lean on.
 
-## Deployment
+## How Bobby AI works
 
-**Vercel (canonical), native Next.js.** The Astro to Next.js migration (App Router, React 19) cut over to `main` on 2026-09-01 (see `TODO.md`), and production now serves the Next.js build. Pushing to `main` auto-builds and deploys via Vercel's native Next.js support, no adapter and no `vercel.json`. Static/SSG pages are prerendered; the chatbot route (`app/api/chat/route.ts`) and the contact-form route (`app/api/contact/route.ts`), both Next.js route handlers (`runtime: 'nodejs'`, `dynamic: 'force-dynamic'`), are bundled as serverless functions. `next.config.mjs` sets `trailingSlash: true` so the existing URL shape (`/projects/`, `/projects/<slug>/`) carries over unchanged; requests without a trailing slash 308-redirect. The domain itself does not change: `https://www.bobbymuljono.com` (custom domain attached 2026-07-16; canonical is `www`).
+Bobby AI looks things up before it answers, so it stays grounded in real facts about me instead of making things up. Here's a single question, from the moment you hit send to the reply streaming back:
 
-Required setup in **Vercel → Project → Settings → Environment Variables** (Production scope): `CHAT_PROVIDER`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `DEVICE_ID_SALT` for the chatbot, plus `RESEND_API_KEY` (optional `CONTACT_TO`/`CONTACT_FROM` overrides) for the contact form. Without them the relevant endpoint returns a "Server is not configured" error. None may be `PUBLIC_`-prefixed — they're server-side secrets (Next.js's client-exposed prefix, `NEXT_PUBLIC_`, is unused here).
+![Bobby AI chat request sequence](docs/diagrams/chat-rag.png)
 
-Still to do:
+_Interactive version: [`docs/diagrams/chat-rag.html`](./docs/diagrams/chat-rag.html)._
 
-1. Confirm in the Vercel dashboard that the apex domain 301-redirects to `www`.
+In plain terms: when you send a message, it first pulls the most relevant snippets about me (my bio, FAQs, project write-ups), hands those to a language model as background, and streams the answer back word by word. If it can't find anything relevant it answers carefully rather than guessing, and it keeps private details private.
 
-The dormant legacy Astro source (`src/`) and `astro.config.mjs` were deleted on 2026-09-01, completing the cutover cleanup; their leftover presence had been breaking `npm run build`'s route-type check (Next.js misresolved the app dir to `src/app`), so the build is green again.
+## The stack, briefly
 
-GitHub Pages has been retired (`deploy.yml` removed) — the chatbot needs a server runtime that Pages can't provide.
+- **[Next.js](https://nextjs.org) 15** (App Router) and **React 19**, in TypeScript
+- **Vercel** for hosting
+- **Supabase** (Postgres with pgvector) as the chatbot's memory and search
+- **Gemini** for the lookups, **Claude** (or Gemini) for the replies
+- **Resend** for the contact form
+- Hand-written CSS with design tokens and self-hosted fonts, no UI or animation library
+
+The thinking behind the design (colors, type, layout, and the sites that inspired it) lives in [DESIGN_NOTES.md](./DESIGN_NOTES.md).
+
+## Running it locally
+
+You'll need Node 22.12 or newer, and a `.env` file (copy `.env.example` and fill in the keys the chatbot and contact form use).
+
+```bash
+npm install
+npm run dev
+```
+
+That serves the site at `localhost:3000`. A few other commands:
+
+| Command | What it does |
+| --- | --- |
+| `npm run build` | Build the production site |
+| `npm run start` | Serve that build locally |
+| `npm run lint` | Check the code |
+| `npm run ingest` | Rebuild the chatbot's knowledge base after editing it |
 
 ## License
 
-Code is licensed under [LICENSE](./LICENSE). Written content and images are not covered by the code license — all rights reserved unless stated otherwise.
+The code is under [LICENSE](./LICENSE). The writing and images are all rights reserved unless noted otherwise.

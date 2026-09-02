@@ -1,8 +1,17 @@
 import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
 import ChatBot from '@/components/ChatBot';
 import ContactForm from '@/components/ContactForm';
+import { CopilotMiniDemo, AnalyticsChatDemo } from '@/components/demos/SelectedWorkDemos';
 import { getAllProjects } from '@/lib/content';
 import './home.css';
+
+// The animated visual that fronts each featured card, chosen by slug. Projects
+// without a bespoke visual fall through to null and render a copy-only card.
+const projectVisuals: Record<string, () => ReactNode> = {
+  'chat-recommendation-copilot': CopilotMiniDemo,
+  'data-analyst-ai-agent': AnalyticsChatDemo,
+};
 
 export const metadata: Metadata = {
   // Absolute bypasses the "%s — Bobby Muljono" template so the home title stays
@@ -93,27 +102,46 @@ export default function Home() {
               All projects &rarr;
             </a>
           </div>
-          <div className="selected__grid">
-            {featured.map((p) => (
-              <a
-                key={p.slug}
-                href={`/projects/${p.slug}/`}
-                className="card card--interactive project-preview"
-              >
-                {p.frontmatter.kind && (
-                  <span className="eyebrow">{p.frontmatter.kind}</span>
-                )}
-                <h3>{p.frontmatter.title}</h3>
-                <p>{p.frontmatter.description}</p>
-                <ul className="tag-list">
-                  {p.frontmatter.techStack.map((t) => (
-                    <li className="tag" key={t}>
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-              </a>
-            ))}
+          <div className="selected__stack">
+            {featured.map((p, i) => {
+              const Visual = projectVisuals[p.slug];
+              return (
+                <a
+                  key={p.slug}
+                  href={`/projects/${p.slug}/`}
+                  className={`feat${i % 2 === 1 ? ' feat--flip' : ''}`}
+                >
+                  {Visual && (
+                    <div className="feat__vis">
+                      <span className="feat__live">
+                        <i /> Live demo
+                      </span>
+                      <Visual />
+                    </div>
+                  )}
+                  <div className="feat__body">
+                    {p.frontmatter.kind && (
+                      <span className="feat__kind">{p.frontmatter.kind}</span>
+                    )}
+                    <h3>{p.frontmatter.title}</h3>
+                    <p>{p.frontmatter.description}</p>
+                    <ul className="tag-list">
+                      {p.frontmatter.techStack.map((t) => (
+                        <li className="tag" key={t}>
+                          {t}
+                        </li>
+                      ))}
+                    </ul>
+                    <span className="feat__more">
+                      Read the write-up{' '}
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 12h14M13 6l6 6-6 6" />
+                      </svg>
+                    </span>
+                  </div>
+                </a>
+              );
+            })}
           </div>
         </section>
       )}

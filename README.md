@@ -9,7 +9,7 @@ I'm a Senior Data Analyst who now spends most of my time building with AI, and t
 ## What's inside
 
 - A short bio and an experience timeline
-- Write-ups of selected projects, with hand-drawn architecture diagrams
+- Write-ups of selected projects, with hand-drawn architecture diagrams and looping, hand-coded demos of the product in action (no video, no GIFs, just CSS)
 - **Bobby AI**, a chatbot grounded in real facts about my work (how it works is below)
 - A light and dark theme, plus a contact form
 - Almost no JavaScript shipped to your browser, so pages stay quick

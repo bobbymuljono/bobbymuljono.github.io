@@ -96,6 +96,20 @@ screen**, unaffected by the migration. See `README.md` → Deployment for produc
   `summary_large_image` Twitter card (pages can still override).
 - [ ] **Optional visual assets**: per-project cover screenshots (still outstanding; the default
   OG image above is done).
+- [x] **Landing page redesign + animated chat demos** (2026-09-02): replaced the Home page's
+  plain `.selected__grid` project-preview cards with a `.selected__stack` of two-column feature
+  cards (`app/page.tsx` / `app/home.css`) pairing a looping animated demo visual against the
+  project copy, sides alternating per card, collapsing to a single stacked column under 52rem. New
+  pure-CSS, zero-JS, server-component demo library at `components/demos/`: `CopilotChatDemo.tsx`
+  (a full 11s-loop recreation of the item-recommendation copilot: buyer message, suggestion panel,
+  an animated cursor editing a draft, send, reply landing in-thread with a product card), now
+  embedded as the lead element of `chat-recommendation-copilot.mdx` via a new `mdxComponents` map
+  in `app/projects/[slug]/page.tsx`, and `SelectedWorkDemos.tsx` (two compact mini-demos for the
+  landing feature cards: `CopilotMiniDemo` and `AnalyticsChatDemo`, the latter replacing an
+  abstract SVG "analytics motif" sketch tried and discarded this session for reading as decoration
+  rather than a real demo). All demos use semantic color tokens (invert in dark mode) and go
+  static under `prefers-reduced-motion`, matching the `components/arch/` kit's ethos. `npm run
+  build` is green. See `DESIGN_NOTES.md` for the pattern writeup.
 - [~] **Project write-ups: two real rewrites done; three still placeholders** (updated
   2026-07-15). The four original write-ups started as sample copy from the design bundle. **Two
   are now real, published rewrites**: `data-analyst-ai-agent.mdx` (renamed from `.md` in the

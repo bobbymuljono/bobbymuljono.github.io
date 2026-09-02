@@ -1,0 +1,454 @@
+/* Copilot chat demo — a looping, scripted product-recommendation walkthrough that
+   opens the chat-recommendation-copilot write-up. Pure CSS animation (no JS): the
+   whole timeline is one shared cycle (--ccd-T) run on `infinite`, so every element
+   resets together at the loop boundary. Tokens are the site's semantic aliases, so
+   it adapts to dark mode automatically. Fully visible and static under
+   prefers-reduced-motion. Namespaced under .ccd so class names never collide. */
+
+.ccd {
+  --ccd-T: 11000ms;
+  --ccd-focus: color-mix(in srgb, var(--color-accent) 24%, transparent);
+  margin: var(--space-6) 0;
+}
+
+.ccd__win {
+  position: relative;
+  max-width: 660px;
+  margin: 0 auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.ccd__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+.ccd__who {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+.ccd__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  flex: none;
+}
+.ccd__ctx {
+  font-family: var(--font-label);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.ccd__chat {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 16px 8px;
+}
+
+.ccd__cap {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin: 0 2px -4px;
+}
+.ccd__cap--right {
+  align-self: flex-end;
+}
+.ccd__row {
+  display: flex;
+}
+.ccd__row--right {
+  justify-content: flex-end;
+}
+.ccd__bubble {
+  max-width: 80%;
+  padding: 10px 14px;
+  font-size: 15px;
+  line-height: 1.42;
+  border-radius: 14px;
+}
+.ccd__bubble--buyer {
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+  border-bottom-right-radius: 5px;
+}
+.ccd__bubble--shop {
+  background: var(--color-surface-sunk);
+  color: var(--color-text);
+  border-bottom-left-radius: 5px;
+}
+
+.ccd__think {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: 2px 0;
+  padding: 8px 13px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-accent);
+  color: var(--color-text-on-wash);
+  font-family: var(--font-label);
+  font-style: italic;
+  font-size: 14px;
+  opacity: 0;
+}
+.ccd__dots {
+  display: inline-flex;
+  gap: 4px;
+}
+.ccd__dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  display: block;
+  opacity: 0.5;
+}
+
+.ccd__sent {
+  overflow: hidden;
+  opacity: 0;
+  max-height: 0;
+}
+.ccd__msg {
+  max-width: 88%;
+  background: var(--color-surface-sunk);
+  border-radius: 14px;
+  border-bottom-left-radius: 5px;
+  padding: 11px 13px;
+}
+.ccd__msg-text {
+  font-size: 15px;
+  line-height: 1.42;
+}
+.ccd__msg-card {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+.ccd__msg-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+.ccd__msg-price {
+  margin-left: auto;
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.ccd__panel {
+  margin: 6px 16px 4px;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  overflow: hidden;
+  opacity: 0;
+  max-height: 0;
+}
+.ccd__panel-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 14px;
+  background: var(--color-surface-accent);
+  border-bottom: 1px solid var(--color-border);
+}
+.ccd__panel-ey {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-label);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--color-accent-deep);
+}
+.ccd__panel-ey svg {
+  display: block;
+  color: var(--color-accent);
+}
+.ccd__intent {
+  font-family: var(--font-label);
+  font-style: italic;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-text-on-accent);
+  background: var(--color-accent);
+  border-radius: var(--radius-pill);
+  padding: 3px 11px;
+}
+
+.ccd__rec {
+  padding: 12px 14px;
+  border-top: 1px solid var(--color-border);
+  opacity: 0;
+}
+.ccd__rec:first-of-type {
+  border-top: none;
+}
+.ccd__rec-head {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.ccd__thumb {
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-accent);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+}
+.ccd__thumb svg {
+  display: block;
+}
+.ccd__rec-name {
+  font-weight: 600;
+  font-size: 15px;
+}
+.ccd__rec-price {
+  margin-left: auto;
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
+}
+.ccd__draft {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--color-text);
+  background: var(--color-surface-sunk);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 9px 11px;
+  margin: 9px 0 0;
+}
+.ccd__draftwrap {
+  position: relative;
+  min-height: 78px;
+  border-radius: var(--radius-md);
+}
+.ccd__dold {
+  display: block;
+}
+.ccd__dnew {
+  display: block;
+  position: absolute;
+  top: 9px;
+  left: 11px;
+  right: 11px;
+  opacity: 0;
+}
+.ccd__caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.05em;
+  background: var(--color-accent);
+  margin-left: 2px;
+  vertical-align: -3px;
+  visibility: hidden;
+}
+.ccd__act {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 9px;
+}
+.ccd__send {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 12.5px;
+  color: var(--color-text-on-accent);
+  background: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  padding: 7px 13px;
+}
+.ccd__send svg {
+  display: block;
+}
+.ccd__send--pro {
+  position: relative;
+}
+.ccd__lbl-send {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.ccd__lbl-sent {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  opacity: 0;
+}
+
+.ccd__compose {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+.ccd__compose-ph {
+  flex: 1;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  background: var(--color-surface-sunk);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 9px 14px;
+}
+.ccd__suggest {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: none;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-text-on-accent);
+  background: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-pill);
+  padding: 9px 15px;
+}
+.ccd__suggest svg {
+  display: block;
+}
+
+.ccd__cursor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 22px;
+  height: 22px;
+  z-index: 6;
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 1px rgba(35, 41, 31, 0.35));
+  transform: translate(150px, 300px);
+}
+.ccd__cursor svg {
+  display: block;
+}
+
+.ccd figcaption {
+  margin-top: var(--space-4);
+  text-align: center;
+  font-family: var(--font-label);
+  font-style: italic;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* ===================== looped timeline (cycle = --ccd-T) ===================== */
+@keyframes ccd-buyer { 0%, 1.8% { opacity: 0; transform: translateY(8px); } 5.5% { opacity: 1; transform: none; } 100% { opacity: 1; transform: none; } }
+@keyframes ccd-agent { 0%, 10% { opacity: 0; transform: translateY(8px); } 13.6% { opacity: 1; transform: none; } 100% { opacity: 1; transform: none; } }
+@keyframes ccd-think { 0%, 30% { opacity: 0; transform: translateY(6px); } 32.7% { opacity: 1; transform: none; } 39% { opacity: 1; } 41.8% { opacity: 0; } 100% { opacity: 0; } }
+@keyframes ccd-panel {
+  0%, 42.7% { opacity: 0; max-height: 0; transform: translateY(8px); }
+  47% { opacity: 1; max-height: 760px; transform: none; }
+  68.2% { opacity: 1; max-height: 760px; }
+  72.9% { opacity: 0; max-height: 0; transform: translateY(-6px); }
+  100% { opacity: 0; max-height: 0; }
+}
+@keyframes ccd-rec1 { 0%, 43.8% { opacity: 0; transform: translateY(8px); } 47.5% { opacity: 1; transform: none; } 100% { opacity: 1; } }
+@keyframes ccd-rec2 { 0%, 45.1% { opacity: 0; transform: translateY(8px); } 48.7% { opacity: 1; transform: none; } 100% { opacity: 1; } }
+@keyframes ccd-rec3 { 0%, 46.4% { opacity: 0; transform: translateY(8px); } 50% { opacity: 1; transform: none; } 100% { opacity: 1; } }
+@keyframes ccd-focus { 0%, 53.6% { box-shadow: 0 0 0 0 var(--ccd-focus); } 55.5% { box-shadow: 0 0 0 3px var(--ccd-focus); } 67.3% { box-shadow: 0 0 0 3px var(--ccd-focus); } 68.2% { box-shadow: 0 0 0 0 var(--ccd-focus); } 100% { box-shadow: 0 0 0 0 var(--ccd-focus); } }
+@keyframes ccd-dold { 0%, 55.5% { opacity: 1; } 58.9% { opacity: 0; } 100% { opacity: 0; } }
+@keyframes ccd-dnew { 0%, 57.7% { opacity: 0; } 61.2% { opacity: 1; } 100% { opacity: 1; } }
+@keyframes ccd-caretvis { 0%, 57.4% { visibility: hidden; } 57.5% { visibility: visible; } 68% { visibility: visible; } 68.1% { visibility: hidden; } 100% { visibility: hidden; } }
+@keyframes ccd-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes ccd-suggest { 0%, 27.5% { transform: scale(1); } 28.3% { transform: scale(0.9); } 29.4% { transform: scale(1); } 100% { transform: scale(1); } }
+@keyframes ccd-send { 0%, 65.6% { transform: scale(1); } 66.4% { transform: scale(0.9); } 67.4% { transform: scale(1); } 100% { transform: scale(1); } }
+@keyframes ccd-lblsend { 0%, 67.8% { opacity: 1; } 68.6% { opacity: 0; } 100% { opacity: 0; } }
+@keyframes ccd-lblsent { 0%, 68% { opacity: 0; } 69.2% { opacity: 1; } 100% { opacity: 1; } }
+@keyframes ccd-sent { 0%, 71.8% { opacity: 0; max-height: 0; transform: translateY(8px); } 74% { max-height: 220px; } 76.9% { opacity: 1; max-height: 220px; transform: none; } 100% { opacity: 1; max-height: 220px; } }
+@keyframes ccd-cursor {
+  0% { opacity: 0; transform: translate(150px, 300px) scale(1); }
+  18.2% { opacity: 0; transform: translate(150px, 300px) scale(1); }
+  21.5% { opacity: 1; transform: translate(150px, 300px) scale(1); }
+  26.4% { opacity: 1; transform: translate(566px, 905px) scale(1); }
+  28% { transform: translate(566px, 905px) scale(0.82); }
+  29.6% { transform: translate(566px, 905px) scale(1); }
+  48.7% { opacity: 1; transform: translate(566px, 905px) scale(1); }
+  54.2% { transform: translate(150px, 556px) scale(1); }
+  60.7% { opacity: 1; transform: translate(150px, 556px) scale(1); }
+  66.2% { transform: translate(470px, 612px) scale(1); }
+  67.3% { transform: translate(470px, 612px) scale(0.82); }
+  68.9% { transform: translate(470px, 612px) scale(1); }
+  71.1% { opacity: 0; transform: translate(470px, 612px) scale(1); }
+  100% { opacity: 0; transform: translate(470px, 612px) scale(1); }
+}
+
+.ccd .ccd-buyer { animation: ccd-buyer var(--ccd-T) linear infinite; }
+.ccd .ccd-agent { animation: ccd-agent var(--ccd-T) linear infinite; }
+.ccd .ccd__think { animation: ccd-think var(--ccd-T) linear infinite; }
+.ccd .ccd__panel { animation: ccd-panel var(--ccd-T) linear infinite; }
+.ccd .ccd-r1 { animation: ccd-rec1 var(--ccd-T) linear infinite; }
+.ccd .ccd-r2 { animation: ccd-rec2 var(--ccd-T) linear infinite; }
+.ccd .ccd-r3 { animation: ccd-rec3 var(--ccd-T) linear infinite; }
+.ccd .ccd__draftwrap { animation: ccd-focus var(--ccd-T) linear infinite; }
+.ccd .ccd__dold { animation: ccd-dold var(--ccd-T) linear infinite; }
+.ccd .ccd__dnew { animation: ccd-dnew var(--ccd-T) linear infinite; }
+.ccd .ccd__caret { animation: ccd-caretvis var(--ccd-T) steps(1, end) infinite, ccd-blink 640ms steps(1) infinite; }
+.ccd .ccd__suggest { animation: ccd-suggest var(--ccd-T) linear infinite; }
+.ccd .ccd__send--pro { animation: ccd-send var(--ccd-T) linear infinite; }
+.ccd .ccd__send--pro .ccd__lbl-send { animation: ccd-lblsend var(--ccd-T) linear infinite; }
+.ccd .ccd__send--pro .ccd__lbl-sent { animation: ccd-lblsent var(--ccd-T) linear infinite; }
+.ccd .ccd__sent { animation: ccd-sent var(--ccd-T) linear infinite; }
+.ccd .ccd__cursor { animation: ccd-cursor var(--ccd-T) linear infinite; }
+
+/* The scripted cursor targets fixed pixel positions in the 660px window; on narrow
+   screens the window shrinks and those coords drift, so hide it there. The rest of
+   the sequence still reads without it. */
+@media (max-width: 700px) {
+  .ccd__cursor { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ccd * { animation: none !important; }
+  .ccd .ccd-buyer,
+  .ccd .ccd-agent,
+  .ccd .ccd__panel,
+  .ccd .ccd__rec { opacity: 1 !important; transform: none !important; }
+  .ccd .ccd__panel { max-height: none !important; }
+  .ccd .ccd__think,
+  .ccd .ccd__cursor,
+  .ccd .ccd__sent,
+  .ccd .ccd__dnew { display: none !important; }
+}

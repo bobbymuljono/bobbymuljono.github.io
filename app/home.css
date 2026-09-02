@@ -166,21 +166,122 @@
   white-space: nowrap;
 }
 
-.selected__grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+.selected__stack {
+  display: flex;
+  flex-direction: column;
   gap: var(--space-5);
 }
 
-.project-preview h3 {
-  font-size: var(--text-xl);
-  margin: var(--space-2) 0 var(--space-3);
+/* Feature card: an animated demo panel beside the copy, sides alternating. */
+.feat {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color var(--ease-out), box-shadow var(--ease-out);
+}
+.feat:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-md);
+}
+.feat--flip .feat__vis {
+  order: 2;
 }
 
-.project-preview p {
+.feat__vis {
+  position: relative;
+  padding: var(--space-6);
+  background: var(--color-surface-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--color-border);
+}
+.feat--flip .feat__vis {
+  border-right: none;
+  border-left: 1px solid var(--color-border);
+}
+
+.feat__live {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-accent-deep);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 4px 10px;
+}
+.feat__live i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  display: block;
+  animation: feat-pulse 2s ease-in-out infinite;
+}
+@keyframes feat-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .feat__live i { animation: none; }
+}
+
+.feat__body {
+  padding: var(--space-7) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.feat__kind {
+  font-family: var(--font-label);
+  font-style: italic;
+  font-size: var(--text-sm);
+  color: var(--color-accent);
+  margin-bottom: var(--space-2);
+}
+.feat__body h3 {
+  font-size: var(--text-2xl);
+  line-height: 1.16;
+  margin: 0 0 var(--space-3);
+}
+.feat__body p {
   font-size: var(--text-base);
   color: var(--color-text-muted);
+  line-height: 1.55;
   margin: 0 0 var(--space-4);
+}
+.feat__body .tag-list {
+  margin: 0 0 var(--space-5);
+}
+.feat__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-label);
+  font-style: italic;
+  font-size: var(--text-base);
+  color: var(--color-accent);
+}
+.feat__more svg {
+  display: block;
+  transition: transform var(--ease-out);
+}
+.feat:hover .feat__more svg {
+  transform: translateX(3px);
 }
 
 /* Contact */
@@ -208,8 +309,19 @@
 }
 
 @media (max-width: 52rem) {
-  .selected__grid {
+  .feat,
+  .feat--flip {
     grid-template-columns: 1fr;
+  }
+
+  /* Stack visual above copy in source order, even on the flipped card. */
+  .feat--flip .feat__vis {
+    order: 0;
+    border-left: none;
+  }
+  .feat__vis {
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
   }
 
   .exp__head {

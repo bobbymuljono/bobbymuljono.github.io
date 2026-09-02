@@ -1,5 +1,6 @@
-/* Compact looping visuals for the landing "Selected work" feature cards. Pure CSS,
-   server-rendered, token-driven so they invert in dark mode. Two motifs:
+/* Compact looping visuals for the landing "Selected work" feature cards. Token-driven
+   so they invert in dark mode. The copilot is pure CSS; the analytics reply uses a
+   small client-side typewriter synchronized with its CSS timeline. Two motifs:
    .cmini  — a miniature copilot chat (card 1), and
    .amotif — a query-to-chart analytics sketch (card 2).
    Both loop on a 6s cycle and go static under prefers-reduced-motion. */
@@ -178,17 +179,36 @@
   background: var(--color-accent);
   color: var(--color-text-on-accent);
   border-bottom-right-radius: 4px;
-  opacity: 0;
+  opacity: 1;
 }
 .amini__bub--agent {
   background: var(--color-surface-sunk);
   color: var(--color-text);
   border-bottom-left-radius: 4px;
-  opacity: 0;
+  opacity: 1;
 }
 .amini__bub--agent b {
   color: var(--color-accent-deep);
   font-weight: 600;
+}
+.amini__stream {
+  display: grid;
+}
+.amini__stream-reserve,
+.amini__stream-live {
+  grid-area: 1 / 1;
+}
+.amini__stream-reserve {
+  visibility: hidden;
+}
+.amini__caret {
+  display: inline-block;
+  width: 1px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -2px;
+  background: var(--color-accent);
+  animation: amini-caret 640ms steps(1, end) infinite;
 }
 .amini__tool {
   align-self: flex-start;
@@ -202,7 +222,7 @@
   font-family: var(--font-label);
   font-style: italic;
   font-size: 11.5px;
-  opacity: 0;
+  opacity: 1;
 }
 .amini__tool svg {
   display: block;
@@ -213,11 +233,12 @@
 @keyframes amini-user { 0%, 6% { opacity: 0; transform: translateY(6px); } 14% { opacity: 1; transform: none; } 100% { opacity: 1; } }
 @keyframes amini-t1 { 0%, 24% { opacity: 0; transform: translateY(5px); } 32% { opacity: 1; transform: none; } 100% { opacity: 1; } }
 @keyframes amini-t2 { 0%, 40% { opacity: 0; transform: translateY(5px); } 48% { opacity: 1; transform: none; } 100% { opacity: 1; } }
-@keyframes amini-agent { 0%, 60% { opacity: 0; transform: translateY(6px); } 70% { opacity: 1; transform: none; } 100% { opacity: 1; } }
-.amini .amini__bub--user { animation: amini-user 7s ease-out infinite; }
-.amini .amini__tool--1 { animation: amini-t1 7s ease-out infinite; }
-.amini .amini__tool--2 { animation: amini-t2 7s ease-out infinite; }
-.amini .amini__bub--agent { animation: amini-agent 7s ease-out infinite; }
+@keyframes amini-agent { 0%, 56% { opacity: 0; transform: translateY(6px); } 60% { opacity: 1; transform: none; } 100% { opacity: 1; } }
+@keyframes amini-caret { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+.amini--running .amini__bub--user { animation: amini-user 7s ease-out infinite; }
+.amini--running .amini__tool--1 { animation: amini-t1 7s ease-out infinite; }
+.amini--running .amini__tool--2 { animation: amini-t2 7s ease-out infinite; }
+.amini--running .amini__bub--agent { animation: amini-agent 7s ease-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
   .cmini *, .amini * { animation: none !important; }

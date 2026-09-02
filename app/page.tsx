@@ -113,9 +113,6 @@ export default function Home() {
                 >
                   {Visual && (
                     <div className="feat__vis">
-                      <span className="feat__live">
-                        <i /> Live demo
-                      </span>
                       <Visual />
                     </div>
                   )}

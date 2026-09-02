@@ -73,7 +73,25 @@
     gap: var(--space-2) var(--space-4);
   }
 
+  .site-header__nav {
+    width: 100%;
+    flex-wrap: nowrap;
+    gap: var(--space-2);
+  }
+
   .site-header__link--contact {
     display: none;
+  }
+
+  .site-header__nav .bobbychat__launch {
+    gap: 3px;
+    padding: 5px 6px;
+    font-size: var(--text-xs);
+    white-space: nowrap;
+  }
+
+  .site-header__nav .bobbychat__spark {
+    width: 11px;
+    height: 11px;
   }
 }

@@ -207,39 +207,6 @@
   border-left: 1px solid var(--color-border);
 }
 
-.feat__live {
-  position: absolute;
-  top: var(--space-4);
-  left: var(--space-4);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  color: var(--color-accent-deep);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  padding: 4px 10px;
-}
-.feat__live i {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--color-accent);
-  display: block;
-  animation: feat-pulse 2s ease-in-out infinite;
-}
-@keyframes feat-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .feat__live i { animation: none; }
-}
-
 .feat__body {
   padding: var(--space-7) var(--space-6);
   display: flex;

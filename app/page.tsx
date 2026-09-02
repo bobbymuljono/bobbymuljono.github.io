@@ -23,11 +23,10 @@ export default function Home() {
         <div className="hero__intro">
           <h1>I build with AI, and I storytell with data for a living.</h1>
           <p className="hero__lead">
-            I&apos;m Bobby — a Senior Data Analyst, with 6+ years in SQL,
+            Hey guys, welcome to my site. I'm Bobby, a Senior Data Analyst, with 6+ years in SQL (a little bit of Python),
             dashboarding, and data analytics. These days that expertise is
             evolving into building the AI that does it with me: RAG chatbots,
-            automated SQL execution, and automated insight and visualization
-            generation.
+            automated SQL execution, automated insight and visualization, and last but not least, workflow automations.
           </p>
         </div>
         <div className="hero__portrait">
@@ -121,11 +120,10 @@ export default function Home() {
 
       {/* Contact */}
       <section id="contact" className="contact" data-reveal>
-        <span className="eyebrow">Contact</span>
-        <h2>Let&apos;s talk.</h2>
+        <span className="eyebrow"></span>
+        <h2>Want to have a chat? Let's connect.</h2>
         <p className="contact__lead">
-          Building something at the seam of analytics and AI, or just want to
-          compare notes? I&apos;m happy to hear from you.
+          Building cool stuff with AI or need me to work something out with you? Reach out to me via the following channels below.
         </p>
         <div className="contact__actions">
           <a className="button button--secondary" href="https://github.com/bobbymuljono">

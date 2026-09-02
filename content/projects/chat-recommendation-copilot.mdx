@@ -9,9 +9,11 @@ status: "live"
 draft: false
 ---
 
-Shop chat is the one place in the marketplace where a buyer, standing in a shop and looking at an item, asks a question before they buy. That makes it the rare support surface that can actually drive presales revenue, and ops wanted more out of it. Their first plan was to hard-code it: peg every item to one fixed upsell item (higher-priced item) and one fixed substitute-sell, by hand. For a catalog that size it did not scale, and it ignored the one thing that decides whether a suggestion lands, which is what the buyer just asked.
+On Shopee, a buyer eyeing a listing will often message the shop before they commit, and a customer service agent answers on the shop's behalf. But one agent stands in for a catalog of ***thousands*** of items, and cannot possibly know it by heart. So every question turns into lookup work: if the buyer is asking about the item, the agent reads through its description to reply; if they want something else, the agent digs through the shop's listings for a closer match by hand. And that's pretty slow.
 
-I pitched the alternative: let an AI read the actual question and decide. I showed them a working feasibility demo on our internal low-code AI-builder (think Coze), they bought in, and I went straight to building it with a PM. What we shipped was a small panel inside the agent's chat window. The agent reads the buyer's chat, and if they think the AI can help, they press a sell button. Within 20 to 30 seconds the panel fills in up to three suggestions, each a product card with a short reply written in the buyer's language. The agent scans them, presses send on the one that fits, and the card drops straight into the chat.
+Ops wanted to fix this by hardcoding the suggestions: a fixed rule pairing each item with a pricier one in the same category. I thought that was backwards. It does not scale, and it ignores the most useful thing in the chat, the question the buyer just asked. So I pitched the opposite: let an AI read the conversation and do the digging.
+
+I showed ops a rough feasibility demo on our internal low-code AI builder (kind of like Coze), they bought in, and I built the real thing with a PM in under three weeks: one button inside the agent's chat window. The agent taps it, and half a minute later finds up to three product cards waiting, each with a short reply ready to send.
 
 ## Intent is the whole game
 
@@ -57,22 +59,22 @@ That last case mattered more than it looks. The easy version of this tool recomm
   </ArchFlow>
 </Arch>
 
+Under the hood this is a small crew of models, not one big prompt. The routing runs on a lightweight model, since it fires on every click and has to be cheap. The judgment work goes to a frontier model: writing the same-item answers, and scoring candidate items against the product's description so it recommends at most three, and only when relevance clears a high bar. Splitting it this way kept each prompt narrow enough to stay reliable and the per-click cost sane.
+
 ## Why 30 seconds of latency was fine
 
-The full chain runs in about 20 to 30 seconds. For a system a person waits on, that would be a dealbreaker. The decision that made it work was to make it something the agent does *not* wait on.
+The full chain runs in about 20 to 30 seconds. For a system a person waits on, that would be a dealbreaker. The decision that made it work was to build something the agent does *not* wait on.
 
-The sell button is fire-and-forget. The moment an agent taps it, they are free to switch to another chat, and the draft is ready when they circle back. So the thing that would normally be a latency problem became the exact behavior we wanted to encourage: less time parked on one conversation, more chats handled in parallel. I was braced for latency to be the hard constraint. Framing the tool as asynchronous made the constraint irrelevant.
-
-Under the hood this is a small crew of models rather than one big prompt. A lightweight model does the routing, since it is cheap and runs on every click. One of the leading frontier models handles the work that needs judgment: writing the same-item answers, and scoring candidate items for relevance against the product's description so it only recommends, up to three, when that relevance clears a high bar. Splitting it this way kept each prompt narrow enough to be reliable, kept the per-click cost sane, and meant a weak match produced nothing rather than a bad suggestion.
+The sell button is fire-and-forget. The moment an agent taps it, they are free to switch to another chat, and the draft is ready when they circle back. So the thing that would normally be a latency problem became the exact behavior we wanted to encourage: less time parked on one conversation, more chats handled in parallel. I braced for latency to be the hard constraint. Framing the tool as asynchronous made it irrelevant.
 
 ## The friction was human, not technical
 
-The models behaved. People needed a beat to learn the tool. The sell button is meant to be pressed *at the buyer's question*, so the AI drafts the reply the agent then sends. Early on, agents would read the question, type their own reply, and *then* press the button, which is backwards: they had already answered, so the draft had nothing useful to add. There was real confusion in the first few days. It cleared up within about a week once people understood the AI's draft was meant to be the reply, not a second opinion on one they had already written.
-
-The build itself was fast in a way that surprised people. My half was the agents: the supervisor that reads intent and routes, and the two task agents. The PM, who came from a software-engineering background, built the backend around it, the button and the Chrome plugin that calls the agentic workflow. We had it working in roughly a week and a half, plus about a week of testing and grading responses alongside the ops team. A two-person build with no formal sprint cycle turning something around that quickly was not the normal shape of a project here, and the speed was part of why it got taken seriously.
+The models behaved. People needed a beat to learn the tool. The sell button is meant to be pressed *at the buyer's question*, so the AI drafts the reply the agent then sends. Early on, agents would read the question, type their own reply, and *then* press the button, which is backwards: they had already answered, so the draft had nothing useful to add. There was real confusion in the first few days. It cleared up within about a week, once people understood the AI's draft was meant to be the reply, not a second opinion on one they had already written.
 
 ## What it moved, and where I stopped
 
-The point of a PoC is to earn the next conversation, and this one did. With the copilot in the loop, agents handled meaningfully more chats without a drop in order conversion, a productivity lift in the low single digits across multiple regions. The "no conversion hit" half was as important as the productivity half: a tool that makes agents faster but quietly costs sales is not worth scaling, and being able to say it did neither is what made the result credible.
+The build itself was fast in a way that surprised people. My half was the agents: the supervisor that reads intent and routes, and the two task agents. The PM, who came from a software-engineering background, built everything around them, the sell button and the Chrome plugin that calls the agentic workflow. We had it working in roughly a week and a half, plus about a week of testing and grading responses alongside the ops team. A two-person build with no formal sprint cycle moving that fast was not the normal shape of a project here, and the speed was part of why it got taken seriously.
 
-When ops asked us to build the full production feature, we said no. Getting the latency from 20-30 seconds down to a couple, and pushing response accuracy higher, is failsafe engineering work that belongs with a proper software team, not a two-person PoC. So the promising numbers became the justification for a proposal to the feature PM who owns scaling it. Knowing where the PoC ended and the real build began was its own kind of result.
+And it earned the next conversation, which is the whole point of a PoC. With the copilot in the loop, agents handled meaningfully more chats without a drop in order conversion, a productivity lift in the low single digits across multiple regions. The "no conversion hit" half mattered as much as the productivity half: a tool that makes agents faster but quietly costs sales is not worth scaling, and being able to say it did neither is what made the result credible.
+
+So when ops asked us to build the full production feature, we said no. Getting the latency from 20-30 seconds down to a couple, and pushing response accuracy higher, is failsafe engineering work that belongs with a proper software team, not a two-person PoC. The promising numbers became the justification for a proposal to the feature PM who owns scaling it. Knowing where the PoC ended and the real build began was its own kind of result.

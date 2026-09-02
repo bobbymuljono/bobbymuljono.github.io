@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Bobby AI — Chat Request (RAG) Sequence",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [1080, 640],
+    "views": [
+      { "id": "request", "label": "Request + validate", "focus": ["chatui", "chatapi", "supabase"], "note": "The chat island posts to /api/chat, which first rate-limits the session." },
+      { "id": "retrieve", "label": "Retrieve (RAG)", "focus": ["chatapi", "gemini", "supabase"], "note": "Embed the question with Gemini, then pull the top-5 chunks from pgvector." },
+      { "id": "answer", "label": "Generate + log", "focus": ["chatapi", "llm", "chatui"], "note": "Stream the grounded reply, then log the turn asynchronously after it closes." }
+    ]
+  },
+  "participants": [
+    { "id": "chatui", "type": "frontend", "label": "ChatBot", "sublabel": "client island" },
+    { "id": "chatapi", "type": "backend", "label": "Chat API", "sublabel": "/api/chat" },
+    { "id": "gemini", "type": "external", "label": "Gemini", "sublabel": "embeddings" },
+    { "id": "supabase", "type": "database", "label": "Supabase", "sublabel": "pgvector" },
+    { "id": "llm", "type": "external", "label": "Provider", "sublabel": "Claude Haiku" }
+  ],
+  "segments": [
+    { "from": 158, "to": 250, "label": "Validate + rate-limit" },
+    { "from": 260, "to": 404, "label": "Retrieve (RAG)" },
+    { "from": 414, "to": 520, "label": "Generate + stream" },
+    { "from": 530, "to": 566, "label": "Log · async" }
+  ],
+  "messages": [
+    { "id": "post", "from": "chatui", "to": "chatapi", "y": 176, "label": "POST /api/chat", "variant": "emphasis" },
+    { "id": "ratecount", "from": "chatapi", "to": "supabase", "y": 210, "label": "count recent turns", "variant": "default" },
+    { "id": "rateok", "from": "supabase", "to": "chatapi", "y": 244, "label": "within limit (12 / 60s)", "variant": "return" },
+    { "id": "embed", "from": "chatapi", "to": "gemini", "y": 284, "label": "embed question", "variant": "default" },
+    { "id": "vector", "from": "gemini", "to": "chatapi", "y": 318, "label": "768-dim vector", "variant": "return" },
+    { "id": "match", "from": "chatapi", "to": "supabase", "y": 356, "label": "match_documents · top-5", "variant": "emphasis" },
+    { "id": "chunks", "from": "supabase", "to": "chatapi", "y": 390, "label": "top-5 chunks (>0.3 sim)", "variant": "return" },
+    { "id": "gen", "from": "chatapi", "to": "llm", "y": 430, "label": "persona + context + history", "variant": "default" },
+    { "id": "tokens", "from": "llm", "to": "chatapi", "y": 464, "label": "stream tokens", "variant": "return" },
+    { "id": "sse", "from": "chatapi", "to": "chatui", "y": 502, "label": "stream chunks → typewriter", "variant": "return" },
+    { "id": "log", "from": "chatapi", "to": "supabase", "y": 546, "label": "log turn · waitUntil", "variant": "dashed" }
+  ],
+  "activations": [
+    { "participant": "chatui", "from": 170, "to": 508, "type": "frontend" },
+    { "participant": "chatapi", "from": 176, "to": 560, "type": "backend" },
+    { "participant": "supabase", "from": 205, "to": 249, "type": "database" },
+    { "participant": "gemini", "from": 279, "to": 323, "type": "external" },
+    { "participant": "supabase", "from": 351, "to": 395, "type": "database" },
+    { "participant": "llm", "from": 425, "to": 469, "type": "external" },
+    { "participant": "supabase", "from": 541, "to": 560, "type": "database" }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "Request path", "items": ["ChatBot posts to /api/chat and streams the reply back", "The visitor sees it revealed via a typewriter effect"] },
+    { "dot": "violet", "title": "RAG grounding", "items": ["Gemini always does the embedding (Anthropic has no embeddings API)", "Supabase pgvector returns the top-5 chunks above 0.3 similarity", "Persona + retrieved context become the system prompt"] },
+    { "dot": "orange", "title": "Async + resilience", "items": ["The turn is logged via waitUntil, after the response closes", "If retrieval fails it answers without context instead of erroring"] }
+  ]
+}

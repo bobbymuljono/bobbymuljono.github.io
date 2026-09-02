@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Personal Site — Architecture & File Map",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/bobbymuljono/bobbymuljono.github.io",
+      "revision": "71d448bc0bc1793ccae2624e2d1946492a61c3e9"
+    },
+    "views": [
+      { "id": "browse", "label": "Browsing the site", "focus": ["browser", "pages", "content"], "note": "A visitor loads a static page; write-up prose comes from MDX via the content loader." },
+      { "id": "chat", "label": "Chatbot RAG path", "focus": ["islands", "chatapi", "gemini", "supabase", "anthropic"], "note": "The chat island posts to /api/chat, which embeds, retrieves, and streams a grounded reply." },
+      { "id": "contact", "label": "Contact form", "focus": ["islands", "contactapi", "resend"], "note": "The contact island posts to /api/contact, which sends mail via Resend." }
+    ]
+  },
+  "components": [
+    {
+      "id": "browser", "type": "external", "label": "Visitor's Browser", "sublabel": "HTML + hydrated islands",
+      "pos": [40, 290], "size": [170, 66]
+    },
+    {
+      "id": "content", "type": "backend", "label": "Content Loader", "sublabel": "fs + gray-matter + zod", "tag": "content/",
+      "pos": [300, 150], "size": [180, 66],
+      "sources": [
+        { "path": "lib/content.ts", "label": "loads + validates projects" },
+        { "path": "content/projects/data-analyst-ai-agent.mdx", "label": "a published write-up" }
+      ]
+    },
+    {
+      "id": "pages", "type": "frontend", "label": "App Router Pages", "sublabel": "Static / SSG", "tag": "app/",
+      "pos": [300, 290], "size": [180, 66],
+      "sources": [
+        { "path": "app/layout.tsx", "label": "root layout + <head>" },
+        { "path": "app/page.tsx", "label": "home (hero/experience/contact)" },
+        { "path": "app/projects/[slug]/page.tsx", "label": "project detail" }
+      ]
+    },
+    {
+      "id": "islands", "type": "frontend", "label": "Client Islands", "sublabel": "'use client' components", "tag": "components/",
+      "pos": [300, 430], "size": [180, 66],
+      "sources": [
+        { "path": "components/ChatBot.tsx", "label": "chat dialog" },
+        { "path": "components/Header.tsx", "label": "sticky nav + theme" },
+        { "path": "components/ContactForm.tsx", "label": "contact dialog" }
+      ]
+    },
+    {
+      "id": "gemini", "type": "external", "label": "Gemini", "sublabel": "embeddings (768-dim)",
+      "pos": [560, 150], "size": [170, 66]
+    },
+    {
+      "id": "chatapi", "type": "backend", "label": "Chat API", "sublabel": "route handler · Node",
+      "pos": [560, 290], "size": [180, 66],
+      "sources": [
+        { "path": "app/api/chat/route.ts", "label": "embed → retrieve → stream" }
+      ]
+    },
+    {
+      "id": "anthropic", "type": "external", "label": "Claude Haiku", "sublabel": "reply generation",
+      "pos": [560, 430], "size": [170, 66]
+    },
+    {
+      "id": "supabase", "type": "database", "label": "Supabase", "sublabel": "pgvector + conversation log",
+      "pos": [820, 290], "size": [180, 66],
+      "sources": [
+        { "path": "supabase/schema.sql", "label": "documents + conversations" }
+      ]
+    },
+    {
+      "id": "contactapi", "type": "backend", "label": "Contact API", "sublabel": "route handler · Node",
+      "pos": [820, 430], "size": [180, 66],
+      "sources": [
+        { "path": "app/api/contact/route.ts", "label": "validate → send mail" }
+      ]
+    },
+    {
+      "id": "resend", "type": "external", "label": "Resend", "sublabel": "transactional email",
+      "pos": [1080, 430], "size": [160, 66]
+    }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Next.js on Vercel", "wraps": ["pages", "content", "islands", "chatapi", "contactapi"] }
+  ],
+  "connections": [
+    { "id": "load", "from": "browser", "to": "pages", "label": "HTTPS · static HTML", "variant": "emphasis", "fromSide": "right", "toSide": "left", "labelDy": -32 },
+    { "id": "reads", "from": "pages", "to": "content", "label": "reads MDX", "fromSide": "top", "toSide": "bottom" },
+    { "id": "hydrate", "from": "pages", "to": "islands", "label": "hydrates islands", "fromSide": "bottom", "toSide": "top", "labelDy": 35 },
+    { "id": "postchat", "from": "islands", "to": "chatapi", "label": "POST /api/chat", "fromSide": "right", "toSide": "left" },
+    { "id": "postcontact", "from": "islands", "to": "contactapi", "label": "POST /api/contact", "variant": "dashed", "fromSide": "bottom", "toSide": "bottom" },
+    { "id": "embed", "from": "chatapi", "to": "gemini", "label": "embed question", "fromSide": "top", "toSide": "bottom" },
+    { "id": "retrieve", "from": "chatapi", "to": "supabase", "label": "retrieve top-5 + log", "fromSide": "right", "toSide": "left", "labelDy": -32 },
+    { "id": "generate", "from": "chatapi", "to": "anthropic", "label": "stream reply", "fromSide": "bottom", "toSide": "top", "labelDy": 35 },
+    { "id": "sendmail", "from": "contactapi", "to": "resend", "label": "send email", "fromSide": "right", "toSide": "left" }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "App (Next.js App Router)", "items": ["Most pages are static / SSG", "Client islands hydrate only where interaction is needed", "Two serverless routes: /api/chat and /api/contact"] },
+    { "dot": "cyan", "title": "Content", "items": ["Write-ups live in content/projects as MDX", "lib/content.ts loads + validates them with zod"] },
+    { "dot": "violet", "title": "Chatbot RAG", "items": ["Gemini embeds the question", "Supabase pgvector returns the top-5 chunks", "Claude Haiku streams a grounded reply"] },
+    { "dot": "slate", "title": "Design", "items": ["Tokens in styles/global.css", "Co-located .css per page and component"] }
+  ]
+}

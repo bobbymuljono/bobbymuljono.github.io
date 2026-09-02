@@ -3,8 +3,13 @@ import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { getProjectBySlug, getProjectSlugs } from '@/lib/content';
 import { archComponents } from '@/components/arch';
+import CopilotChatDemo from '@/components/demos/CopilotChatDemo';
 import '@/styles/arch.css';
 import './detail.css';
+
+// Components made available to every write-up's MDX body. The demo is only used by
+// the copilot write-up; other entries simply never reference it.
+const mdxComponents = { ...archComponents, CopilotChatDemo };
 
 type Params = { slug: string };
 
@@ -64,7 +69,7 @@ export default async function ProjectDetail({
       </p>
 
       <div className="prose">
-        <MDXRemote source={project.body} components={archComponents} />
+        <MDXRemote source={project.body} components={mdxComponents} />
       </div>
     </div>
   );

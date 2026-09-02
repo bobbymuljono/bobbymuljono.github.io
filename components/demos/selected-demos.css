@@ -1,0 +1,226 @@
+/* Compact looping visuals for the landing "Selected work" feature cards. Pure CSS,
+   server-rendered, token-driven so they invert in dark mode. Two motifs:
+   .cmini  — a miniature copilot chat (card 1), and
+   .amotif — a query-to-chart analytics sketch (card 2).
+   Both loop on a 6s cycle and go static under prefers-reduced-motion. */
+
+/* ---------- mini copilot chat (card 1) ---------- */
+.cmini {
+  width: 100%;
+  max-width: 380px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.cmini__bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 12px;
+  font-weight: 600;
+}
+.cmini__bar i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  display: block;
+}
+.cmini__body {
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-height: 196px;
+}
+.cmini__row {
+  display: flex;
+}
+.cmini__row--r {
+  justify-content: flex-end;
+}
+.cmini__bub {
+  max-width: 82%;
+  font-size: 12.5px;
+  line-height: 1.38;
+  padding: 8px 11px;
+  border-radius: 12px;
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+  border-bottom-right-radius: 4px;
+  opacity: 0;
+}
+.cmini__panel {
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  opacity: 0;
+}
+.cmini__panel-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  background: var(--color-surface-accent);
+  font-family: var(--font-label);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--color-accent-deep);
+  border-bottom: 1px solid var(--color-border);
+}
+.cmini__panel-top svg {
+  display: block;
+  color: var(--color-accent);
+}
+.cmini__opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-top: 1px solid var(--color-border);
+  opacity: 0;
+}
+.cmini__opt:first-of-type {
+  border-top: none;
+}
+.cmini__thumb {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: 5px;
+  background: var(--color-surface-accent);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+}
+.cmini__opt b {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.cmini__price {
+  margin-left: auto;
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: 12px;
+}
+.cmini__send {
+  margin-left: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--color-text-on-accent);
+  background: var(--color-accent);
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+@keyframes cmini-buyer { 0%, 6% { opacity: 0; transform: translateY(6px); } 14% { opacity: 1; transform: none; } 100% { opacity: 1; } }
+@keyframes cmini-panel { 0%, 40% { opacity: 0; transform: translateY(6px); } 48% { opacity: 1; transform: none; } 100% { opacity: 1; } }
+@keyframes cmini-opt1 { 0%, 50% { opacity: 0; transform: translateY(5px); } 58% { opacity: 1; transform: none; } 100% { opacity: 1; } }
+@keyframes cmini-opt2 { 0%, 58% { opacity: 0; transform: translateY(5px); } 66% { opacity: 1; transform: none; } 100% { opacity: 1; } }
+.cmini .cmini__bub { animation: cmini-buyer 6s ease-out infinite; }
+.cmini .cmini__panel { animation: cmini-panel 6s ease-out infinite; }
+.cmini .cmini__opt--1 { animation: cmini-opt1 6s ease-out infinite; }
+.cmini .cmini__opt--2 { animation: cmini-opt2 6s ease-out infinite; }
+
+/* ---------- mini analytics chat (card 2) ---------- */
+.amini {
+  width: 100%;
+  max-width: 380px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.amini__bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 12px;
+  font-weight: 600;
+}
+.amini__bar i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  display: block;
+}
+.amini__body {
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-height: 210px;
+}
+.amini__row {
+  display: flex;
+}
+.amini__row--r {
+  justify-content: flex-end;
+}
+.amini__bub {
+  max-width: 86%;
+  font-size: 12.5px;
+  line-height: 1.4;
+  padding: 8px 11px;
+  border-radius: 12px;
+}
+.amini__bub--user {
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+  border-bottom-right-radius: 4px;
+  opacity: 0;
+}
+.amini__bub--agent {
+  background: var(--color-surface-sunk);
+  color: var(--color-text);
+  border-bottom-left-radius: 4px;
+  opacity: 0;
+}
+.amini__bub--agent b {
+  color: var(--color-accent-deep);
+  font-weight: 600;
+}
+.amini__tool {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-accent);
+  color: var(--color-accent-deep);
+  font-family: var(--font-label);
+  font-style: italic;
+  font-size: 11.5px;
+  opacity: 0;
+}
+.amini__tool svg {
+  display: block;
+  color: var(--color-accent);
+  flex: none;
+}
+
+@keyframes amini-user { 0%, 6% { opacity: 0; transform: translateY(6px); } 14% { opacity: 1; transform: none; } 100% { opacity: 1; } }
+@keyframes amini-t1 { 0%, 24% { opacity: 0; transform: translateY(5px); } 32% { opacity: 1; transform: none; } 100% { opacity: 1; } }
+@keyframes amini-t2 { 0%, 40% { opacity: 0; transform: translateY(5px); } 48% { opacity: 1; transform: none; } 100% { opacity: 1; } }
+@keyframes amini-agent { 0%, 60% { opacity: 0; transform: translateY(6px); } 70% { opacity: 1; transform: none; } 100% { opacity: 1; } }
+.amini .amini__bub--user { animation: amini-user 7s ease-out infinite; }
+.amini .amini__tool--1 { animation: amini-t1 7s ease-out infinite; }
+.amini .amini__tool--2 { animation: amini-t2 7s ease-out infinite; }
+.amini .amini__bub--agent { animation: amini-agent 7s ease-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cmini *, .amini * { animation: none !important; }
+  .cmini__bub, .cmini__panel, .cmini__opt,
+  .amini__bub--user, .amini__bub--agent, .amini__tool { opacity: 1 !important; transform: none !important; }
+}

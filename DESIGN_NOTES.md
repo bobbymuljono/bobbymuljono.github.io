@@ -160,6 +160,28 @@ brightness/contrast filter to reseat the light studio photo against the darker p
   write-ups stay plain markdown, diagrams are components instead of hand-written CSS, and
   because content is MDX, React demos or gifs can be embedded directly in a write-up going
   forward.
+- **Animated demo components (2026-09-02).** A sibling pattern to the arch-diagram kit: pure-CSS
+  looped-timeline recreations of the interactive product surfaces, built as zero-JS server
+  components under `components/demos/`. `CopilotChatDemo` is a full, scripted 11s-loop recreation
+  of the item-recommendation copilot (buyer message, a "Suggest reply" tap, thinking chip, a
+  3-option suggestion panel, an animated cursor editing a draft with a blinking caret, a send
+  click, and the reply landing in-thread with a product card), embedded as the lead element of
+  `chat-recommendation-copilot.mdx`. `SelectedWorkDemos` holds two compact mini-demos
+  (`CopilotMiniDemo`, `AnalyticsChatDemo`) used on the Home page's feature cards. The whole
+  timeline runs as one shared CSS `infinite` animation (no JS timers, so everything stays in sync
+  and resets together at the loop boundary), stays token-driven so it adapts to dark mode, and
+  goes static under `prefers-reduced-motion`, the same rules as the arch kit. An earlier abstract
+  SVG "analytics motif" sketch (query box, agent, bar chart) was tried for the analytics feature
+  card and discarded in this session for reading as decoration rather than a real demo; the
+  chatbox-style `AnalyticsChatDemo` replaced it.
+- **Landing page redesign (2026-09-02).** The Home page's `.selected__grid` of plain
+  `.card.card--interactive.project-preview` anchors was replaced by a `.selected__stack` of
+  two-column feature cards (`.feat`, sides alternating via `.feat--flip`): an animated demo panel
+  on a sage-wash background with a pulsing "Live demo" badge, beside the project copy (kind
+  eyebrow, serif heading, description, tag list, "Read the write-up" link). Collapses to a single
+  stacked column (visual above copy) under 52rem. The demo visual is chosen per project by slug;
+  projects without a bespoke demo fall back to a copy-only card. The old `.project-preview` rules
+  were removed from `app/home.css`.
 
 The tokens/components live in `styles/global.css` (single file consumed by
 the root layout, `app/layout.tsx`; was `BaseLayout.astro` under Astro). Utility classes mirror the bundle's React primitives: `.button`

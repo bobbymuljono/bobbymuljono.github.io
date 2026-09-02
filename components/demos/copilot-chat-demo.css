@@ -81,6 +81,7 @@
 }
 .ccd__row {
   display: flex;
+  margin-top: 8px;
 }
 .ccd__row--right {
   justify-content: flex-end;

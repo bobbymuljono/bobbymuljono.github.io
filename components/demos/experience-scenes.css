@@ -1,0 +1,104 @@
+/* Looping line-art scenes for the Experience bands (see ExperienceScenes.tsx).
+   Everything is token-driven so the figures, boards, and washes invert in dark mode,
+   and every motion goes static on its final frame under prefers-reduced-motion.
+   Scenes share one 4.6s cycle; the Shopee callouts and their connectors fade in
+   together, staggered. */
+
+.scene {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* line-art figure ink */
+.fig {
+  stroke: var(--color-accent);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.fig-fill {
+  fill: var(--color-accent);
+  stroke: none;
+}
+.aud {
+  fill: var(--color-text-muted);
+}
+
+/* whiteboard / monitor surface — a defined edge keeps it readable in dark mode,
+   where the board fill sits close to the panel wash */
+.board {
+  fill: var(--color-surface);
+  stroke: var(--color-border-strong);
+  stroke-width: 1.5;
+}
+.axis {
+  stroke: var(--color-border-strong);
+  stroke-width: 1.4;
+  fill: none;
+}
+.code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  fill: var(--color-text-on-wash);
+}
+.callbox {
+  fill: var(--color-surface);
+  stroke: var(--color-border-strong);
+  stroke-width: 1.4;
+}
+
+/* connectors from the monitor to each callout — fade in on their callout's beat */
+.conn {
+  stroke: var(--color-accent);
+  stroke-width: 1.3;
+  stroke-dasharray: 2 3;
+  fill: none;
+  opacity: 0;
+  animation: connfade 4.6s ease-in-out infinite;
+}
+.conn-2 { animation-delay: 0.55s; }
+.conn-3 { animation-delay: 1.1s; }
+@keyframes connfade {
+  0%, 6% { opacity: 0; }
+  14%, 88% { opacity: 0.6; }
+  96%, 100% { opacity: 0; }
+}
+
+/* talking mouth — closed line swaps with open ellipse */
+.mo { opacity: 0; }
+.talking .mc { animation: mc 0.46s steps(1) infinite; }
+.talking .mo { animation: mo 0.46s steps(1) infinite; }
+@keyframes mc { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+@keyframes mo { 0%, 50% { opacity: 0; } 50.01%, 100% { opacity: 1; } }
+
+/* typing hands */
+.hand { animation: tap 0.32s ease-in-out infinite; }
+.hand-b { animation-delay: 0.16s; }
+@keyframes tap {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(1.6px); }
+}
+
+/* callout bubbles pop in, staggered, and hold before the loop resets */
+.call {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pop 4.6s ease-in-out infinite;
+}
+.call-2 { animation-delay: 0.55s; }
+.call-3 { animation-delay: 1.1s; }
+@keyframes pop {
+  0%, 6% { opacity: 0; transform: scale(0.7); }
+  14%, 88% { opacity: 1; transform: scale(1); }
+  96%, 100% { opacity: 0; transform: scale(0.7); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .talking .mc, .talking .mo, .hand, .call, .conn { animation: none; }
+  .mo { opacity: 0; }
+  .call { opacity: 1; transform: none; }
+  .conn { opacity: 0.6; }
+}

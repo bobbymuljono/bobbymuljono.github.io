@@ -109,6 +109,122 @@
   filter: brightness(0.9) contrast(1.03);
 }
 
+/* Currently building — a "now" band directly under the hero. Reuses the
+   Experience/feature-card vocabulary: a tinted logo panel beside the copy. */
+.nowband {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  margin-top: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--ease-out), box-shadow var(--ease-out);
+}
+
+.nowband:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-md);
+}
+
+.nowband__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  background: var(--color-surface-accent);
+  border-right: 1px solid var(--color-border);
+}
+
+.nowband__logo-img {
+  display: block;
+  width: auto;
+  height: 136px;
+  max-width: 100%;
+}
+
+/* Theme swap: dark-green mark in light mode, cream mark under dark. */
+.nowband__logo-img--dark {
+  display: none;
+}
+:root[data-theme='dark'] .nowband__logo-img--light {
+  display: none;
+}
+:root[data-theme='dark'] .nowband__logo-img--dark {
+  display: block;
+}
+
+.nowband__body {
+  padding: var(--space-5) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.nowband__name {
+  font-size: var(--text-2xl);
+  margin: 0 0 var(--space-2);
+}
+
+.nowband__desc {
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-4);
+  max-width: 56ch;
+}
+
+.nowband .tag-list {
+  margin: 0 0 var(--space-4);
+}
+
+.nowband__status {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  margin: 0;
+  font-family: var(--font-label);
+  font-style: italic;
+  font-size: var(--text-sm);
+  color: var(--color-accent-deep);
+}
+
+.nowband__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.nowband__sep {
+  color: var(--color-text-muted);
+}
+
+.nowband__status-soon {
+  font-family: var(--font-body);
+  font-style: normal;
+  color: var(--color-text-muted);
+}
+
+/* The "live" pulse — the block's only motion; static under reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes nowband-pulse {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.4;
+      transform: scale(0.6);
+    }
+  }
+  .nowband__dot {
+    animation: nowband-pulse 2.1s var(--ease-in-out) infinite;
+  }
+}
+
 /* Experience — full bands: an animated scene beside each role. */
 .exp-list {
   list-style: none;
@@ -317,6 +433,16 @@
     border-left: none;
   }
   .feat__vis {
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* Now band: logo panel stacks above the copy. */
+  .nowband {
+    grid-template-columns: 1fr;
+  }
+  .nowband__logo {
+    padding: var(--space-5);
     border-right: none;
     border-bottom: 1px solid var(--color-border);
   }

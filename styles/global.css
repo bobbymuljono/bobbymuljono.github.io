@@ -295,7 +295,7 @@ hr {
   display: inline-block;
   font-family: var(--font-label);
   font-style: italic;
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-normal);
   color: var(--color-accent);

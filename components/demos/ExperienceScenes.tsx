@@ -28,7 +28,7 @@ export function ShopeeScene() {
       <circle className="fig-fill" cx="96" cy="50" r="1.5" />
       <path className="fig" d="M90 106 L89 66" />
       <path className="fig" d="M90 106 L120 106 L124 138" />
-      <path className="fig" d="M89 70 Q102 82 128 92" />
+      <path className="fig" d="M89 70 Q99 81 121 85" />
       {/* keyboard on table */}
       <rect className="fig" x="118" y="88" width="44" height="6" rx="2" />
       <rect className="fig-fill hand" x="124" y="83" width="6" height="5" rx="1.5" />
@@ -37,32 +37,32 @@ export function ShopeeScene() {
       <rect className="board" x="178" y="54" width="52" height="34" rx="3" />
       <line className="fig" x1="204" y1="88" x2="204" y2="94" />
       <line className="fig" x1="192" y1="94" x2="216" y2="94" />
-      {/* connectors (fade in with their callouts) */}
-      <path className="conn" d="M180 54 L172 34" />
-      <path className="conn conn-2" d="M208 54 L216 32" />
-      <path className="conn conn-3" d="M222 66 L227 55" />
+      {/* connectors fan up from the monitor top to the row of callouts (fade in with them) */}
+      <path className="conn" d="M186 54 L166 34" />
+      <path className="conn conn-2" d="M204 54 L204 34" />
+      <path className="conn conn-3" d="M222 54 L242 34" />
       {/* callout: AI bot */}
       <g className="call">
-        <rect className="callbox" x="150" y="8" width="36" height="26" rx="7" />
-        <rect className="fig" x="161" y="16" width="14" height="11" rx="3" />
-        <line className="fig" x1="168" y1="16" x2="168" y2="12" />
-        <circle className="fig-fill" cx="168" cy="10.5" r="1.3" />
-        <circle className="fig-fill" cx="165" cy="21.5" r="1.2" />
-        <circle className="fig-fill" cx="171" cy="21.5" r="1.2" />
+        <rect className="callbox" x="150" y="6" width="32" height="26" rx="7" />
+        <rect className="fig" x="159" y="13" width="14" height="11" rx="3" />
+        <line className="fig" x1="166" y1="13" x2="166" y2="9" />
+        <circle className="fig-fill" cx="166" cy="8" r="1.3" />
+        <circle className="fig-fill" cx="163" cy="18.5" r="1.2" />
+        <circle className="fig-fill" cx="169" cy="18.5" r="1.2" />
       </g>
       {/* callout: charts */}
       <g className="call call-2">
-        <rect className="callbox" x="196" y="6" width="34" height="26" rx="7" />
-        <rect className="fig-fill" x="203" y="18" width="4" height="8" rx="1" />
-        <rect className="fig-fill" x="211" y="14" width="4" height="12" rx="1" />
-        <rect className="fig-fill" x="219" y="11" width="4" height="15" rx="1" />
+        <rect className="callbox" x="188" y="6" width="32" height="26" rx="7" />
+        <rect className="fig-fill" x="197" y="18" width="4" height="8" rx="1" />
+        <rect className="fig-fill" x="203" y="14" width="4" height="12" rx="1" />
+        <rect className="fig-fill" x="209" y="11" width="4" height="15" rx="1" />
       </g>
-      {/* callout: database */}
+      {/* callout: database — lifted into the row, aligned with the bot and charts */}
       <g className="call call-3">
-        <rect className="callbox" x="224" y="40" width="34" height="30" rx="7" />
-        <ellipse className="fig" cx="241" cy="49" rx="7" ry="3" />
-        <path className="fig" d="M234 49 v11 a7 3 0 0 0 14 0 v-11" />
-        <path className="fig" d="M234 55 a7 3 0 0 0 14 0" />
+        <rect className="callbox" x="226" y="6" width="32" height="26" rx="7" />
+        <ellipse className="fig" cx="242" cy="14" rx="7" ry="3" />
+        <path className="fig" d="M235 14 v11 a7 3 0 0 0 14 0 v-11" />
+        <path className="fig" d="M235 20 a7 3 0 0 0 14 0" />
       </g>
     </svg>
   );

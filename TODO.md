@@ -25,10 +25,22 @@ screen**, unaffected by the migration. See `README.md` → Deployment for produc
 
 ## Next up (planned, 2026-09-01)
 
-- [ ] **"Currently building" surface**: show what Bobby is actively working on — right now the
-  **personal budgeting app** — somewhere on the site (e.g. a "Now" / "Building" block on Home, or
-  a lightweight dedicated section). Keep it low-effort to update as the current project changes.
-  Scope + placement TBD.
+- [ ] **"Currently building" surface (persofin)**: a "Now" / "Building" block on Home highlighting
+  the project Bobby is actively working on — right now **persofin**, his personal finance /
+  budgeting app. Keep it low-effort to swap as the current project changes. **Design mockups are
+  done** (`/design` canvas, three options: A = compact "Currently building" strip *(recommended)*,
+  B = fuller sage feature card, C = minimal one-line). **Blocked on Bobby**: pick an option and
+  supply the persofin one-liner (one sentence on what it does / why he's building it) + any link.
+  Then implement on a `feature/now-building` branch (its own PR), reusing the `components/demos/`
+  house style (pure-CSS, token-driven, static under reduced-motion). Mini budget-card motif already
+  sketched in the mockups.
+- [x] **Experience section animations** (done 2026-09-03): each role on Home now pairs its copy with
+  a looping pure-CSS line-art scene in a full-width band — Shopee (typing, with AI / chart /
+  database callouts), ISS (pointing at a trendline, talking to an audience), First Code (teaching
+  `print("Hello world!")`). Zero client JS, token-driven for dark mode, stacks scene-above-copy on
+  mobile, static under `prefers-reduced-motion`. Files: `components/demos/ExperienceScenes.tsx` +
+  `experience-scenes.css`, edits to `app/page.tsx` + `app/home.css`. Shipped via
+  `feature/experience-animations` (merged as PR #19).
 - [ ] **Write-up cleanup**: a polish pass over the existing project write-ups in
   `content/projects/` — tighten prose, fix anything stale, align voice. Distinct from drafting the
   three remaining `draft: true` placeholders (that's the `portfolio-writeup` content item above).

@@ -61,6 +61,57 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Currently building — a "now" band under the hero */}
+      <section className="building" data-reveal>
+        <span className="eyebrow">Currently building</span>
+        <div className="nowband">
+          <div className="nowband__logo">
+            {/* Dark-green mark for light mode; cream mark swaps in under dark. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className="nowband__logo-img nowband__logo-img--light"
+              src="/logo-notext-dark.png"
+              alt="PersoFin"
+              width={1254}
+              height={1254}
+              loading="lazy"
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className="nowband__logo-img nowband__logo-img--dark"
+              src="/logo-notext-light.png"
+              alt=""
+              aria-hidden="true"
+              width={1254}
+              height={1254}
+              loading="lazy"
+            />
+          </div>
+          <div className="nowband__body">
+            <h3 className="nowband__name">PersoFin</h3>
+            <p className="nowband__desc">
+              An open-source personal finance web app that tracks spending and
+              budgets from bank exports.
+            </p>
+            <ul className="tag-list">
+              <li className="tag">JavaScript</li>
+              <li className="tag">TypeScript</li>
+              <li className="tag">Next.js</li>
+            </ul>
+            <p className="nowband__status">
+              <span className="nowband__dot" aria-hidden="true" />
+              <span className="nowband__status-live">
+                Cloud version close to completion, open source first
+              </span>
+              <span className="nowband__sep" aria-hidden="true">
+                &middot;
+              </span>
+              <span className="nowband__status-soon">GitHub repo coming soon</span>
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Experience — full bands: an animated scene beside each role */}
       <section className="experience" data-reveal>
         <span className="eyebrow">Experience</span>

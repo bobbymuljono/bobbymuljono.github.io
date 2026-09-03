@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import ChatBot from '@/components/ChatBot';
 import ContactForm from '@/components/ContactForm';
 import { CopilotMiniDemo, AnalyticsChatDemo } from '@/components/demos/SelectedWorkDemos';
+import { ShopeeScene, ISSScene, FirstCodeScene } from '@/components/demos/ExperienceScenes';
 import { getAllProjects } from '@/lib/content';
 import './home.css';
 
@@ -60,35 +61,50 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Experience — minimalist progression list */}
+      {/* Experience — full bands: an animated scene beside each role */}
       <section className="experience" data-reveal>
         <span className="eyebrow">Experience</span>
         <ul className="exp-list">
           <li className="exp">
-            <div className="exp__head">
-              <h3 className="exp__company">Shopee</h3>
-              <span className="exp__years">2020 &mdash; Present</span>
+            <div className="band">
+              <div className="band__vis"><ShopeeScene /></div>
+              <div className="band__body">
+                <div className="exp__head">
+                  <h3 className="exp__company">Shopee</h3>
+                  <span className="exp__years">2020 &mdash; Present</span>
+                </div>
+                <p className="exp__role">Senior Data Analyst</p>
+                <p className="exp__note">Building analytical solutions with AI</p>
+              </div>
             </div>
-            <p className="exp__role">Senior Data Analyst</p>
-            <p className="exp__note">Building analytical solutions with AI</p>
           </li>
 
           <li className="exp">
-            <div className="exp__head">
-              <h3 className="exp__company">ISS Facility Services</h3>
-              <span className="exp__years">2019 &mdash; 2020</span>
+            <div className="band">
+              <div className="band__vis"><ISSScene /></div>
+              <div className="band__body">
+                <div className="exp__head">
+                  <h3 className="exp__company">ISS Facility Services</h3>
+                  <span className="exp__years">2019 &mdash; 2020</span>
+                </div>
+                <p className="exp__role">Data Analyst</p>
+                <p className="exp__note">Drawing insights from data</p>
+              </div>
             </div>
-            <p className="exp__role">Data Analyst</p>
-            <p className="exp__note">Drawing insights from data</p>
           </li>
 
           <li className="exp">
-            <div className="exp__head">
-              <h3 className="exp__company">First Code Academy</h3>
-              <span className="exp__years">2017</span>
+            <div className="band">
+              <div className="band__vis"><FirstCodeScene /></div>
+              <div className="band__body">
+                <div className="exp__head">
+                  <h3 className="exp__company">First Code Academy</h3>
+                  <span className="exp__years">2017</span>
+                </div>
+                <p className="exp__role">STEM Course Facilitator</p>
+                <p className="exp__note">Teaching kids how to code</p>
+              </div>
             </div>
-            <p className="exp__role">STEM Course Facilitator</p>
-            <p className="exp__note">Teaching kids how to code</p>
           </li>
         </ul>
       </section>

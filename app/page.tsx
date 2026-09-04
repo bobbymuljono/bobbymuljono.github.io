@@ -31,7 +31,10 @@ export default function Home() {
       {/* Hero */}
       <section className="hero" data-reveal>
         <div className="hero__intro">
-          <h1>I build with AI, and I storytell with data for a living.</h1>
+          <h1>
+            I build with <span className="hero__accent">AI</span>, and I
+            storytell with data for a living.
+          </h1>
           <p className="hero__lead">
             Hey guys, welcome to my site. I'm Bobby, a Senior Data Analyst, with 6+ years in SQL (a little bit of Python),
             dashboarding, and data analytics. These days that expertise is

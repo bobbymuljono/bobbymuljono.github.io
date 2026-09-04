@@ -25,7 +25,7 @@
 
 .hero__intro {
   grid-area: intro;
-  max-width: 560px;
+  max-width: 600px;
 }
 
 .hero__body {
@@ -34,10 +34,23 @@
 }
 
 .hero h1 {
-  /* Scales down on narrow screens so the headline doesn't push the CTAs far
-     below the fold; caps at the --text-4xl display size on wider viewports. */
-  font-size: clamp(2.5rem, 9vw, var(--text-4xl));
-  margin: 18px 0 20px;
+  /* Display scale — the hero used to cap at --text-4xl (60px) and quietly opt out
+     of the reserved --text-5xl display size. Pushed up to ~76px with tighter
+     leading and tracking so the larger type reads as a dense editorial block, not
+     just bigger text. Still scales down on narrow screens so it doesn't shove the
+     CTAs below the fold. */
+  font-size: clamp(2.6rem, 7vw, 4.75rem);
+  line-height: 1.03;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  margin: 20px 0 24px;
+}
+
+/* The hero's single accent moment — one green word, echoing the wordmark's green
+   period and the OG image's forest rule. The headline carries the weight; there is
+   deliberately no eyebrow above it. */
+.hero__accent {
+  color: var(--color-accent);
 }
 
 .hero__lead {

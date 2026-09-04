@@ -74,3 +74,10 @@ Genuinely, I want to build more automation for end users. It doesn't have to be 
 it could be anything that solves an immediate problem, especially for small and medium
 businesses. And if I'm working within a company, roles like AI product manager, AI engineer,
 or AI analytics are where I'm most excited to grow.
+
+## When and why did I leave Shopee
+
+I left Shopee in September 2026. It started somewhere in mid 2025 when AI was rapidly evolving in a pace that was unimaginable.
+Suddenly I was involved in the first of many things. The first to be issued a Cursor Enterprise license in the team to experiment with agentic coding.
+The first to be build AI agents in Shopee's internal low-code AI agent building. The first to build skills in Claude and empower Shopee's internal AI agent for data analytics.
+All these firsts got me excited to build solutions with AI, and it felt like I needed a change in environment in order for me to grow in this aspect. So I decided to leave my role which was still quite traditional in majority of my responsibilities (pulling data using SQL, dashboarding etc.) and decided to pursue learning the craft of building with AI as a leap of faith.

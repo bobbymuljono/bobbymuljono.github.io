@@ -10,7 +10,7 @@ workflows.
 
 ## Experience
 
-- **Shopee** (2020 to Present) - Senior Data Analyst. Building analytical solutions with AI.
+- **Shopee** (2020 to 2026) - Senior Data Analyst. Building analytical solutions with AI.
 - **ISS Facility Services** (2019 to 2020) - Data Analyst. Drawing insights from data.
 - **First Code Academy** (2017) - STEM Course Facilitator. Teaching kids how to code.
 

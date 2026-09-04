@@ -1,8 +1,11 @@
 /* Looping line-art scenes for the Experience bands (see ExperienceScenes.tsx).
    Everything is token-driven so the figures, boards, and washes invert in dark mode,
    and every motion goes static on its final frame under prefers-reduced-motion.
-   Scenes share one 4.6s cycle; the Shopee callouts and their connectors fade in
-   together, staggered. */
+   Motion is choreographed, not simultaneous: the Shopee connectors draw on toward
+   each callout, the callouts cascade up in sequence and the chart bars grow from
+   the baseline; the ISS trendline draws itself on before its points pop; the First
+   Code lines write onto the board in turn. The talking mouth and typing hands keep
+   their own quick loops. */
 
 .scene {
   width: 100%;
@@ -49,21 +52,26 @@
   stroke-width: 1.4;
 }
 
-/* connectors from the monitor to each callout — fade in on their callout's beat */
+/* connectors from the monitor to each callout — draw on toward the callout,
+   hold, then reset for the loop. Staggered so they lead their callout in. */
 .conn {
   stroke: var(--color-accent);
-  stroke-width: 1.3;
-  stroke-dasharray: 2 3;
+  stroke-width: 1.4;
   fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: 44;
+  stroke-dashoffset: 44;
   opacity: 0;
-  animation: connfade 4.6s ease-in-out infinite;
+  animation: conndraw 6.5s var(--ease-out) infinite;
 }
-.conn-2 { animation-delay: 0.55s; }
-.conn-3 { animation-delay: 1.1s; }
-@keyframes connfade {
-  0%, 6% { opacity: 0; }
-  14%, 88% { opacity: 0.6; }
-  96%, 100% { opacity: 0; }
+.conn-2 { animation-delay: 0.7s; }
+.conn-3 { animation-delay: 1.4s; }
+@keyframes conndraw {
+  0% { stroke-dashoffset: 44; opacity: 0; }
+  3% { opacity: 1; }
+  16% { stroke-dashoffset: 0; opacity: 1; }
+  90% { stroke-dashoffset: 0; opacity: 1; }
+  97%, 100% { stroke-dashoffset: 0; opacity: 0; }
 }
 
 /* talking mouth — closed line swaps with open ellipse */
@@ -81,24 +89,87 @@
   50% { transform: translateY(1.6px); }
 }
 
-/* callout bubbles pop in, staggered, and hold before the loop resets */
+/* callout bubbles cascade up in sequence — rise with a light overshoot behind
+   their connector, hold, then reset. */
 .call {
   opacity: 0;
   transform-box: fill-box;
-  transform-origin: center;
-  animation: pop 4.6s ease-in-out infinite;
+  transform-origin: center bottom;
+  animation: callrise 6.5s var(--ease-out) infinite;
 }
-.call-2 { animation-delay: 0.55s; }
-.call-3 { animation-delay: 1.1s; }
-@keyframes pop {
-  0%, 6% { opacity: 0; transform: scale(0.7); }
-  14%, 88% { opacity: 1; transform: scale(1); }
-  96%, 100% { opacity: 0; transform: scale(0.7); }
+.call-2 { animation-delay: 0.7s; }
+.call-3 { animation-delay: 1.4s; }
+@keyframes callrise {
+  0%, 8% { opacity: 0; transform: translateY(7px) scale(0.86); }
+  18% { opacity: 1; transform: translateY(0) scale(1.05); }
+  24%, 88% { opacity: 1; transform: translateY(0) scale(1); }
+  96%, 100% { opacity: 0; transform: translateY(0) scale(1); }
+}
+
+/* chart bars grow up from the baseline just as the chart callout settles */
+.bar {
+  fill: var(--color-accent);
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: bargrow 6.5s var(--ease-out) infinite;
+  animation-delay: 0.95s;
+}
+.bar-2 { animation-delay: 1.05s; }
+.bar-3 { animation-delay: 1.15s; }
+@keyframes bargrow {
+  0%, 12% { transform: scaleY(0.08); }
+  26% { transform: scaleY(1); }
+  88% { transform: scaleY(1); }
+  96%, 100% { transform: scaleY(0.08); }
+}
+
+/* ISS trendline draws itself on, then its two data points pop in behind it */
+.trend {
+  stroke-dasharray: 150;
+  stroke-dashoffset: 150;
+  animation: trenddraw 5.5s var(--ease-out) infinite;
+}
+@keyframes trenddraw {
+  0%, 6% { stroke-dashoffset: 150; }
+  34% { stroke-dashoffset: 0; }
+  90% { stroke-dashoffset: 0; }
+  97%, 100% { stroke-dashoffset: 150; }
+}
+.pt {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ptpop 5.5s var(--ease-out) infinite;
+}
+.pt-2 { animation-delay: 0.35s; }
+@keyframes ptpop {
+  0%, 22% { opacity: 0; transform: scale(0); }
+  30% { opacity: 1; transform: scale(1.35); }
+  38%, 90% { opacity: 1; transform: scale(1); }
+  97%, 100% { opacity: 0; transform: scale(0); }
+}
+
+/* First Code — the two code lines write onto the board in turn */
+.codeline {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: codein 5.5s var(--ease-out) infinite;
+}
+.codeline-2 { animation-delay: 0.5s; }
+@keyframes codein {
+  0%, 8% { opacity: 0; transform: translateY(3px); }
+  20% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  97%, 100% { opacity: 0; transform: translateY(0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .talking .mc, .talking .mo, .hand, .call, .conn { animation: none; }
+  .talking .mc, .talking .mo, .hand, .call, .conn, .bar,
+  .trend, .pt, .codeline { animation: none; }
   .mo { opacity: 0; }
-  .call { opacity: 1; transform: none; }
-  .conn { opacity: 0.6; }
+  .call, .pt, .codeline { opacity: 1; transform: none; }
+  .conn { opacity: 1; stroke-dashoffset: 0; }
+  .trend { stroke-dashoffset: 0; }
+  .bar { opacity: 1; transform: scaleY(1); }
 }

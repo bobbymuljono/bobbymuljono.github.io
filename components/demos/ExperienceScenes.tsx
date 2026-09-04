@@ -53,9 +53,9 @@ export function ShopeeScene() {
       {/* callout: charts */}
       <g className="call call-2">
         <rect className="callbox" x="188" y="6" width="32" height="26" rx="7" />
-        <rect className="fig-fill" x="197" y="18" width="4" height="8" rx="1" />
-        <rect className="fig-fill" x="203" y="14" width="4" height="12" rx="1" />
-        <rect className="fig-fill" x="209" y="11" width="4" height="15" rx="1" />
+        <rect className="bar" x="197" y="18" width="4" height="8" rx="1" />
+        <rect className="bar bar-2" x="203" y="14" width="4" height="12" rx="1" />
+        <rect className="bar bar-3" x="209" y="11" width="4" height="15" rx="1" />
       </g>
       {/* callout: database — lifted into the row, aligned with the bot and charts */}
       <g className="call call-3">
@@ -76,9 +76,9 @@ export function ISSScene() {
       <rect className="board" x="22" y="14" width="150" height="74" rx="4" />
       <line className="axis" x1="34" y1="76" x2="160" y2="76" />
       <line className="axis" x1="34" y1="24" x2="34" y2="76" />
-      <polyline className="fig" points="38,68 64,54 90,60 116,38 156,46" />
-      <circle className="fig-fill" cx="64" cy="54" r="2" />
-      <circle className="fig-fill" cx="116" cy="38" r="2" />
+      <polyline className="fig trend" points="38,68 64,54 90,60 116,38 156,46" />
+      <circle className="fig-fill pt" cx="64" cy="54" r="2" />
+      <circle className="fig-fill pt pt-2" cx="116" cy="38" r="2" />
       <path className="fig" d="M203 68 L178 52" />
       <path className="fig" d="M196 116 Q196 74 210 71 Q224 74 224 116" />
       <circle className="fig" cx="210" cy="54" r="12" />
@@ -100,8 +100,8 @@ export function FirstCodeScene() {
   return (
     <svg className="scene talking" viewBox="0 0 260 150" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
       <rect className="board" x="22" y="14" width="150" height="74" rx="4" />
-      <text className="code" x="34" y="42">print(</text>
-      <text className="code" x="46" y="58">&quot;Hello world!&quot;)</text>
+      <text className="code codeline" x="34" y="42">print(</text>
+      <text className="code codeline codeline-2" x="46" y="58">&quot;Hello world!&quot;)</text>
       <path className="fig" d="M203 68 L178 52" />
       <path className="fig" d="M196 116 Q196 74 210 71 Q224 74 224 116" />
       <circle className="fig" cx="210" cy="54" r="12" />

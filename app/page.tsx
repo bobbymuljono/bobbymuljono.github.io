@@ -64,10 +64,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Currently building — a "now" band under the hero */}
+      {/* Side projects — a "now" band under the hero */}
       <section className="building" data-reveal>
-        <span className="eyebrow">Currently building</span>
-        <div className="nowband">
+        <span className="eyebrow">Side projects</span>
+        <a
+          className="nowband"
+          href="https://persofin.app"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <div className="nowband__logo">
             {/* Dark-green mark for light mode; cream mark swaps in under dark. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -104,15 +109,11 @@ export default function Home() {
             <p className="nowband__status">
               <span className="nowband__dot" aria-hidden="true" />
               <span className="nowband__status-live">
-                Cloud version close to completion, open source first
+                Open source and live, always being built on
               </span>
-              <span className="nowband__sep" aria-hidden="true">
-                &middot;
-              </span>
-              <span className="nowband__status-soon">GitHub repo coming soon</span>
             </p>
           </div>
-        </div>
+        </a>
       </section>
 
       {/* Experience — full bands: an animated scene beside each role */}

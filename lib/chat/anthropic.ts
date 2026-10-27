@@ -2,7 +2,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import type { ChatOptions, ChatProvider, Usage } from './types';
 
-const CHAT_MODEL = 'claude-haiku-4-5';
+const CHAT_MODEL = 'claude-haiku-5-5';
 
 export function createAnthropicProvider(apiKey: string): ChatProvider {
   // The SDK auto-retries 429/5xx with backoff (maxRetries defaults to 2).
